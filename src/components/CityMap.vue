@@ -1,6 +1,9 @@
 <template>
-  <div>
-    <div ref="cityMap" class="cityMap"></div>
+  <div
+    :class="{ mapWrapper: true, fullscreen }"
+    @dblclick="!fullscreen && toggleFullscreen()"
+  >
+    <div :id="_uid + '_map'" class="cityMap"></div>
   </div>
 </template>
 
@@ -22,6 +25,7 @@ export default Vue.extend({
   data() {
     return {
       map: null as unknown as L.Map,
+      fullscreen: false,
     };
   },
   mounted() {
@@ -29,15 +33,16 @@ export default Vue.extend({
   },
   methods: {
     initMap() {
-      this.map = L.map(this.$refs.cityMap as HTMLElement, undefined)
+      // eslint-disable-next-line
+      this.map = L.map(`${(this as any)._uid}_map`)
         .setView(this.coordinates, 13);
+      this.zoomControl(this.map, false);
+      this.drag(this.map, false);
 
       L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
         attribution:
-          '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a>',
+          '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> רינגו נדלן',
       }).addTo(this.map);
-
-      // L.control.scale().addTo(this.map);
 
       this.map.pm.addControls({
         position: 'topleft',
@@ -55,13 +60,66 @@ export default Vue.extend({
         snappingOption: false,
       });
     },
+    center(map: L.Map) {
+      const cords: L.LatLng = this.coordinates;
+
+      // to force rerender map tiles
+      map.invalidateSize();
+      (map.attributionControl as any)._map.fitBounds(cords); // eslint-disable-line
+    },
+    zoomControl(map: L.Map, state: boolean) {
+      map.touchZoom[state ? 'enable' : 'disable']();
+      map.doubleClickZoom[state ? 'enable' : 'disable']();
+      map.scrollWheelZoom[state ? 'enable' : 'disable']();
+      map.boxZoom[state ? 'enable' : 'disable']();
+      map.keyboard[state ? 'enable' : 'disable']();
+
+      // eslint-disable-next-line
+      state ? map.zoomControl.addTo(map) : map.zoomControl.remove();
+    },
+    drag(map: L.Map, state: boolean) {
+      map.dragging[!state ? 'disable' : 'enable']();
+    },
+    toggleFullscreen() {
+      this.fullscreen = !this.fullscreen;
+      this.$nextTick(() => {
+        this.zoomControl(this.map, this.fullscreen);
+        this.drag(this.map, this.fullscreen);
+      });
+    },
   },
 });
 </script>
 
 <style lang="scss" scoped>
-.cityMap {
-  width: 100%;
-  height: 200px;
+.mapWrapper {
+  &.fullscreen {
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    left: 0;
+    top: 0;
+    background: rgba(51, 51, 51, 0.7);
+    z-index: 99999;
+    >div.cityMap {
+      height: 100vh;
+      width: 100vw;
+      ::v-deep {
+        .leaflet-pm-toolbar {
+          display: block;
+        }
+      }
+    }
+  }
+  .cityMap {
+    width: 100%;
+    height: 200px;
+    ::v-deep {
+      .leaflet-control-attribution,
+      .leaflet-pm-toolbar {
+        display: none;
+      }
+    }
+  }
 }
 </style>

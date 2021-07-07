@@ -6,10 +6,10 @@
       <template v-slot:header>
         <v-row>
           <v-col
-            v-for="item in headers"
-            :key="item.text"
+            v-for="header in headers"
+            :key="header"
           >
-            <p><b>{{ item.text }}</b></p>
+            <p><b>{{ header }}</b></p>
           </v-col>
         </v-row>
       </template>
@@ -47,7 +47,7 @@
 
 <script lang="ts">
 import Vue from 'vue';
-import { latLng } from 'leaflet';
+import { GeoJSON } from 'leaflet';
 import CityMap from './CityMap.vue';
 
 export default Vue.extend({
@@ -57,53 +57,36 @@ export default Vue.extend({
   },
   data() {
     return {
-      headers: [
-        {
-          text: 'Index',
-          align: 'start',
-          value: 'index',
-        },
-        { text: 'Name', value: 'name' },
-        { text: 'Translations', value: 'translations' },
-        { text: 'Id', value: 'id' },
-        { text: 'Map', value: 'coordinates' },
-      ],
+      headers: ['Index', 'Name', 'Translations', 'Id', 'Map'],
       cities: [
         {
           name: 'Jerusalem',
           translations: 'ירושלים , القدس',
           id: '5f197ba2a69db72eb094bc0a',
-          // coordinates: [35.211391, 31.775654],
-          coordinates: [31.775654, 35.211391],
+          coordinates: [35.211391, 31.775654],
         },
         {
           name: 'Kfar Adumim',
           translations: 'כפר אדומים , כפר אדומים',
           id: '5f197bd5a69db72eb094bc2c',
-          // coordinates: [35.332791, 31.823963],
-          coordinates: [31.823963, 35.332791],
+          coordinates: [35.332791, 31.823963],
         },
         {
           name: 'Maale Adomim',
           translations: 'מעלה אדומים , معاليه أدوميم',
           id: '5f197ceda69db72eb094bce7',
-          // coordinates: [35.311355, 31.785264],
-          coordinates: [31.785264, 35.311355],
+          coordinates: [35.311355, 31.785264],
         },
       ],
     };
   },
   methods: {
     toLatLng(array: Array<number>) {
-      return latLng(array[0], array[1]);
+      return GeoJSON.coordsToLatLng([array[0], array[1]]);
     },
   },
 });
 </script>
 
 <style lang="scss" scoped>
-.myAreaMap {
-  width: 100%;
-  height: 400px;
-}
 </style>
