@@ -83,6 +83,7 @@ export default Vue.extend({
     toggleFullscreen() {
       this.fullscreen = !this.fullscreen;
       this.$nextTick(() => {
+        this.center(this.map);
         this.zoomControl(this.map, this.fullscreen);
         this.drag(this.map, this.fullscreen);
       });
