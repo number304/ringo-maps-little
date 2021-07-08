@@ -37,7 +37,7 @@ export default Vue.extend({
       this.map = L.map(`${(this as any)._uid}_map`)
         .setView(this.coordinates, 13);
       this.zoomControl(this.map, false);
-      this.drag(this.map, false);
+      // this.drag(this.map, false);
 
       L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
         attribution:
