@@ -34,9 +34,9 @@
               <v-col>
                 <p>{{ city.payload[0]._id }}</p>
               </v-col>
-              <!-- <v-col>
-                <CityMap :coordinates="toLatLng(item.coordinates)" />
-              </v-col> -->
+              <v-col>
+                <CityMap :city="city" />
+              </v-col>
             </v-row>
           </v-col>
         </v-row>
@@ -48,14 +48,14 @@
 <script lang="ts">
 import Vue from 'vue';
 import { GeoJSON } from 'leaflet';
-// import CityMap from './CityMap.vue';
+import CityMap from './CityMap.vue';
 import getCities from '../plugins/http';
 
 export default Vue.extend({
   name: 'components.selectedCityList',
-  // components: {
-  //   CityMap,
-  // },
+  components: {
+    CityMap,
+  },
   data() {
     return {
       headers: ['Index', 'Name', 'Translations', 'Id', 'Map'],
