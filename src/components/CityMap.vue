@@ -10,10 +10,10 @@
     <div :id="_uid + '_map'" class="myMap"></div>
     <!-- Here are the custom buttons -->
     <div :class="[fullscreen ? 'menuButtons' : 'hiddenButtons']">
-      <div class="d-flex flex-row justify-space-around menu">
+      <div class="menu">
         <!-- Exit fullscreen -->
         <v-btn fab dark
-          class="orange darken-2"
+          class="orange darken-2 btn"
           @click="toggleFullScreen();center(map)"
           title="Exit Fullscreen"
         >
@@ -21,7 +21,7 @@
         </v-btn>
         <!-- Center city -->
         <v-btn fab dark
-          class="orange darken-2"
+          class="orange darken-2 btn"
           @click="center(map)"
           title="Center City"
         >
@@ -29,14 +29,39 @@
         </v-btn>
         <!-- Toggle neighborhoods -->
         <v-btn fab dark
-          class="orange darken-2"
-          @click="toggleNeighborhoods(map)"
-          title="Center City"
+          class="orange darken-2 btn"
+          @click.prevent="toggleNeighborhoods(map)"
+          title="Toggle Neighborhoods"
         >
           <v-icon dark>mdi-home-group</v-icon>
         </v-btn>
       </div>
     </div>
+
+    <!-- Buttons related to the selected neighborhood -->
+    <template v-if="fullscreen && selected.neighborhood">
+      <div class="fixed-center-top menu">
+        <h2 class="text-center">{{ selected.neighborhood.name
+          .find((name) => name.language == 'en').label }}</h2>
+        <div class="mt-2">
+          <!-- Center neighborhood -->
+          <v-btn fab dark
+            class="orange darken-2 btn"
+            @click.prevent="centerArea(selected.neighborhood)"
+            title="Center Neighborhood"
+          >
+            <v-icon dark>mdi-image-filter-center-focus-weak</v-icon>
+          </v-btn>
+          <!-- Edit neighborhood -->
+          <v-btn fab dark
+            class="orange darken-2 btn"
+            title="Edit Neighborhood"
+          >
+            <v-icon dark>mdi-pencil</v-icon>
+          </v-btn>
+        </div>
+      </div>
+    </template>
   </div>
 </template>
 
@@ -125,6 +150,12 @@ export default Vue.extend({
       map.invalidateSize();
       // console.log(cords);
       (map.attributionControl as any)._map.fitBounds(cords);
+    },
+    centerArea(area: any) {
+      (this.map.attributionControl as any)._map.fitBounds(
+        area.FeatureCollection.features[0].geometry
+          .coordinates[0][0].map((x: any) => L.GeoJSON.coordsToLatLng(x))
+      );
     },
     cityLayer(map: L.Map) {
       // If the object map has a cityLayer, delete it
@@ -230,6 +261,7 @@ export default Vue.extend({
                     click: (event: any) => {
                       this.$emit('clickArea', event, neighborhood, this.city)
                       this.$set(this.selected, 'neighborhood', neighborhood)
+                      console.log(this.selected.neighborhood)
                       setTimeout(() => {
                         layer.bindPopup(neighborhoodName)
                       }, 500)
@@ -291,23 +323,16 @@ $success: #3f9967;
       padding: 0.5em;
     }
     .menu {
-      a {
-        &.btn {
-          &:hover {
-            position: relative;
-            span {
-              display: block !important;
-              bottom: -5em;
-              background: rgba($color: $orange, $alpha: 0.3);
-              border-radius: 5px;
-              position: absolute;
-              color: $dark;
-              left: -30px;
-              border: 1px solid rgba($color: $orange, $alpha: 0.3);
-              padding: 0.5em;
-            }
-          }
+      display: flex;
+      &.fixed-center-top {
+        align-items: center;
+        .btn {
+          margin: 8px;
         }
+      }
+      flex-direction: column;
+      .btn {
+        margin-bottom: 8px;
       }
     }
     .fixed-center-top {
@@ -315,7 +340,8 @@ $success: #3f9967;
       top: 4em;
       left: 50%;
       margin-top: -50px;
-      margin-left: -100px;
+      margin-left: -60px;
+      z-index: 999;
     }
   }
 
