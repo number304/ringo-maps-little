@@ -30,6 +30,7 @@
         <!-- Toggle neighborhoods -->
         <v-btn fab dark
           class="orange darken-2 btn"
+          :disabled="neighborhoods.length === 0"
           @click.prevent="toggleNeighborhoods(map)"
           title="Toggle Neighborhoods"
         >
@@ -52,13 +53,24 @@
           >
             <v-icon dark>mdi-image-filter-center-focus-weak</v-icon>
           </v-btn>
-          <!-- Edit neighborhood -->
-          <v-btn fab dark
-            class="orange darken-2 btn"
-            title="Edit Neighborhood"
-          >
-            <v-icon dark>mdi-pencil</v-icon>
-          </v-btn>
+          <v-dialog v-model="dialog">
+            <template v-slot:activator="{ on, attrs }">
+              <!-- Edit neighborhood -->
+              <v-btn fab dark
+                class="orange darken-2 btn"
+                title="Edit Neighborhood"
+                v-bind="attrs"
+                v-on="on"
+              >
+                <v-icon dark>mdi-pencil</v-icon>
+              </v-btn>
+            </template>
+            <v-card>
+              <v-card-title class="text-h5 grey lighten-2">
+                Privacy Policy
+              </v-card-title>
+            </v-card>
+          </v-dialog>
         </div>
       </div>
     </template>
@@ -88,6 +100,7 @@ export default Vue.extend({
       selected: {
         neighborhood: null,
       },
+      dialog: false,
     }
   },
   mounted() {

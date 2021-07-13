@@ -1,7 +1,7 @@
 <template>
-  <div id="app">
+  <v-app id="app">
     <SelectedCityList />
-  </div>
+  </v-app>
 </template>
 
 <script lang="ts">
