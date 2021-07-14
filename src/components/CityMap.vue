@@ -2,7 +2,7 @@
   <div
     :class="{
       mapWrapper: true,
-      fullscreen,
+      fullscreen
     }"
     @dblclick="!fullscreen && toggleFullScreen()"
   >
@@ -12,23 +12,26 @@
     <div :class="[fullscreen ? 'menuButtons' : 'hiddenButtons']">
       <div class="menu">
         <!-- Exit fullscreen -->
-        <v-btn fab dark
+        <v-btn
+          fab
+          dark
           class="orange darken-2 btn"
-          @click="toggleFullScreen();center(map)"
+          @click="
+            toggleFullScreen();
+            center(map);
+          "
           title="Exit Fullscreen"
         >
           <v-icon dark>mdi-fullscreen-exit</v-icon>
         </v-btn>
         <!-- Center city -->
-        <v-btn fab dark
-          class="orange darken-2 btn"
-          @click="center(map)"
-          title="Center City"
-        >
+        <v-btn fab dark class="orange darken-2 btn" @click="center(map)" title="Center City">
           <v-icon dark>mdi-image-filter-center-focus</v-icon>
         </v-btn>
         <!-- Toggle neighborhoods -->
-        <v-btn fab dark
+        <v-btn
+          fab
+          dark
           class="orange darken-2 btn"
           :disabled="neighborhoods.length === 0"
           @click.prevent="toggleNeighborhoods(map)"
@@ -42,35 +45,31 @@
     <!-- Buttons related to the selected neighborhood -->
     <template v-if="fullscreen && selected.neighborhood">
       <div class="fixed-center-top menu">
-        <h2 class="text-center">{{ selected.neighborhood.name
-          .find((name) => name.language == 'en').label }}</h2>
+        <h2 class="text-center">
+          {{ selected.neighborhood.name.find(name => name.language == "en").label }}
+        </h2>
         <div class="mt-2">
           <!-- Center neighborhood -->
-          <v-btn fab dark
+          <v-btn
+            fab
+            dark
             class="orange darken-2 btn"
             @click.prevent="centerArea(selected.neighborhood)"
             title="Center Neighborhood"
           >
             <v-icon dark>mdi-image-filter-center-focus-weak</v-icon>
           </v-btn>
-          <v-dialog v-model="dialog">
-            <template v-slot:activator="{ on, attrs }">
-              <!-- Edit neighborhood -->
-              <v-btn fab dark
-                class="orange darken-2 btn"
-                title="Edit Neighborhood"
-                v-bind="attrs"
-                v-on="on"
-              >
-                <v-icon dark>mdi-pencil</v-icon>
-              </v-btn>
-            </template>
-            <v-card>
-              <v-card-title class="text-h5 grey lighten-2">
-                Privacy Policy
-              </v-card-title>
-            </v-card>
-          </v-dialog>
+          <!-- Edit neighborhood -->
+          <v-btn
+            fab
+            dark
+            class="orange darken-2 btn"
+            title="Edit Neighborhood"
+            @click.stop="$emit('editNeighborhood', selected.neighborhood)"
+          >
+            <v-icon dark>mdi-pencil</v-icon>
+          </v-btn>
+
         </div>
       </div>
     </template>
@@ -78,30 +77,29 @@
 </template>
 
 <script lang="ts">
-import Vue from 'vue';
-import L from 'leaflet';
-import 'leaflet/dist/leaflet.css';
+import Vue from "vue";
+import L from "leaflet";
+import "leaflet/dist/leaflet.css";
 
-import '@geoman-io/leaflet-geoman-free';
-import '@geoman-io/leaflet-geoman-free/dist/leaflet-geoman.css';
+import "@geoman-io/leaflet-geoman-free";
+import "@geoman-io/leaflet-geoman-free/dist/leaflet-geoman.css";
 
 export default Vue.extend({
   props: {
     city: {
       type: Object,
-      required: true,
+      required: true
     }
   },
   data() {
     return {
-      map: null as unknown as L.Map,
+      map: (null as unknown) as L.Map,
       neighborhoods: [],
       fullscreen: false,
       selected: {
-        neighborhood: null,
+        neighborhood: null
       },
-      dialog: false,
-    }
+    };
   },
   mounted() {
     this.initMap();
@@ -109,9 +107,9 @@ export default Vue.extend({
   },
   methods: {
     initMap() {
-      this.map = L.map((this as any)._uid + '_map');
-      L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
-        attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> רינגו נדלן',
+      this.map = L.map((this as any)._uid + "_map");
+      L.tileLayer("http://{s}.tile.osm.org/{z}/{x}/{y}.png", {
+        attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> רינגו נדלן'
       }).addTo(this.map);
       this.center(this.map);
       this.zoomControl(this.map, false);
@@ -120,7 +118,7 @@ export default Vue.extend({
       this.map.pm.addControls({
         positions: {
           draw: "bottomleft",
-          edit: "bottomleft",
+          edit: "bottomleft"
         },
         drawMarker: false,
         drawCircleMarker: false,
@@ -133,28 +131,30 @@ export default Vue.extend({
         cutPolygon: false,
         removalMode: true, // erase shapes
         pinningOption: false,
-        snappingOption: false,
+        snappingOption: false
       });
 
       // Creates an event listener that returns on console the
       // coordinates of the layer created by user
-      this.map.on('pm:create', (event) => {
+      this.map.on("pm:create", event => {
         console.log(event);
         const { layer } = event;
         const coords = (layer as any).getLatLngs();
         const polyedit = (layer as any).toGeoJSON();
         console.log(coords);
         console.log(polyedit);
-      })
+      });
 
       this.cityLayer(this.map);
     },
     center(map: L.Map) {
-      const cords: L.LatLng[] = this.city.payload[0].FeatureCollection.features
-        .reduce((o: L.LatLng[], v: any) => {
-          return o.concat(v.geometry.coordinates[0][0].map((x: any) => {
-            return L.GeoJSON.coordsToLatLng(x)
-          }))
+      const cords: L.LatLng[] = this.city.payload[0].FeatureCollection.features.reduce(
+        (o: L.LatLng[], v: any) => {
+          return o.concat(
+            v.geometry.coordinates[0][0].map((x: any) => {
+              return L.GeoJSON.coordsToLatLng(x);
+            })
+          );
         },
         []
       );
@@ -166,13 +166,14 @@ export default Vue.extend({
     },
     centerArea(area: any) {
       (this.map.attributionControl as any)._map.fitBounds(
-        area.FeatureCollection.features[0].geometry
-          .coordinates[0][0].map((x: any) => L.GeoJSON.coordsToLatLng(x))
+        area.FeatureCollection.features[0].geometry.coordinates[0][0].map((x: any) =>
+          L.GeoJSON.coordsToLatLng(x)
+        )
       );
     },
     cityLayer(map: L.Map) {
       // If the object map has a cityLayer, delete it
-      if((map as any).cityLayerGroup) {
+      if ((map as any).cityLayerGroup) {
         map.removeLayer((map as any).cityLayerGroup);
         delete (map as any).cityLayerGroup;
       }
@@ -185,17 +186,17 @@ export default Vue.extend({
         (map as any).cityLayerGroup.addLayer(
           L.geoJSON(feature.geometry, {
             style: () => {
-              return { color: "#007bff", weight: 2, opacity: 0.65 }
+              return { color: "#007bff", weight: 2, opacity: 0.65 };
             },
             onEachFeature: (feature, layer) => {
-              layer.on('pm:update', (event) => {
+              layer.on("pm:update", event => {
                 // Creates an event listener for any modification
                 // of a pre-existent polygon
-                console.log(event)
-              })
+                console.log(event);
+              });
             }
           })
-        )
+        );
       });
 
       // Insert the LayerGroup from city object to map
@@ -211,44 +212,46 @@ export default Vue.extend({
       state ? map.zoomControl.addTo(map) : map.zoomControl.remove();
     },
     drag(map: L.Map, state: boolean) {
-      map.dragging[state ? 'enable' : 'disable']();
+      map.dragging[state ? "enable" : "disable"]();
     },
     toggleFullScreen() {
       this.fullscreen = !this.fullscreen;
-      if(!this.fullscreen) {
-        if((this.map as any).neighborhoodsLayerGroup) {
-          this.map.removeLayer((this.map as any).neighborhoodsLayerGroup)
-          delete (this.map as any).neighborhoodsLayerGroup
+      if (!this.fullscreen) {
+        if ((this.map as any).neighborhoodsLayerGroup) {
+          this.map.removeLayer((this.map as any).neighborhoodsLayerGroup);
+          delete (this.map as any).neighborhoodsLayerGroup;
         }
       }
       this.$nextTick(() => {
-        this.center(this.map)
-        this.zoomControl(this.map, this.fullscreen)
-        this.drag(this.map, this.fullscreen)
-      })
+        this.center(this.map);
+        this.zoomControl(this.map, this.fullscreen);
+        this.drag(this.map, this.fullscreen);
+      });
     },
     loadNeighborhoods() {
-      const cityId = this.city.payload[0]._id
+      const cityId = this.city.payload[0]._id;
 
       // If this city has an Array with _id property, then it's true
-      if(cityId){
+      if (cityId) {
         // Neighborhoods from city object inserted in same
         // name data value
-        this.neighborhoods = this.city.payload[0].neighborhoods
+        this.neighborhoods = this.city.payload[0].neighborhoods;
       } else {
-        console.log('No city hood in local data files')
-        console.log(`https://agents.ringoboot.com/api/v1.0/areas/city/${cityId}/?FeatureCollection`)
+        console.log("No city hood in local data files");
+        console.log(
+          `https://agents.ringoboot.com/api/v1.0/areas/city/${cityId}/?FeatureCollection`
+        );
       }
     },
     toggleNeighborhoods(map: L.Map, draw?: boolean) {
-      if(!this.neighborhoods.length) return;
+      if (!this.neighborhoods.length) return;
 
-      this.$set(this.selected, 'neighborhood', null);
+      this.$set(this.selected, "neighborhood", null);
 
-      if((map as any).neighborhoodsLayerGroup) {
-        map.removeLayer((map as any).neighborhoodsLayerGroup)
-        delete (map as any).neighborhoodsLayerGroup
-        if (!draw) return
+      if ((map as any).neighborhoodsLayerGroup) {
+        map.removeLayer((map as any).neighborhoodsLayerGroup);
+        delete (map as any).neighborhoodsLayerGroup;
+        if (!draw) return;
       }
 
       (map as any).neighborhoodsLayerGroup = new L.LayerGroup();
@@ -256,37 +259,32 @@ export default Vue.extend({
       // A loop that will add all the hoods into a layer group
       // in the map, that are ignored in City view
       for (let i = 0; i < this.neighborhoods.length; i++) {
-        const neighborhood: any = this.neighborhoods[i]
-        const neighborhoodName = neighborhood.name.find(
-          (x: any) => x.language == "en"
-        ).label;
+        const neighborhood: any = this.neighborhoods[i];
+        const neighborhoodName = neighborhood.name.find((x: any) => x.language == "en").label;
 
         (map as any).neighborhoodsLayerGroup.addLayer(
-          L.geoJSON(
-            neighborhood.FeatureCollection.features[0].geometry,
-            {
-              pmIgnore: true, // To ignore the hoods in City view
-              onEachFeature: (feature: any, layer: any) => {
-                if(neighborhoodName) {
-                  layer.on({
-                    // Event to change the value of selected
-                    // to the last hood selected
-                    click: (event: any) => {
-                      this.$emit('clickArea', event, neighborhood, this.city)
-                      this.$set(this.selected, 'neighborhood', neighborhood)
-                      console.log(this.selected.neighborhood)
-                      setTimeout(() => {
-                        layer.bindPopup(neighborhoodName)
-                      }, 500)
-                    }
-                  })
-                }
-              },
-              style: () => {
-                return { color: "#ff8900", weight: 2, opacity: 0.65 }
+          L.geoJSON(neighborhood.FeatureCollection.features[0].geometry, {
+            pmIgnore: true, // To ignore the hoods in City view
+            onEachFeature: (feature: any, layer: any) => {
+              if (neighborhoodName) {
+                layer.on({
+                  // Event to change the value of selected
+                  // to the last hood selected
+                  click: (event: any) => {
+                    this.$emit("clickArea", [event, neighborhood, this.city.payload[0]]);
+                    this.$set(this.selected, "neighborhood", neighborhood);
+                    setTimeout(() => {
+                      layer.bindPopup(neighborhoodName);
+                    }, 500);
+                  }
+                });
               }
-            })
-        )
+            },
+            style: () => {
+              return { color: "#ff8900", weight: 2, opacity: 0.65 };
+            }
+          })
+        );
       }
 
       (map as any).neighborhoodsLayerGroup.addTo(map);
@@ -296,16 +294,16 @@ export default Vue.extend({
     neighborhoods: {
       deep: true,
       immediate: false,
-      handler: function (val, oldVal) {
+      handler: function(val, oldVal) {
         if (!val.length || !oldVal.length) return;
-        this.toggleNeighborhoods(this.map, true)
+        this.toggleNeighborhoods(this.map, true);
       }
     }
   }
-})
+});
 </script>
 
-<style lang='scss' scoped>
+<style lang="scss" scoped>
 $orange: #ff8900;
 $dark: #0e4275;
 $success: #3f9967;
@@ -318,7 +316,7 @@ $success: #3f9967;
     left: 0;
     top: 0;
     background: rgba(51, 51, 51, 0.7);
-    z-index: 99999;
+    z-index: 401;
     > div.myMap {
       height: 100vh;
       width: 100vw;
