@@ -94,7 +94,7 @@ export default Vue.extend({
       this.dialog = !this.dialog
     },
     setAreaSelected(data: any) {
-      console.log(data)
+      // console.log(data)
       this.$set(this, "area", {
         letleafEvent: data[0],
         neighborhood: data[1],
