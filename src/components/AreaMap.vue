@@ -88,8 +88,8 @@ export default Vue.extend({
       ((self) => {
         self.area.FeatureCollection.features.forEach(
           function (feature: any, featureIndex: number) {
-            const geometry = JSON.parse(JSON.stringify(feature.geometry))
-            console.log(geometry);
+            const geometry = JSON.parse(JSON.stringify(feature.geometry));
+            // console.log(geometry);
 
             (map as any).areaLayerGroup.addLayer(
               L.geoJSON(geometry, {
@@ -152,11 +152,14 @@ export default Vue.extend({
     },
     centerArea(area: any) {
       const cords: L.LatLng[] = area.FeatureCollection.features.reduce(
-        (o: L.LatLng[], v: any) =>
-          o.concat(
+        (o: L.LatLng[], v: any) => {
+          console.log(v)
+          return o.concat(
             v.geometry.coordinates[0][0].map((x: any) =>
               L.GeoJSON.coordsToLatLng(x))
           )
+        },
+        []
       )
 
       // Again, force rerender the map tiles
