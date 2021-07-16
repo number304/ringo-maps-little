@@ -21,8 +21,50 @@
               v-model="name.label"
               class="mx-4"
             ></v-text-field>
+            <div class="d-flex mx-4 mb-4">
+              <label for="activeColor">
+                Active Color
+              </label>
+              <v-spacer></v-spacer>
+              <input
+                type="color"
+                name="activeColor"
+                v-model="form.color.active"
+              >
+            </div>
+            <div class="d-flex mx-4 mb-4">
+              <label for="hoverColor">
+                Hover Color
+              </label>
+              <v-spacer></v-spacer>
+              <input
+                type="color"
+                name="hoverColor"
+                v-model="form.color.hover"
+              >
+            </div>
+            <div class="d-flex mx-4">
+              <label for="statusColor">
+                Status Color
+              </label>
+              <v-spacer></v-spacer>
+              <input
+                type="color"
+                name="statusColor"
+                v-model="form.color.status"
+              >
+            </div>
+            <p class="mt-4 mb-0 text-left mx-4">
+              Form has {{ isChanged ? '' : 'not' }} changed.
+            </p>
           </v-col>
-          <v-col>A</v-col>
+          <v-col>
+            <AreaMap
+              :area="neighborhood"
+              :key="neighborhood._id"
+              :settings="{ color: form.color }"
+            />
+          </v-col>
         </v-row>
       </v-container>
 
@@ -36,7 +78,7 @@
         </v-btn>
 
         <v-btn color="green darken-1" text
-          @click.stop="$emit('closeModal')"
+          @click.stop="close"
         >
           Cancel
         </v-btn>
@@ -47,6 +89,7 @@
 
 <script lang="ts">
 import Vue from 'vue';
+import AreaMap from './AreaMap.vue'
 
 interface InitForm {
   name: { language: string, label: null }[];
@@ -60,6 +103,9 @@ interface InitForm {
 }
 
 export default Vue.extend({
+  components: {
+    AreaMap,
+  },
   props: ['letleafEvent', 'neighborhood', 'city'],
   data() {
     const form = (this as any).initForm();
@@ -89,6 +135,21 @@ export default Vue.extend({
     }
   },
   methods: {
+    close() {
+      if (this.isChanged) {
+        const ask = confirm('Are you sure to exit?');
+        if (ask) {
+          this.$emit('closeModal');
+          this.setNeighborhood(this.neighborhood);
+          this.form.color.active = "#e3a702";
+          this.form.color.hover = "#571414";
+          this.form.color.status = "#55915c";
+          this.form.mapTouched = false;
+        }
+        return;
+      }
+      this.$emit('closeModal');
+    },
     // Just to set the names in form object by argument's name property
     setNeighborhood(neighborhood: any) {
       const data = JSON.parse(JSON.stringify(this.form.name));
