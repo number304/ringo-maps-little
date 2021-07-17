@@ -148,7 +148,7 @@ export default Vue.extend({
       this.cityLayer(this.map);
     },
     center(map: L.Map) {
-      const cords: L.LatLng[] = this.city.payload[0].FeatureCollection.features.reduce(
+      const cords: L.LatLng[] = this.city.FeatureCollection.features.reduce(
         (o: L.LatLng[], v: any) => {
           return o.concat(
             v.geometry.coordinates[0][0].map((x: any) => {
@@ -182,7 +182,7 @@ export default Vue.extend({
       (map as any).cityLayerGroup = new L.LayerGroup();
 
       // Get the information inside city object of his LayerGroup
-      this.city.payload[0].FeatureCollection.features.forEach((feature: any) => {
+      this.city.FeatureCollection.features.forEach((feature: any) => {
         (map as any).cityLayerGroup.addLayer(
           L.geoJSON(feature.geometry, {
             style: () => {
@@ -229,13 +229,13 @@ export default Vue.extend({
       });
     },
     loadNeighborhoods() {
-      const cityId = this.city.payload[0]._id;
+      const cityId = this.city._id;
 
       // If this city has an Array with _id property, then it's true
       if (cityId) {
         // Neighborhoods from city object inserted in same
         // name data value
-        this.neighborhoods = this.city.payload[0].neighborhoods;
+        this.neighborhoods = this.city.neighborhoods;
       } else {
         console.log("No city hood in local data files");
         console.log(
@@ -271,7 +271,7 @@ export default Vue.extend({
                   // Event to change the value of selected
                   // to the last hood selected
                   click: (event: any) => {
-                    this.$emit("clickArea", [event, neighborhood, this.city.payload[0]]);
+                    this.$emit("clickArea", [event, neighborhood, this.city]);
                     this.$set(this.selected, "neighborhood", neighborhood);
                     setTimeout(() => {
                       layer.bindPopup(neighborhoodName);

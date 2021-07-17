@@ -26,13 +26,13 @@
                 <p>{{ index + 1 }}</p>
               </v-col>
               <v-col>
-                <p>{{ city.payload[0].name[1].label }}</p>
+                <p>{{ city.name[1].label }}</p>
               </v-col>
               <v-col>
-                <p>{{ city.payload[0].name[0].label }}</p>
+                <p>{{ city.name[0].label }}</p>
               </v-col>
               <v-col>
-                <p>{{ city.payload[0]._id }}</p>
+                <p>{{ city._id }}</p>
               </v-col>
               <v-col>
                 <CityMap
