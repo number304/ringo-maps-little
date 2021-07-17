@@ -2,8 +2,21 @@
   <div class="mapWrapper">
     <div ref="areaMap" class="areaMap"></div>
     <div class="d-flex justify-center mt-4">
-      <v-btn>Center</v-btn>
-      <v-btn>Redraw layer</v-btn>
+      <v-btn
+        @click.prevent="centerArea(area)"
+        dark
+        color="orange darken-2"
+      >
+        Center
+      </v-btn>
+      <div class="mx-4"></div>
+       <v-btn
+        @click.prevent="areaLayer(map);$emit('restauredArea')"
+        dark
+        color="orange darken-2"
+      >
+        Redraw layer
+      </v-btn>
     </div>
   </div>
 </template>
@@ -19,6 +32,10 @@ export default Vue.extend({
   props: {
     area: {
       type: Object,
+      required: true,
+    },
+    cancel: {
+      type: Boolean,
       required: true,
     },
     settings: {
@@ -51,7 +68,7 @@ export default Vue.extend({
 
       setTimeout(() => {
         this.centerArea(this.area)
-      }, 500)
+      }, 1000)
 
       this.areaLayer(this.map)
 
@@ -135,12 +152,51 @@ export default Vue.extend({
                     },
                   });
 
-                  const geoJson = (layer as any).toGeoJSON();
-                  const redraw = () => {
-                    layer.remove();
-                    self.areaLayer(self.map)
-                  }
-                  self.$emit('newLayer', geoJson, redraw)
+                  layer.on('pm:update', (e) => {
+                    self.$emit(
+                      'editFeature',
+                      featureIndex,
+                      feature,
+                      JSON.parse(JSON
+                        .stringify((e.layer as any).toGeoJSON()))
+                    )
+                  })
+
+                  map.on('pm:create', (e) => {
+                    const { layer } = e;
+
+                    layer.on({
+                      mouseover: () => {
+                      (layer as any).setStyle({
+                        color: getColor("hover"),
+                        weight: 2,
+                        opacity: 0.65,
+                      });
+                    },
+                    mouseout: () => {
+                      (layer as any).setStyle({
+                        color: getColor("active"),
+                        weight: 2,
+                        opacity: 0.65,
+                      });
+                    },
+                    preclick: () => {
+                      (layer as any).setStyle({
+                        color: getColor("status"),
+                        weight: 2,
+                        opacity: 0.65,
+                      });
+                    },
+                    })
+
+                    const geoJson = (layer as any).toGeoJSON();
+                    const redraw = () => {
+                      layer.remove();
+                      self.areaLayer(self.map)
+                    }
+                    self.$emit('newLayer', geoJson, redraw)
+                  });
+
                 }
               })
             )
@@ -151,9 +207,9 @@ export default Vue.extend({
       })(this)
     },
     centerArea(area: any) {
+      if (area == null || area == undefined) console.log('Ayuda')
       const cords: L.LatLng[] = area.FeatureCollection.features.reduce(
         (o: L.LatLng[], v: any) => {
-          console.log(v)
           return o.concat(
             v.geometry.coordinates[0][0].map((x: any) =>
               L.GeoJSON.coordsToLatLng(x))
@@ -165,6 +221,15 @@ export default Vue.extend({
       // Again, force rerender the map tiles
       this.map.invalidateSize();
       (this.map.attributionControl as any)._map.fitBounds(cords);
+    }
+  },
+  watch: {
+    cancel: function() {
+      if (this.cancel) {
+        this.areaLayer(this.map)
+        this.$emit('restaureCancel')
+      }
+      return;
     }
   }
 })

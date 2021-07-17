@@ -63,6 +63,10 @@
               :area="neighborhood"
               :key="neighborhood._id"
               :settings="{ color: form.color }"
+              :cancel="cancel"
+              @editFeature="layerChanges"
+              @restaureCancel="restaureCancel"
+              @restauredArea="restauredArea"
             />
           </v-col>
         </v-row>
@@ -111,6 +115,7 @@ export default Vue.extend({
     const form = (this as any).initForm();
     return {
       form,
+      cancel: false,
     };
   },
   computed: {
@@ -139,12 +144,13 @@ export default Vue.extend({
       if (this.isChanged) {
         const ask = confirm('Are you sure to exit?');
         if (ask) {
+          this.cancel = true;
           this.$emit('closeModal');
           this.setNeighborhood(this.neighborhood);
           this.form.color.active = "#e3a702";
           this.form.color.hover = "#571414";
           this.form.color.status = "#55915c";
-          this.form.mapTouched = false;
+          this.restauredArea();
         }
         return;
       }
@@ -160,6 +166,17 @@ export default Vue.extend({
         if (ref) ref.label =JSON.parse(JSON.stringify(neighborhood.name[i])).label;
       }
       this.$set(this.form, 'name', data);
+    },
+    layerChanges(index: number, feature: any, geoJSON: any) {
+      this.form.mapData = [index, feature, geoJSON];
+      this.form.mapTouched = true;
+    },
+    restauredArea() {
+      this.form.mapData = null;
+      this.form.mapTouched = false;
+    },
+    restaureCancel() {
+      this.cancel = false
     },
     initForm(): InitForm {
       const names = JSON.parse(JSON.stringify(this.neighborhood.name))

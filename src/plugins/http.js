@@ -7,3 +7,9 @@ export default async function getCities() {
   return Axios.get(url)
     .then((res) => res.data);
 }
+
+// export async function patchArea(id, ) {
+//   return Axios.patch(`${url}/${id}`, {
+
+//   })
+// }
