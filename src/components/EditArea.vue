@@ -94,7 +94,7 @@
 <script lang="ts">
 import Vue from 'vue';
 import AreaMap from './AreaMap.vue'
-import { getArea } from '../plugins/http'
+import { patchArea } from '../plugins/http'
 
 interface InitForm {
   name: { language: string, label: null }[];
@@ -117,12 +117,12 @@ export default Vue.extend({
     return {
       form,
       cancel: false,
-      test: null,
+      // test: null,
     };
   },
-  mounted() {
-    this.callGetArea();
-  },
+  // mounted() {
+  //   this.callGetArea();
+  // },
   computed: {
     isChanged() {
       if (!this.neighborhood) return;
@@ -204,16 +204,17 @@ export default Vue.extend({
       else if(language === 'ar') return 'Name in arabic';
       else return 'Name in other language';
     },
-    getArea,
-    async callGetArea() {
-      this.test = await getArea(this.city._id, this.neighborhood._id)
-    }
+    patchArea,
+    // getArea,
+    // async callGetArea() {
+    //   this.test = await getArea(this.city._id, this.neighborhood._id)
+    // }
   },
   watch: {
     neighborhood: {
       handler: function (newVal) {
         this.setNeighborhood(newVal);
-        this.callGetArea();
+        // this.callGetArea();
       },
     },
   },

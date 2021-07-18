@@ -8,23 +8,25 @@ export default async function getCities() {
     .then((res) => res.data);
 }
 
-export async function patchArea(cityId, areaId, formData) {
-  const oldNeighborhoods = await getOldAreas(cityId, areaId)
+export async function patchArea(cityId, oldArea, formData) {
+  const oldNeighborhoods = await getOldAreas(cityId, oldArea._id)
   if (formData.mapTouched) {
     return Axios.patch(`${url}?_id=${cityId}`, {
       neighborhoods: [
         {
+          _id: oldArea._id,
           name: formData.name,
           FeatureCollection: {
+            type: 'FeatureCollection',
             features: [{
+              type: 'Feature',
               properties: {
                 name: formData.name,
                 color: formData.color
               },
               geometry: {
-                coordinates: [
-                  formData.mapData[2].geometry.coordinates[0][0]
-                ]
+                type: 'MultiPolygon',
+                coordinates: formData.mapData[2].geometry.coordinates
               }
             }]
           }
@@ -36,12 +38,20 @@ export async function patchArea(cityId, areaId, formData) {
   return Axios.patch(`${url}?_id=${cityId}`, {
     neighborhoods: [
       {
+        _id: oldArea._id,
         name: formData.name,
         FeatureCollection: {
+          type: 'FeatureCollection',
           features: [{
+            type: 'Feature',
             properties: {
               name: formData.name,
               color: formData.color
+            },
+            geometry: {
+              type: 'MultiPolygon',
+              coordinates: oldArea.FeatureCollection
+                .features[0].geometry.coordinates
             }
           }]
         }
