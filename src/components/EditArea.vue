@@ -61,7 +61,7 @@
           <v-col>
             <AreaMap
               :area="neighborhood"
-              :key="neighborhood._id"
+              :key="neighborhood.id"
               :settings="{ color: form.color }"
               :cancel="cancel"
               @editFeature="layerChanges"
@@ -76,7 +76,8 @@
       <v-card-actions>
         <v-spacer></v-spacer>
         <v-btn color="green darken-1" text
-          @click.stop="$emit('closeModal')"
+          @click.stop="patchArea(city.id, neighborhood, form);$emit('closeModal')"
+          :disabled="!isChanged"
         >
           Save
         </v-btn>
@@ -207,7 +208,7 @@ export default Vue.extend({
     patchArea,
     // getArea,
     // async callGetArea() {
-    //   this.test = await getArea(this.city._id, this.neighborhood._id)
+    //   this.test = await getArea(this.city.id, this.neighborhood.id)
     // }
   },
   watch: {

@@ -229,9 +229,9 @@ export default Vue.extend({
       });
     },
     loadNeighborhoods() {
-      const cityId = this.city._id;
+      const cityId = this.city.id;
 
-      // If this city has an Array with _id property, then it's true
+      // If this city has an Array with id property, then it's true
       if (cityId) {
         // Neighborhoods from city object inserted in same
         // name data value

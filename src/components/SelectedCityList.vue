@@ -32,7 +32,7 @@
                 <p>{{ city.name[0].label }}</p>
               </v-col>
               <v-col>
-                <p>{{ city._id }}</p>
+                <p>{{ city.id }}</p>
               </v-col>
               <v-col>
                 <CityMap
