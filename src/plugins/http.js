@@ -17,6 +17,7 @@ export async function patchArea(cityId, oldArea, formData) {
         {
           id: oldArea.id,
           name: formData.name,
+          color: formData.color,
           FeatureCollection: {
             type: 'FeatureCollection',
             features: [{
@@ -24,7 +25,6 @@ export async function patchArea(cityId, oldArea, formData) {
               geometry: formData.mapData[2].geometry,
               properties: {
                 name: formData.name,
-                color: formData.color
               }
             }]
           }
@@ -38,6 +38,7 @@ export async function patchArea(cityId, oldArea, formData) {
       {
         id: oldArea.id,
         name: formData.name,
+        color: formData.color,
         FeatureCollection: {
           type: 'FeatureCollection',
           features: [{
@@ -45,7 +46,6 @@ export async function patchArea(cityId, oldArea, formData) {
             geometry: oldArea.FeatureCollection.features[0].geometry,
             properties: {
               name: formData.name,
-              color: formData.color
             }
           }]
         }

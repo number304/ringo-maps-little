@@ -52,6 +52,7 @@
         :city="area.city"
         :letleafEvent="area.letleafEvent"
         @closeModal="toggleModalEditNeighborhood"
+        @reloadCities="reloadCities"
       />
     </v-dialog>
   </div>
@@ -100,6 +101,10 @@ export default Vue.extend({
         neighborhood: data[1],
         city: data[2],
       })
+    },
+    async reloadCities() {
+      console.log('working')
+      this.cities = await getCities();
     }
   },
 });

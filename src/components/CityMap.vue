@@ -261,6 +261,8 @@ export default Vue.extend({
       for (let i = 0; i < this.neighborhoods.length; i++) {
         const neighborhood: any = this.neighborhoods[i];
         const neighborhoodName = neighborhood.name.find((x: any) => x.language == "en").label;
+        const neighborhoodColor = (this.neighborhoods[i] as any).color ?
+          (this.neighborhoods[i] as any).color.active : '#ff8900';
 
         (map as any).neighborhoodsLayerGroup.addLayer(
           L.geoJSON(neighborhood.FeatureCollection.features[0].geometry, {
@@ -281,7 +283,7 @@ export default Vue.extend({
               }
             },
             style: () => {
-              return { color: "#ff8900", weight: 2, opacity: 0.65 };
+              return { color: neighborhoodColor, weight: 2, opacity: 0.65 };
             }
           })
         );
