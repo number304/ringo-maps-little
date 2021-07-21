@@ -2,7 +2,7 @@ import axios from 'axios'
 const url = 'http://localhost:3000/cities'
 
 interface State {
-  cities: object[]
+  cities: any[]
 }
 
 const state: State = {
@@ -16,13 +16,14 @@ const getters = {
 const actions = {
   async fetchCities(context: any) {
     const response = await axios.get(url)
+    console.log(response.data)
 
     context.commit('setCities', response.data)
   }
 }
 
 const mutations = {
-  setCities: (state: State, cities: object[]) => state.cities = cities
+  setCities: (state: State, cities: any[]) => state.cities = cities
 }
 
 export default {

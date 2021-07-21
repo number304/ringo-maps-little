@@ -1,7 +1,7 @@
 <template>
   <div>
     <v-data-iterator
-      :items="cities"
+      :items="allCities"
     >
       <template v-slot:header>
         <v-row>
@@ -64,6 +64,7 @@ import { GeoJSON } from 'leaflet';
 import CityMap from './CityMap.vue';
 import EditArea from './EditArea.vue';
 import getCities from '../plugins/http';
+import { mapGetters, mapActions } from 'vuex';
 
 export default Vue.extend({
   name: 'components.selectedCityList',
@@ -84,7 +85,8 @@ export default Vue.extend({
     };
   },
   async mounted() {
-    this.cities = await getCities();
+    // this.cities = await getCities();
+    this.fetchCities()
   },
   methods: {
     toLatLng(array: Array<number>) {
@@ -105,8 +107,10 @@ export default Vue.extend({
     async reloadCities() {
       console.log('working')
       this.cities = await getCities();
-    }
+    },
+    ...mapActions(['fetchCities'])
   },
+  computed: mapGetters(['allCities'])
 });
 </script>
 

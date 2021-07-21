@@ -1,5 +1,6 @@
 import Vuex from 'vuex'
 import Vue from 'vue'
+// import cities from './modules/cities'
 
 Vue.use(Vuex)
 
