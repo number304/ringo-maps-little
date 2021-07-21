@@ -47,12 +47,18 @@
       </template>
     </v-data-iterator>
     <v-dialog style="z-index: 402" v-model="dialog" max-width="800px">
-      <EditArea
+      <!-- <EditArea
         :neighborhood="area.neighborhood"
         :city="area.city"
         :letleafEvent="area.letleafEvent"
         @closeModal="toggleModalEditNeighborhood"
         @reloadCities="reloadCities"
+      /> -->
+      <EditArea
+        :neighborhood="area.neighborhood"
+        :city="area.city"
+        :letleafEvent="area.letleafEvent"
+        @closeModal="toggleModalEditNeighborhood"
       />
     </v-dialog>
   </div>
@@ -63,7 +69,6 @@ import Vue from 'vue';
 import { GeoJSON } from 'leaflet';
 import CityMap from './CityMap.vue';
 import EditArea from './EditArea.vue';
-import getCities from '../plugins/http';
 import { mapGetters, mapActions } from 'vuex';
 
 export default Vue.extend({
@@ -75,7 +80,6 @@ export default Vue.extend({
   data() {
     return {
       headers: ['Index', 'Name', 'Translations', 'Id', 'Map'],
-      cities: [],
       dialog: false,
       area: {
         letleafEvent: null,
@@ -85,14 +89,12 @@ export default Vue.extend({
     };
   },
   async mounted() {
-    // this.cities = await getCities();
     this.fetchCities()
   },
   methods: {
     toLatLng(array: Array<number>) {
       return GeoJSON.coordsToLatLng([array[0], array[1]]);
     },
-    getCities,
     toggleModalEditNeighborhood() {
       this.dialog = !this.dialog
     },
@@ -103,10 +105,6 @@ export default Vue.extend({
         neighborhood: data[1],
         city: data[2],
       })
-    },
-    async reloadCities() {
-      console.log('working')
-      this.cities = await getCities();
     },
     ...mapActions(['fetchCities'])
   },
