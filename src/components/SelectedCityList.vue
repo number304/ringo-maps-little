@@ -37,9 +37,13 @@
               <v-col>
                 <CityMap
                   :city="city"
-                  @clickArea="setAreaSelected"
                   @editNeighborhood="toggleModalEditNeighborhood"
                 />
+                <!-- <CityMap
+                  :city="city"
+                  @clickArea="setAreaSelected"
+                  @editNeighborhood="toggleModalEditNeighborhood"
+                /> -->
               </v-col>
             </v-row>
           </v-col>
@@ -54,12 +58,7 @@
         @closeModal="toggleModalEditNeighborhood"
         @reloadCities="reloadCities"
       /> -->
-      <EditArea
-        :neighborhood="area.neighborhood"
-        :city="area.city"
-        :letleafEvent="area.letleafEvent"
-        @closeModal="toggleModalEditNeighborhood"
-      />
+      <EditArea @closeModal="toggleModalEditNeighborhood"/>
     </v-dialog>
   </div>
 </template>
@@ -81,11 +80,11 @@ export default Vue.extend({
     return {
       headers: ['Index', 'Name', 'Translations', 'Id', 'Map'],
       dialog: false,
-      area: {
-        letleafEvent: null,
-        neighborhood: null,
-        city: null,
-      }
+      // area: {
+      //   letleafEvent: null,
+      //   neighborhood: null,
+      //   city: null,
+      // }
     };
   },
   async mounted() {
@@ -98,14 +97,14 @@ export default Vue.extend({
     toggleModalEditNeighborhood() {
       this.dialog = !this.dialog
     },
-    setAreaSelected(data: any) {
-      // console.log(data)
-      this.$set(this, "area", {
-        letleafEvent: data[0],
-        neighborhood: data[1],
-        city: data[2],
-      })
-    },
+    // setAreaSelected(data: any) {
+    //   // console.log(data)
+    //   this.$set(this, "area", {
+    //     letleafEvent: data[0],
+    //     neighborhood: data[1],
+    //     city: data[2],
+    //   })
+    // },
     ...mapActions(['fetchCities'])
   },
   computed: mapGetters(['allCities'])

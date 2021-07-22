@@ -1,13 +1,13 @@
 <template>
   <div>
-    <v-card v-if="!neighborhood || !city || !letleafEvent">
+    <v-card v-if="!getArea.neighborhood || !getArea.city || !getArea.letleafEvent">
       <v-card-title class="text-h5" style="word-break: normal">
         Please choose a neighborhood to edit!
       </v-card-title>
     </v-card>
     <v-card v-else>
       <v-card-title class="text-h5" style="word-break: normal">
-        {{ city.name[1].label }} - {{ neighborhood.name[1].label }}
+        {{ getArea.city.name[1].label }} - {{ getArea.neighborhood.name[1].label }}
       </v-card-title>
       <v-divider></v-divider>
 
@@ -60,8 +60,8 @@
           </v-col>
           <v-col>
             <AreaMap
-              :area="neighborhood"
-              :key="neighborhood.id"
+              :area="getArea.neighborhood"
+              :key="getArea.neighborhood.id"
               :settings="{ color: form.color }"
               :cancel="cancel"
               @editFeature="layerChanges"
@@ -78,7 +78,7 @@
         <v-btn color="green darken-1" text
           @click.stop="
             patchArea(city.id, neighborhood, form);
-            closeAndReload()"
+            $emit('closeModal')"
           :disabled="!isChanged"
         >
           Save
@@ -98,6 +98,7 @@
 import Vue from 'vue';
 import AreaMap from './AreaMap.vue'
 import { patchArea } from '../plugins/http'
+import { mapGetters } from 'vuex'
 
 interface InitForm {
   name: { language: string, label: null }[];
@@ -114,26 +115,32 @@ export default Vue.extend({
   components: {
     AreaMap,
   },
-  props: ['letleafEvent', 'neighborhood', 'city'],
+  // props: ['letleafEvent', 'neighborhood', 'city'],
   data() {
-    const form = (this as any).initForm();
+    // const form = (this as any).initForm();
     return {
-      form,
+      form: null as any,
       cancel: false,
-      nbColors: this.neighborhood.color || { active: '#e3a702', hover: '#571414', status: '#55915c' },
+      nbColors: { active: '#e3a702', hover: '#571414', status: '#55915c' },
     };
   },
+  created() {
+    if (this.getArea.neighborhood.color) this.nbColors = this.getArea.neighborhood.color
+
+    if (this.getArea) this.form = this.initForm()
+  },
   computed: {
+    ...mapGetters(['getArea']),
     isChanged() {
-      if (!this.neighborhood) return;
+      if (!this.getArea.neighborhood) return;
 
       let check = false;
       const data = JSON.parse(JSON.stringify(this.form.name));
-      for (let i = 0; i < this.neighborhood.name.length; i++) {
+      for (let i = 0; i < this.getArea.neighborhood.name.length; i++) {
         const ref = data.find(
-          (x: any) => x.language == this.neighborhood.name[i].language
+          (x: any) => x.language == this.getArea.neighborhood.name[i].language
         );
-        if (ref) ref.label = JSON.parse(JSON.stringify(this.neighborhood.name[i])).label;
+        if (ref) ref.label = JSON.parse(JSON.stringify(this.getArea.neighborhood.name[i])).label;
       }
 
       if(JSON.stringify(data) != JSON.stringify(this.form.name)) check = true;
@@ -151,7 +158,7 @@ export default Vue.extend({
         if (ask) {
           this.cancel = true;
           this.$emit('closeModal');
-          this.setNeighborhood(this.neighborhood);
+          this.setNeighborhood(this.getArea.neighborhood);
           this.form.color.active = this.nbColors.active;
           this.form.color.hover = this.nbColors.hover;
           this.form.color.status = this.nbColors.status;
@@ -184,15 +191,15 @@ export default Vue.extend({
       this.cancel = false
     },
     initForm(): InitForm {
-      const names = JSON.parse(JSON.stringify(this.neighborhood.name))
-      const nbColors = this.neighborhood.color || { active: '#e3a702', hover: '#571414', status: '#55915c' };
+      const names = JSON.parse(JSON.stringify(this.getArea.neighborhood.name))
+      // const nbColors = this.getArea.neighborhood.color || { active: '#e3a702', hover: '#571414', status: '#55915c' };
 
       return {
         name: names,
         color: {
-          active: nbColors.active,
-          hover: nbColors.hover,
-          status: nbColors.status,
+          active: this.nbColors.active,
+          hover: this.nbColors.hover,
+          status: this.nbColors.status,
         },
         mapTouched: false,
         mapData: null,
@@ -206,15 +213,10 @@ export default Vue.extend({
       else return 'Name in other language';
     },
     patchArea,
-    closeAndReload() {
-      this.$emit('closeModal');
-      setTimeout(() => {
-        this.$emit('reloadCities')
-      }, 500);
-    }
   },
   watch: {
-    neighborhood: {
+    '$store.state.getArea': {
+      deep: true,
       handler: function (newVal) {
         this.setNeighborhood(newVal);
       },
@@ -222,7 +224,3 @@ export default Vue.extend({
   },
 })
 </script>
-
-<style>
-
-</style>
