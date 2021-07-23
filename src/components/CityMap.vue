@@ -108,7 +108,7 @@ export default Vue.extend({
     this.loadNeighborhoods();
   },
   methods: {
-    ...mapActions(['setArea', 'initForm']),
+    ...mapActions(['setArea']),
     initMap() {
       this.map = L.map((this as any)._uid + "_map");
       L.tileLayer("http://{s}.tile.osm.org/{z}/{x}/{y}.png", {
@@ -278,7 +278,6 @@ export default Vue.extend({
                   click: (event: any) => {
                     // this.$emit("clickArea", [event, neighborhood, this.city]);
                     this.setArea([event, neighborhood, this.city])
-                    this.initForm(neighborhood)
                     this.$set(this.selected, "neighborhood", neighborhood);
                     setTimeout(() => {
                       layer.bindPopup(neighborhoodName);

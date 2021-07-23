@@ -8,18 +8,11 @@ const state: State = {
     city: null,
     letleafEvent: null,
   },
-  form: {
-    name: [{ language: '', label: null }],
-    color: { active: null, hover: null, status: null },
-    mapTouched: false,
-    mapData: null
-  },
 }
 
 const getters = {
   allCities: (state: State): any[] => state.cities,
   getArea: (state: State): any => state.area,
-  getForm: (state: State): any => state.form,
 }
 
 const actions = {
@@ -32,12 +25,6 @@ const actions = {
   setArea(context: any, data: []): void {
     context.commit('setArea', data)
   },
-  initForm(context: any, area: any): void {
-    context.commit('initForm', area)
-  }
-  // updateForm(context: any, area: any): void {
-  //   context.commit('setForm', area)
-  // }
 }
 
 const mutations = {
@@ -47,11 +34,6 @@ const mutations = {
     state.area.neighborhood = data[1];
     state.area.city = data[2];
   },
-  initForm: (state: State, area: any) => {
-    state.form.name = area.name
-    if (area.color) state.form.color = area.color
-    else state.form.color = { active: '#e3a702', hover: '#571414', status: '#55915c' }
-  }
 }
 
 export default {

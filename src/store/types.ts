@@ -5,7 +5,6 @@ export default interface State {
     neighborhood: Object | null,
     city: Object | null,
   },
-  form: AreaForm,
 }
 
 export interface AreaForm {
