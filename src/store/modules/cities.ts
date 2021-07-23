@@ -42,14 +42,15 @@ const actions = {
 
 const mutations = {
   setCities: (state: State, cities: any[]): any[] => state.cities = cities,
-  setArea: (state: State, data: Object[]) => {
+  setArea: (state: State, data: any[]) => {
     state.area.letleafEvent = data[0];
     state.area.neighborhood = data[1];
     state.area.city = data[2];
   },
   initForm: (state: State, area: any) => {
     state.form.name = area.name
-    state.form.color = area.color
+    if (area.color) state.form.color = area.color
+    else state.form.color = { active: '#e3a702', hover: '#571414', status: '#55915c' }
   }
 }
 

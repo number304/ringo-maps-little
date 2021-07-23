@@ -129,6 +129,9 @@ export default Vue.extend({
 
     if (this.getArea) this.form = this.initForm()
   },
+  // updated() {
+  //   this.setNeighborhood(this.getArea.neighborhood)
+  // },
   computed: {
     ...mapGetters(['getArea']),
     isChanged() {
@@ -170,6 +173,7 @@ export default Vue.extend({
     },
     // Just to set the names in form object by argument's name property
     setNeighborhood(neighborhood: any) {
+      console.log(neighborhood)
       const data = JSON.parse(JSON.stringify(this.form.name));
       for (let i = 0; i < neighborhood.name.length; i++) {
         const ref = data.find(
@@ -214,13 +218,13 @@ export default Vue.extend({
     },
     patchArea,
   },
-  watch: {
-    '$store.state.getArea': {
-      deep: true,
-      handler: function (newVal) {
-        this.setNeighborhood(newVal);
-      },
-    },
-  },
+  // watch: {
+  //   '$store.state.getArea': {
+  //     deep: true,
+  //     handler: function (newVal) {
+  //       this.setNeighborhood(newVal);
+  //     },
+  //   },
+  // },
 })
 </script>
