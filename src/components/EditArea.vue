@@ -129,9 +129,12 @@ export default Vue.extend({
 
     if (this.getArea) this.form = this.initForm()
   },
-  // updated() {
-  //   this.setNeighborhood(this.getArea.neighborhood)
-  // },
+  beforeUpdate() {
+    if (this.getArea.neighborhood.color) this.nbColors = this.getArea.neighborhood.color
+    else this.nbColors = { active: '#e3a702', hover: '#571414', status: '#55915c' }
+
+    this.form = this.initForm()
+  },
   computed: {
     ...mapGetters(['getArea']),
     isChanged() {
