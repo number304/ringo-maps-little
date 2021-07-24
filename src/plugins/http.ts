@@ -64,10 +64,10 @@ async function getOldAreas(cityId: string, areaId: string): Promise<any> {
     )
 }
 
-export async function getArea(cityId: string, areaId: string): Promise<any> {
-  return Axios.get(`${url}/${cityId}`)
-    .then(res => res.data)
-    .then(data => data.neighborhoods)
-    .then(nb => nb.filter((x: any) => x.id === areaId))
-    .then(arr => arr[0])
-}
+// export async function getArea(cityId: string, areaId: string): Promise<any> {
+//   return Axios.get(`${url}/${cityId}`)
+//     .then(res => res.data)
+//     .then(data => data.neighborhoods)
+//     .then(nb => nb.filter((x: any) => x.id === areaId))
+//     .then(arr => arr[0])
+// }

@@ -77,7 +77,7 @@
         <v-spacer></v-spacer>
         <v-btn color="green darken-1" text
           @click.stop="
-            patchArea(city.id, neighborhood, form);
+            editArea([getArea.city.id, getArea.neighborhood, form]);
             $emit('closeModal')"
           :disabled="!isChanged"
         >
@@ -98,7 +98,7 @@
 import Vue from 'vue';
 import AreaMap from './AreaMap.vue'
 import { patchArea } from '../plugins/http'
-import { mapGetters } from 'vuex'
+import { mapGetters, mapActions } from 'vuex'
 
 interface InitForm {
   name: { language: string, label: null }[];
@@ -115,6 +115,12 @@ export default Vue.extend({
   components: {
     AreaMap,
   },
+  props: {
+    dialog: {
+      type: Boolean,
+      required: true,
+    }
+  },
   data() {
     return {
       form: null as any,
@@ -128,10 +134,12 @@ export default Vue.extend({
     if (this.getArea) this.form = this.initForm()
   },
   beforeUpdate() {
-    if (this.getArea.neighborhood.color) this.nbColors = this.getArea.neighborhood.color
-    else this.nbColors = { active: '#e3a702', hover: '#571414', status: '#55915c' }
+    if (!this.dialog) {
+      if (this.getArea.neighborhood.color) this.nbColors = this.getArea.neighborhood.color
+      else this.nbColors = { active: '#e3a702', hover: '#571414', status: '#55915c' }
 
-    if (!this.form.mapTouched) this.form = this.initForm()
+      this.form = this.initForm()
+    }
   },
   computed: {
     ...mapGetters(['getArea']),
@@ -217,6 +225,7 @@ export default Vue.extend({
       else return 'Name in other language';
     },
     patchArea,
+    ...mapActions(['editArea']),
   },
 })
 </script>

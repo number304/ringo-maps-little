@@ -35,6 +35,10 @@
                 <p>{{ city.id }}</p>
               </v-col>
               <v-col>
+                <!-- <CityMap
+                  :cityId="city.id"
+                  @editNeighborhood="toggleModalEditNeighborhood"
+                /> -->
                 <CityMap
                   :city="city"
                   @editNeighborhood="toggleModalEditNeighborhood"
@@ -58,7 +62,7 @@
         @closeModal="toggleModalEditNeighborhood"
         @reloadCities="reloadCities"
       /> -->
-      <EditArea @closeModal="toggleModalEditNeighborhood"/>
+      <EditArea :dialog="dialog" @closeModal="toggleModalEditNeighborhood"/>
     </v-dialog>
   </div>
 </template>

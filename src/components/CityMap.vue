@@ -93,6 +93,12 @@ export default Vue.extend({
       required: true
     }
   },
+  // props: {
+  //   cityId: {
+  //     type: String,
+  //     required: true
+  //   }
+  // },
   data() {
     return {
       map: (null as unknown) as L.Map,
@@ -107,6 +113,11 @@ export default Vue.extend({
     this.initMap();
     this.loadNeighborhoods();
   },
+  // computed: {
+  //   city() {
+  //     return this.$store.getters.getCity(this.cityId)
+  //   }
+  // },
   methods: {
     ...mapActions(['setArea']),
     initMap() {
@@ -303,6 +314,11 @@ export default Vue.extend({
       handler: function(val, oldVal) {
         if (!val.length || !oldVal.length) return;
         this.toggleNeighborhoods(this.map, true);
+      }
+    },
+    city: {
+      handler: function() {
+        this.loadNeighborhoods()
       }
     }
   }
