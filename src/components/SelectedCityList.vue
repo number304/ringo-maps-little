@@ -39,7 +39,6 @@
                   :city="city"
                   @editNeighborhood="toggleModalEditNeighborhood"
                 />
-                /> -->
               </v-col>
             </v-row>
           </v-col>
