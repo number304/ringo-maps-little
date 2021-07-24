@@ -35,18 +35,10 @@
                 <p>{{ city.id }}</p>
               </v-col>
               <v-col>
-                <!-- <CityMap
-                  :cityId="city.id"
-                  @editNeighborhood="toggleModalEditNeighborhood"
-                /> -->
                 <CityMap
                   :city="city"
                   @editNeighborhood="toggleModalEditNeighborhood"
                 />
-                <!-- <CityMap
-                  :city="city"
-                  @clickArea="setAreaSelected"
-                  @editNeighborhood="toggleModalEditNeighborhood"
                 /> -->
               </v-col>
             </v-row>
@@ -55,13 +47,6 @@
       </template>
     </v-data-iterator>
     <v-dialog style="z-index: 402" v-model="dialog" max-width="800px">
-      <!-- <EditArea
-        :neighborhood="area.neighborhood"
-        :city="area.city"
-        :letleafEvent="area.letleafEvent"
-        @closeModal="toggleModalEditNeighborhood"
-        @reloadCities="reloadCities"
-      /> -->
       <EditArea :dialog="dialog" @closeModal="toggleModalEditNeighborhood"/>
     </v-dialog>
   </div>
@@ -84,11 +69,6 @@ export default Vue.extend({
     return {
       headers: ['Index', 'Name', 'Translations', 'Id', 'Map'],
       dialog: false,
-      // area: {
-      //   letleafEvent: null,
-      //   neighborhood: null,
-      //   city: null,
-      // }
     };
   },
   async mounted() {
@@ -101,19 +81,8 @@ export default Vue.extend({
     toggleModalEditNeighborhood() {
       this.dialog = !this.dialog
     },
-    // setAreaSelected(data: any) {
-    //   // console.log(data)
-    //   this.$set(this, "area", {
-    //     letleafEvent: data[0],
-    //     neighborhood: data[1],
-    //     city: data[2],
-    //   })
-    // },
     ...mapActions(['fetchCities'])
   },
   computed: mapGetters(['allCities'])
 });
 </script>
-
-<style lang="scss" scoped>
-</style>
