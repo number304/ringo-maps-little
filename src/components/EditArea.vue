@@ -115,9 +115,7 @@ export default Vue.extend({
   components: {
     AreaMap,
   },
-  // props: ['letleafEvent', 'neighborhood', 'city'],
   data() {
-    // const form = (this as any).initForm();
     return {
       form: null as any,
       cancel: false,
@@ -133,7 +131,7 @@ export default Vue.extend({
     if (this.getArea.neighborhood.color) this.nbColors = this.getArea.neighborhood.color
     else this.nbColors = { active: '#e3a702', hover: '#571414', status: '#55915c' }
 
-    this.form = this.initForm()
+    if (!this.form.mapTouched) this.form = this.initForm()
   },
   computed: {
     ...mapGetters(['getArea']),
@@ -199,7 +197,6 @@ export default Vue.extend({
     },
     initForm(): InitForm {
       const names = JSON.parse(JSON.stringify(this.getArea.neighborhood.name))
-      // const nbColors = this.getArea.neighborhood.color || { active: '#e3a702', hover: '#571414', status: '#55915c' };
 
       return {
         name: names,
@@ -221,13 +218,5 @@ export default Vue.extend({
     },
     patchArea,
   },
-  // watch: {
-  //   '$store.state.getArea': {
-  //     deep: true,
-  //     handler: function (newVal) {
-  //       this.setNeighborhood(newVal);
-  //     },
-  //   },
-  // },
 })
 </script>
