@@ -161,8 +161,8 @@ export default Vue.extend({
       return check;
     },
     neighborhoodLabel(): string {
-      if (this.getArea.neighborhood.name[1].label.length === 0) return 'New neighborhood'
-      else return this.getArea.neighborhood.name[1].label
+      if (this.form.name[1].label.length === 0) return 'New neighborhood'
+      else return this.form.name[1].label
     }
   },
   methods: {

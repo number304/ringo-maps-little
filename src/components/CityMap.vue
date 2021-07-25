@@ -149,9 +149,13 @@ export default Vue.extend({
         const newNeighborhood = {
           FeatureCollection: {
             type: 'FeatureCollection',
-            features: [
-              polyedit
-            ]
+            features: [{
+              geometry: {
+                coordinates: [polyedit.geometry.coordinates],
+                type: 'MultiPolygon'
+              },
+              type: 'Feature'
+            }]
           },
           name: [{label: '',language: 'he'},{label: '', language: 'en'},{label: '',language: 'ar'}]
         }
