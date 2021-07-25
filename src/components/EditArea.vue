@@ -7,7 +7,7 @@
     </v-card>
     <v-card v-else>
       <v-card-title class="text-h5" style="word-break: normal">
-        {{ getArea.city.name[1].label }} - {{ getArea.neighborhood.name[1].label }}
+        {{ getArea.city.name[1].label }} - {{ neighborhoodLabel }}
       </v-card-title>
       <v-divider></v-divider>
 
@@ -76,9 +76,7 @@
       <v-card-actions>
         <v-spacer></v-spacer>
         <v-btn color="green darken-1" text
-          @click.stop="
-            editArea([getArea.city.id, getArea.neighborhood, form]);
-            $emit('closeModal')"
+          @click.stop="newArea"
           :disabled="!isChanged"
         >
           Save
@@ -97,7 +95,6 @@
 <script lang="ts">
 import Vue from 'vue';
 import AreaMap from './AreaMap.vue'
-import { patchArea } from '../plugins/http'
 import { mapGetters, mapActions } from 'vuex'
 
 interface InitForm {
@@ -135,7 +132,8 @@ export default Vue.extend({
   },
   beforeUpdate() {
     if (!this.dialog) {
-      if (this.getArea.neighborhood.color) this.nbColors = this.getArea.neighborhood.color
+      if (this.getArea.neighborhood && this.getArea.neighborhood.color)
+        this.nbColors = this.getArea.neighborhood.color
       else this.nbColors = { active: '#e3a702', hover: '#571414', status: '#55915c' }
 
       this.form = this.initForm()
@@ -161,6 +159,10 @@ export default Vue.extend({
       if (this.form.color.status != this.nbColors.status) check = true;
       if (this.form.mapTouched) check = true;
       return check;
+    },
+    neighborhoodLabel(): string {
+      if (this.getArea.neighborhood.name[1].label.length === 0) return 'New neighborhood'
+      else return this.getArea.neighborhood.name[1].label
     }
   },
   methods: {
@@ -224,8 +226,23 @@ export default Vue.extend({
       else if(language === 'ar') return 'Name in arabic';
       else return 'Name in other language';
     },
-    patchArea,
-    ...mapActions(['editArea']),
+    newArea() {
+      // If neighborhood don't have id then is new
+      if (!this.getArea.neighborhood.id) {
+        this.addArea([this.getArea.city.id, this.form])
+      }
+      else this.editArea([this.getArea.city.id, this.getArea.neighborhood, this.form]);
+
+      this.$emit('closeModal')
+      // const nb = this.getArea.neighborhood
+      // // If all names are '' then area is new
+      // if (nb.name[0].label.length === 0
+      //   && nb.name[1].label.length === 0
+      //   && nb.name[2].label.length === 0) {
+      //   this.addArea([this.getArea.city.id, this.form])
+      // }
+    },
+    ...mapActions(['editArea', 'addArea']),
   },
 })
 </script>

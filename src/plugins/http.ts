@@ -36,7 +36,6 @@ export async function addArea(cityId: string, formData: any): Promise<any> {
 // eslint-disable-next-line
 export async function patchArea(cityId: string, oldArea: any, formData: any): Promise<any> {
   const oldNeighborhoods = await getOldAreas(cityId, oldArea.id)
-  console.log(oldNeighborhoods)
   if (formData.mapTouched) {
     return Axios.patch(`${url}/${cityId}`, {
       neighborhoods: [

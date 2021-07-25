@@ -65,7 +65,7 @@
             dark
             class="orange darken-2 btn"
             title="Edit Neighborhood"
-            @click.stop="$emit('editNeighborhood', selected.neighborhood)"
+            @click.stop="$emit('editNeighborhood')"
           >
             <v-icon dark>mdi-pencil</v-icon>
           </v-btn>
@@ -146,6 +146,18 @@ export default Vue.extend({
         const polyedit = (layer as any).toGeoJSON();
         console.log(coords);
         console.log(polyedit);
+        const newNeighborhood = {
+          FeatureCollection: {
+            type: 'FeatureCollection',
+            features: [
+              polyedit
+            ]
+          },
+          name: [{label: '',language: 'he'},{label: '', language: 'en'},{label: '',language: 'ar'}]
+        }
+
+        this.setArea([event, newNeighborhood, this.city])
+        this.$emit('editNeighborhood')
       });
 
       this.cityLayer(this.map);
