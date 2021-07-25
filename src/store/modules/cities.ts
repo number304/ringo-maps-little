@@ -1,4 +1,4 @@
-import { default as getCities, patchArea } from '@/plugins/http'
+import { addArea, default as getCities, patchArea } from '@/plugins/http'
 import { default as State } from '../types'
 
 const state: State = {
@@ -26,6 +26,11 @@ const actions = {
   },
   setArea(context: any, data: []): void {
     context.commit('setArea', data)
+  },
+  //eslint-disable-next-line
+  async createArea(context: any, data: any[]): Promise<any> {
+    await addArea(data[0], data[2])
+    context.dispatch('fetchCities')
   },
   //eslint-disable-next-line
   async editArea(context: any, data: any[]): Promise<any> {

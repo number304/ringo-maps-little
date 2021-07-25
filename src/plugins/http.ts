@@ -1,10 +1,36 @@
 import Axios from 'axios';
+import { nanoid } from 'nanoid';
 
 const url = 'http://localhost:3000/cities';
 
 export default async function getCities(): Promise<any> {
   return Axios.get(url)
     .then((res) => res.data);
+}
+
+export async function addArea(cityId: string, formData: any): Promise<any> {
+  const oldNeighborhoods = await getOldAreas(cityId, '_')
+
+  return Axios.patch(`${url}/${cityId}`, {
+    neigbhorhoods: [
+      {
+        id: nanoid(24),
+        name: formData.name,
+        color: formData.color,
+        FeatureCollection: {
+          type: 'FeatureCollection',
+          features: [{
+            type: 'Feature',
+            geometry: formData.mapData[2].geometry,
+            properties: {
+              name: formData.name,
+            }
+          }]
+        }
+      },
+      ...oldNeighborhoods
+    ]
+  })
 }
 
 // eslint-disable-next-line
@@ -63,11 +89,3 @@ async function getOldAreas(cityId: string, areaId: string): Promise<any> {
       neighborhoods.filter((nb: any) => nb.id !== areaId)
     )
 }
-
-// export async function getArea(cityId: string, areaId: string): Promise<any> {
-//   return Axios.get(`${url}/${cityId}`)
-//     .then(res => res.data)
-//     .then(data => data.neighborhoods)
-//     .then(nb => nb.filter((x: any) => x.id === areaId))
-//     .then(arr => arr[0])
-// }
