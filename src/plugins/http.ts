@@ -10,9 +10,10 @@ export default async function getCities(): Promise<any> {
 
 export async function addArea(cityId: string, formData: any): Promise<any> {
   const oldNeighborhoods = await getOldAreas(cityId, '_')
+  console.log(formData)
 
   return Axios.patch(`${url}/${cityId}`, {
-    neigbhorhoods: [
+    neighborhoods: [
       {
         id: nanoid(24),
         name: formData.name,

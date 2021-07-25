@@ -29,7 +29,7 @@ const actions = {
   },
   //eslint-disable-next-line
   async createArea(context: any, data: any[]): Promise<any> {
-    await addArea(data[0], data[2])
+    await addArea(data[0], data[1])
     context.dispatch('fetchCities')
   },
   //eslint-disable-next-line

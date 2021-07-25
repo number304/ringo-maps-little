@@ -229,20 +229,17 @@ export default Vue.extend({
     newArea() {
       // If neighborhood don't have id then is new
       if (!this.getArea.neighborhood.id) {
-        this.addArea([this.getArea.city.id, this.form])
+        if (!this.form.mapTouched) {
+          const newNeighborhood = this.getArea.neighborhood.FeatureCollection.features[0]
+          this.form.mapData = [0, {}, newNeighborhood]
+        }
+        this.createArea([this.getArea.city.id, this.form])
       }
       else this.editArea([this.getArea.city.id, this.getArea.neighborhood, this.form]);
 
       this.$emit('closeModal')
-      // const nb = this.getArea.neighborhood
-      // // If all names are '' then area is new
-      // if (nb.name[0].label.length === 0
-      //   && nb.name[1].label.length === 0
-      //   && nb.name[2].label.length === 0) {
-      //   this.addArea([this.getArea.city.id, this.form])
-      // }
     },
-    ...mapActions(['editArea', 'addArea']),
+    ...mapActions(['editArea', 'createArea']),
   },
 })
 </script>

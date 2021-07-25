@@ -73,6 +73,9 @@
         </div>
       </div>
     </template>
+    <div v-if="fullscreen" class="fixed-center-bottom">
+      <h2 class="text-center">{{ city.name[1].label }}</h2>
+    </div>
   </div>
 </template>
 
@@ -375,6 +378,18 @@ $success: #3f9967;
     .fixed-center-top {
       position: fixed;
       top: 4em;
+      left: 50%;
+      margin-top: -50px;
+      margin-left: -60px;
+      z-index: 999;
+    }
+    .fixed-center-bottom {
+      position: fixed;
+      background-color: white;
+      padding: 0 10px;
+      border-radius: 10px;
+      opacity: 0.85;
+      bottom: 2em;
       left: 50%;
       margin-top: -50px;
       margin-left: -60px;
