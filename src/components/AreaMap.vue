@@ -78,7 +78,7 @@ export default Vue.extend({
         drawCircleMarker: false,
         drawPolyline: false, // draw streight line
         drawRectangle: false,
-        drawPolygon: false, // draw new shapes, temporaly changed
+        drawPolygon: true, // draw new shapes
         rotateMode: false, // draw new shapes, temporaly changed
         drawCircle: false,
         editMode: true, // edit shapes

@@ -77,7 +77,7 @@
         <v-spacer></v-spacer>
         <v-btn color="green darken-1" text
           @click.stop="newArea"
-          :disabled="!isChanged"
+          :disabled="!hasName || !isChanged"
         >
           Save
         </v-btn>
@@ -163,6 +163,11 @@ export default Vue.extend({
     neighborhoodLabel(): string {
       if (this.form.name[1].label.length === 0) return 'New neighborhood'
       else return this.form.name[1].label
+    },
+    hasName(): boolean {
+      return this.form.name[0].label.length > 0
+      && this.form.name[1].label.length > 0
+      || this.form.name[2].label.length > 0 ? true : false
     }
   },
   methods: {
@@ -184,7 +189,7 @@ export default Vue.extend({
     },
     // Just to set the names in form object by argument's name property
     setNeighborhood(neighborhood: any) {
-      console.log(neighborhood)
+      // console.log(neighborhood)
       const data = JSON.parse(JSON.stringify(this.form.name));
       for (let i = 0; i < neighborhood.name.length; i++) {
         const ref = data.find(

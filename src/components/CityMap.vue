@@ -143,12 +143,11 @@ export default Vue.extend({
       // Creates an event listener that returns on console the
       // coordinates of the layer created by user
       this.map.on("pm:create", event => {
-        console.log(event);
+        // console.log(event);
         const { layer } = event;
-        const coords = (layer as any).getLatLngs();
+        // const coords = (layer as any).getLatLngs();
         const polyedit = (layer as any).toGeoJSON();
-        console.log(coords);
-        console.log(polyedit);
+        // console.log(coords);
         const newNeighborhood = {
           FeatureCollection: {
             type: 'FeatureCollection',
