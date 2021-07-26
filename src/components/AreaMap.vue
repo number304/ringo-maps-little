@@ -231,6 +231,10 @@ export default Vue.extend({
         this.$emit('restaureCancel')
       }
       return;
+    },
+    area: function() {
+      this.areaLayer(this.map)
+      this.centerArea(this.area)
     }
   }
 })

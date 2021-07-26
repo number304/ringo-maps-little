@@ -164,6 +164,9 @@ export default Vue.extend({
 
         this.setArea([event, newNeighborhood, this.city])
         this.$emit('editNeighborhood')
+        // console.log(layer)
+        // console.log(this.map)
+        this.map.removeLayer(layer)
       });
 
       this.cityLayer(this.map);
