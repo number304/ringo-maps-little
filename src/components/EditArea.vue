@@ -64,6 +64,7 @@
               :key="getArea.neighborhood.id"
               :settings="{ color: form.color }"
               :cancel="cancel"
+              :dialog="dialog"
               @editFeature="layerChanges"
               @restaureCancel="restaureCancel"
               @restauredArea="restauredArea"

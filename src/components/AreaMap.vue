@@ -38,6 +38,10 @@ export default Vue.extend({
       type: Boolean,
       required: true,
     },
+    dialog: {
+      type: Boolean,
+      required: true,
+    },
     settings: {
       type: Object as () => {
         color: { active: string; hover: string; status: string }
@@ -233,8 +237,11 @@ export default Vue.extend({
       return;
     },
     area: function() {
-      this.areaLayer(this.map)
-      this.centerArea(this.area)
+      // This is necessary to avoid an annoying reload
+      if (this.dialog) {
+        this.areaLayer(this.map)
+        this.centerArea(this.area)
+      }
     }
   }
 })
