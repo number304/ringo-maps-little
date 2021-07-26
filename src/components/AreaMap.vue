@@ -18,6 +18,34 @@
         Redraw layer
       </v-btn>
     </div>
+    <v-dialog v-model="showLayerDialog" max-width="300px" persistent>
+      <v-card class="py-4">
+        <h3 class="mb-4">
+          How to use this polygon?
+        </h3>
+        <v-divider></v-divider>
+        <div class="d-flex flex-column mt-4">
+          <v-btn
+            color="green darken-1" text
+            @click.stop=""
+          >
+            As a new neighborhood
+          </v-btn>
+          <v-btn
+            color="green darken-1" text
+            @click.stop=""
+          >
+            As part of this one
+          </v-btn>
+          <v-btn
+            color="green darken-1" text
+            @click.stop="showLayerDialog = false"
+          >
+            Cancel
+          </v-btn>
+        </div>
+      </v-card>
+    </v-dialog>
   </div>
 </template>
 
@@ -57,6 +85,8 @@ export default Vue.extend({
   data() {
     return {
       map: null as unknown as L.Map,
+      showLayerDialog: false,
+      newLayer: null as unknown as L.Layer,
     }
   },
   mounted() {
@@ -195,11 +225,13 @@ export default Vue.extend({
                     })
 
                     const geoJson = (layer as any).toGeoJSON();
-                    const redraw = () => {
-                      layer.remove();
-                      self.areaLayer(self.map)
-                    }
-                    self.$emit('newLayer', geoJson, redraw)
+                    // const redraw = () => {
+                    //   layer.remove();
+                    //   self.areaLayer(self.map)
+                    // }
+                    // self.$emit('newLayer', geoJson, redraw)
+                    self.newLayer = geoJson
+                    self.showLayerDialog = true
                   });
 
                 }
