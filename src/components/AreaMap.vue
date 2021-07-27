@@ -231,6 +231,7 @@ export default Vue.extend({
                     // }
                     // self.$emit('newLayer', geoJson, redraw)
                     self.newLayer = geoJson
+                    self.map.removeLayer(layer)
                     self.showLayerDialog = true
                   });
 
