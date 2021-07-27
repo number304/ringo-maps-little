@@ -64,6 +64,7 @@
               :key="getArea.neighborhood.id"
               :settings="{ color: form.color }"
               :dialog="dialog"
+              @createNewNeighborhood="reloadModal"
               @editFeature="layerChanges"
               @restauredArea="restauredArea"
             />

@@ -119,7 +119,7 @@ export default Vue.extend({
     }
   },
   methods: {
-    ...mapActions(['setArea', 'cleanArea']),
+    ...mapActions(['setArea', 'cleanNeighborhood']),
     initMap() {
       this.map = L.map((this as any)._uid + "_map");
       L.tileLayer("http://{s}.tile.osm.org/{z}/{x}/{y}.png", {
@@ -276,7 +276,7 @@ export default Vue.extend({
     toggleNeighborhoods(map: L.Map, draw?: boolean) {
       if (!this.neighborhoods.length) return;
 
-      this.cleanArea()
+      this.cleanNeighborhood()
 
       if ((map as any).neighborhoodsLayerGroup) {
         map.removeLayer((map as any).neighborhoodsLayerGroup);

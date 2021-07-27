@@ -37,8 +37,11 @@ const actions = {
     await patchArea(data[0], data[1], data[2])
     context.dispatch('fetchCities')
   },
-  cleanArea(context: any): void {
-    context.commit('cleanArea')
+  cleanNeighborhood(context: any): void {
+    context.commit('cleanNeighborhood')
+  },
+  setNeighborhood(context: any, neighborhood: any): void {
+    context.commit('setNeighborhood', neighborhood)
   }
 }
 
@@ -49,7 +52,11 @@ const mutations = {
     state.area.neighborhood = data[1];
     state.area.city = data[2];
   },
-  cleanArea: (state: State) => state.area.neighborhood = null,
+  setNeighborhood: (state: State, neighborhood: any) => {
+    // if ((state.area.neighborhood as any).id) delete (state.area.neighborhood as any).id;
+    state.area.neighborhood = neighborhood
+  },
+  cleanNeighborhood: (state: State) => state.area.neighborhood = null,
 }
 
 export default {

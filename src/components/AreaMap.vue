@@ -27,7 +27,7 @@
         <div class="d-flex flex-column mt-4">
           <v-btn
             color="green darken-1" text
-            @click.stop=""
+            @click.stop="setNewLayer"
           >
             As a new neighborhood
           </v-btn>
@@ -55,6 +55,7 @@ import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
 import "@geoman-io/leaflet-geoman-free";
 import "@geoman-io/leaflet-geoman-free/dist/leaflet-geoman.css";
+import { mapActions } from 'vuex'
 
 export default Vue.extend({
   props: {
@@ -82,13 +83,14 @@ export default Vue.extend({
     return {
       map: null as unknown as L.Map,
       showLayerDialog: false,
-      newLayer: null as unknown as L.Layer,
+      newLayer: null as any,
     }
   },
   mounted() {
     this.initMap();
   },
   methods: {
+    ...mapActions(['setNeighborhood']),
     initMap() {
       this.map = L.map(this.$refs.areaMap as HTMLElement, undefined)
       L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
@@ -221,12 +223,19 @@ export default Vue.extend({
                     })
 
                     const geoJson = (layer as any).toGeoJSON();
-                    // const redraw = () => {
-                    //   layer.remove();
-                    //   self.areaLayer(self.map)
-                    // }
-                    // self.$emit('newLayer', geoJson, redraw)
-                    self.newLayer = geoJson
+                    self.newLayer = {
+                      FeatureCollection: {
+                        type: 'FeatureCollection',
+                        features: [{
+                          geometry: {
+                            coordinates: [geoJson.geometry.coordinates],
+                            type: 'MultiPolygon'
+                          },
+                          type: 'Feature'
+                        }]
+                      },
+                      name: [{label: '',language: 'he'},{label: '', language: 'en'},{label: '',language: 'ar'}]
+                    }
                     self.map.removeLayer(layer)
                     self.showLayerDialog = true
                   });
@@ -255,7 +264,12 @@ export default Vue.extend({
       // Again, force rerender the map tiles
       this.map.invalidateSize();
       (this.map.attributionControl as any)._map.fitBounds(cords);
-    }
+    },
+    setNewLayer() {
+      this.setNeighborhood(this.newLayer)
+      this.$emit('createNewNeighborhood')
+      this.showLayerDialog = false
+    },
   },
   watch: {
     area: function() {
