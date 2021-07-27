@@ -15,13 +15,13 @@
         dark
         color="orange darken-2"
       >
-        Redraw layer
+        Reset map
       </v-btn>
     </div>
     <v-dialog v-model="showLayerDialog" max-width="300px" persistent>
       <v-card class="py-4">
         <h3 class="mb-4">
-          How to use this polygon?
+          How to use this marked area?
         </h3>
         <v-divider></v-divider>
         <div class="d-flex flex-column mt-4">
