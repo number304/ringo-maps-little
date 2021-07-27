@@ -63,10 +63,8 @@
               :area="getArea.neighborhood"
               :key="getArea.neighborhood.id"
               :settings="{ color: form.color }"
-              :cancel="cancel"
               :dialog="dialog"
               @editFeature="layerChanges"
-              @restaureCancel="restaureCancel"
               @restauredArea="restauredArea"
             />
           </v-col>
@@ -122,7 +120,6 @@ export default Vue.extend({
   data() {
     return {
       form: null as any,
-      cancel: false,
       nbColors: { active: '#e3a702', hover: '#571414', status: '#55915c' },
     };
   },
@@ -176,7 +173,6 @@ export default Vue.extend({
       if (this.isChanged) {
         const ask = confirm('Are you sure to exit?');
         if (ask) {
-          this.cancel = true;
           this.$emit('closeModal');
           this.setNeighborhood(this.getArea.neighborhood);
           this.form.color.active = this.nbColors.active;
@@ -207,9 +203,6 @@ export default Vue.extend({
     restauredArea() {
       this.form.mapData = null;
       this.form.mapTouched = false;
-    },
-    restaureCancel() {
-      this.cancel = false
     },
     initForm(): InitForm {
       const names = JSON.parse(JSON.stringify(this.getArea.neighborhood.name))

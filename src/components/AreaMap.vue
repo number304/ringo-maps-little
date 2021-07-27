@@ -62,10 +62,6 @@ export default Vue.extend({
       type: Object,
       required: true,
     },
-    cancel: {
-      type: Boolean,
-      required: true,
-    },
     dialog: {
       type: Boolean,
       required: true,
@@ -262,13 +258,6 @@ export default Vue.extend({
     }
   },
   watch: {
-    cancel: function() {
-      if (this.cancel) {
-        this.areaLayer(this.map)
-        this.$emit('restaureCancel')
-      }
-      return;
-    },
     area: function() {
       // This is necessary to avoid an annoying reload
       if (this.dialog) {
