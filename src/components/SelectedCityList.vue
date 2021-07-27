@@ -45,7 +45,10 @@
         </v-row>
       </template>
     </v-data-iterator>
-    <v-dialog style="z-index: 402" v-model="dialog" max-width="800px">
+    <v-dialog
+      style="z-index: 402" persistent
+      v-model="dialog" max-width="800px"
+    >
       <EditArea :dialog="dialog" @closeModal="toggleModalEditNeighborhood"/>
     </v-dialog>
   </div>

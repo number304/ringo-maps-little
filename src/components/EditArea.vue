@@ -121,6 +121,7 @@ export default Vue.extend({
     return {
       form: null as any,
       nbColors: { active: '#e3a702', hover: '#571414', status: '#55915c' },
+      touchedOldArea: false,
     };
   },
   created() {
@@ -130,11 +131,12 @@ export default Vue.extend({
   },
   beforeUpdate() {
     if (this.getArea.neighborhood && !this.dialog) {
-      if (this.getArea.neighborhood.color)
-        this.nbColors = this.getArea.neighborhood.color
-      else this.nbColors = { active: '#e3a702', hover: '#571414', status: '#55915c' }
-
-      this.form = this.initForm()
+      this.reloadModal()
+      this.touchedOldArea = true
+    }
+    if (this.isNewArea) {
+      this.reloadModal()
+      this.touchedOldArea = false
     }
   },
   computed: {
@@ -158,16 +160,21 @@ export default Vue.extend({
       if (this.form.mapTouched) check = true;
       return check;
     },
-    neighborhoodLabel(): string {
-      if (this.form.name[1].label.length === 0) return 'New neighborhood'
-      else return this.form.name[1].label
-    },
     hasName(): boolean {
       return this.form.name[0].label.length > 0
       && this.form.name[1].label.length > 0
       || this.form.name[1].label.length > 0
       && this.form.name[2].label.length > 0 ? true : false
-    }
+    },
+    isNewArea(): boolean {
+      return this.getArea.neighborhood
+        && !this.getArea.neighborhood.id
+        && this.touchedOldArea
+    },
+    neighborhoodLabel(): string {
+      if (this.form.name[1].label.length === 0) return 'New neighborhood'
+      else return this.form.name[1].label
+    },
   },
   methods: {
     close() {
@@ -201,13 +208,19 @@ export default Vue.extend({
       this.form.mapData = [index, feature, geoJSON];
       this.form.mapTouched = true;
     },
+    reloadModal() {
+      if (this.getArea.neighborhood.color)
+        this.nbColors = this.getArea.neighborhood.color
+      else this.nbColors = { active: '#e3a702', hover: '#571414', status: '#55915c' }
+
+      this.form = this.initForm()
+    },
     restauredArea() {
       this.form.mapData = null;
       this.form.mapTouched = false;
     },
     initForm(): InitForm {
       const names = JSON.parse(JSON.stringify(this.getArea.neighborhood.name))
-      console.log(names[1])
 
       return {
         name: names,

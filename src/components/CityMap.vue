@@ -43,7 +43,7 @@
     </div>
 
     <!-- Buttons related to the selected neighborhood -->
-    <template v-if="fullscreen && getArea.neighborhood">
+    <template v-if="toggleAreaButtons">
       <div class="fixed-center-top menu">
         <h2 class="text-center">
           {{ neighborhoodLabel }}
@@ -111,6 +111,11 @@ export default Vue.extend({
     ...mapGetters(['getArea']),
     neighborhoodLabel(): string {
       return this.getArea.neighborhood.name.find((name: any) => name.language == "en").label
+    },
+    toggleAreaButtons(): boolean {
+      return this.fullscreen
+      && this.getArea.neighborhood
+      && this.getArea.neighborhood.id ? true : false
     }
   },
   methods: {
@@ -166,10 +171,11 @@ export default Vue.extend({
         }
 
         this.setArea([event, newNeighborhood, this.city])
-        this.$emit('editNeighborhood')
         // console.log(layer)
         // console.log(this.map)
         this.map.removeLayer(layer)
+        // setTimeout(() => this.$emit('editNeighborhood'), 750)
+        this.$emit('editNeighborhood')
       });
 
       this.cityLayer(this.map);
