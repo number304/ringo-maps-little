@@ -129,8 +129,8 @@ export default Vue.extend({
     if (this.getArea) this.form = this.initForm()
   },
   beforeUpdate() {
-    if (!this.dialog) {
-      if (this.getArea.neighborhood && this.getArea.neighborhood.color)
+    if (this.getArea.neighborhood && !this.dialog) {
+      if (this.getArea.neighborhood.color)
         this.nbColors = this.getArea.neighborhood.color
       else this.nbColors = { active: '#e3a702', hover: '#571414', status: '#55915c' }
 
@@ -165,7 +165,8 @@ export default Vue.extend({
     hasName(): boolean {
       return this.form.name[0].label.length > 0
       && this.form.name[1].label.length > 0
-      || this.form.name[2].label.length > 0 ? true : false
+      || this.form.name[1].label.length > 0
+      && this.form.name[2].label.length > 0 ? true : false
     }
   },
   methods: {
@@ -206,6 +207,7 @@ export default Vue.extend({
     },
     initForm(): InitForm {
       const names = JSON.parse(JSON.stringify(this.getArea.neighborhood.name))
+      console.log(names[1])
 
       return {
         name: names,

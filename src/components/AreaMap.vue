@@ -259,7 +259,6 @@ export default Vue.extend({
   },
   watch: {
     area: function() {
-      // This is necessary to avoid an annoying reload
       if (this.dialog) {
         this.areaLayer(this.map)
         this.centerArea(this.area)

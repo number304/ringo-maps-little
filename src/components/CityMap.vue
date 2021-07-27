@@ -43,10 +43,10 @@
     </div>
 
     <!-- Buttons related to the selected neighborhood -->
-    <template v-if="fullscreen && selected.neighborhood">
+    <template v-if="fullscreen && getArea.neighborhood">
       <div class="fixed-center-top menu">
         <h2 class="text-center">
-          {{ selected.neighborhood.name.find(name => name.language == "en").label }}
+          {{ neighborhoodLabel }}
         </h2>
         <div class="mt-2">
           <!-- Center neighborhood -->
@@ -54,7 +54,7 @@
             fab
             dark
             class="orange darken-2 btn"
-            @click.prevent="centerArea(selected.neighborhood)"
+            @click.prevent="centerArea(getArea.neighborhood)"
             title="Center Neighborhood"
           >
             <v-icon dark>mdi-image-filter-center-focus-weak</v-icon>
@@ -81,7 +81,7 @@
 
 <script lang="ts">
 import Vue from "vue";
-import { mapActions } from 'vuex'
+import { mapGetters, mapActions } from 'vuex'
 
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
@@ -101,17 +101,20 @@ export default Vue.extend({
       map: (null as unknown) as L.Map,
       neighborhoods: [],
       fullscreen: false,
-      selected: {
-        neighborhood: null
-      },
     };
   },
   mounted() {
     this.initMap();
     this.loadNeighborhoods();
   },
+  computed: {
+    ...mapGetters(['getArea']),
+    neighborhoodLabel(): string {
+      return this.getArea.neighborhood.name.find((name: any) => name.language == "en").label
+    }
+  },
   methods: {
-    ...mapActions(['setArea']),
+    ...mapActions(['setArea', 'cleanArea']),
     initMap() {
       this.map = L.map((this as any)._uid + "_map");
       L.tileLayer("http://{s}.tile.osm.org/{z}/{x}/{y}.png", {
@@ -270,7 +273,7 @@ export default Vue.extend({
     toggleNeighborhoods(map: L.Map, draw?: boolean) {
       if (!this.neighborhoods.length) return;
 
-      this.$set(this.selected, "neighborhood", null);
+      this.cleanArea()
 
       if ((map as any).neighborhoodsLayerGroup) {
         map.removeLayer((map as any).neighborhoodsLayerGroup);
@@ -298,7 +301,6 @@ export default Vue.extend({
                   // to the last hood selected
                   click: (event: any) => {
                     this.setArea([event, neighborhood, this.city])
-                    this.$set(this.selected, "neighborhood", neighborhood);
                     setTimeout(() => {
                       layer.bindPopup(neighborhoodName);
                     }, 500);
