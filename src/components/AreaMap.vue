@@ -84,6 +84,7 @@ export default Vue.extend({
       map: null as unknown as L.Map,
       showLayerDialog: false,
       newLayer: null as any,
+      layerId: null as any,
     }
   },
   mounted() {
@@ -139,7 +140,6 @@ export default Vue.extend({
         self.area.FeatureCollection.features.forEach(
           function (feature: any, featureIndex: number) {
             const geometry = JSON.parse(JSON.stringify(feature.geometry));
-            // console.log(geometry);
 
             (map as any).areaLayerGroup.addLayer(
               L.geoJSON(geometry, {
@@ -147,6 +147,8 @@ export default Vue.extend({
                   return { color: getColor('active'), weight: 2, opacity: 0.65 };
                 },
                 onEachFeature: function (f, layer) {
+                  self.layerId = (map as any).areaLayerGroup.getLayerId(layer)
+
                   self.$watch(
                     function () {
                       return this.settings.color.active;
@@ -196,6 +198,7 @@ export default Vue.extend({
                   })
 
                   map.on('pm:create', (e) => {
+                    console.log(e)
                     const { layer } = e;
 
                     layer.on({
@@ -236,7 +239,7 @@ export default Vue.extend({
                       },
                       name: [{label: '',language: 'he'},{label: '', language: 'en'},{label: '',language: 'ar'}]
                     }
-                    self.map.removeLayer(layer)
+                    map.removeLayer(layer)
                     self.showLayerDialog = true
                   });
 
@@ -248,9 +251,15 @@ export default Vue.extend({
 
         (map as any).areaLayerGroup.addTo(map);
       })(this)
+      console.log(this.layerId)
+      // This is all the route to the coords array of the nb layer
+      console.log((this.map as any).areaLayerGroup
+        .getLayer(this.layerId + 1).getLayer(this.layerId)
+        .feature.geometry.coordinates)
+      console.log(this.map)
     },
     centerArea(area: any) {
-      if (area == null || area == undefined) console.log('Ayuda')
+      if (area == null || area == undefined) console.log('Help')
       const cords: L.LatLng[] = area.FeatureCollection.features.reduce(
         (o: L.LatLng[], v: any) => {
           return o.concat(
@@ -270,6 +279,12 @@ export default Vue.extend({
       this.$emit('createNewNeighborhood')
       this.showLayerDialog = false
     },
+    // pushNewPolygon() {
+    // Useless, but I mantain the comment for now
+    // because it tells me the route to new coords to push
+    //   this.pushPolygon(this.newLayer.FeatureCollection
+    //     .features[0].geometry.coordinates[0])
+    // }
   },
   watch: {
     area: function() {

@@ -4,6 +4,12 @@
       <v-card-title class="text-h5" style="word-break: normal">
         Please choose a neighborhood to edit!
       </v-card-title>
+      <v-divider></v-divider>
+      <v-btn color="green darken-1" text
+        @click.stop="close" class="my-2"
+      >
+        Exit
+      </v-btn>
     </v-card>
     <v-card v-else>
       <v-card-title class="text-h5" style="word-break: normal">

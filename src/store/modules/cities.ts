@@ -53,7 +53,6 @@ const mutations = {
     state.area.city = data[2];
   },
   setNeighborhood: (state: State, neighborhood: any) => {
-    // if ((state.area.neighborhood as any).id) delete (state.area.neighborhood as any).id;
     state.area.neighborhood = neighborhood
   },
   cleanNeighborhood: (state: State) => state.area.neighborhood = null,
