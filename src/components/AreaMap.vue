@@ -84,6 +84,7 @@ export default Vue.extend({
       map: null as unknown as L.Map,
       showLayerDialog: false,
       newArea: null as any,
+      newFeature: null as any,
       newGeoJSON: null as any,
       layerId: null as any,
     }
@@ -141,6 +142,7 @@ export default Vue.extend({
         self.area.FeatureCollection.features.forEach(
           function (feature: any, featureIndex: number) {
             const geometry = JSON.parse(JSON.stringify(feature.geometry));
+            self.newFeature = JSON.parse(JSON.stringify(feature));
 
             (map as any).areaLayerGroup.addLayer(
               L.geoJSON(geometry, {
@@ -200,7 +202,6 @@ export default Vue.extend({
 
                   map.on('pm:create', (e) => {
                     const { layer } = e;
-                    console.log(layer)
 
                     layer.on({
                       mouseover: () => {
@@ -285,7 +286,12 @@ export default Vue.extend({
       (this.map as any).areaLayerGroup
         .addLayer(L.geoJSON(JSON.parse(JSON.stringify(this.newGeoJSON))))
 
-      console.log(this.map)
+      this.newFeature.geometry.coordinates.push(
+        this.newGeoJSON.geometry.coordinates)
+
+      this.$emit('editFeature', 0, {}, this.newFeature)
+
+      this.newArea = null
       this.showLayerDialog = false
     }
   },
