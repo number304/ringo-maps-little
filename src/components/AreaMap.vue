@@ -198,6 +198,8 @@ export default Vue.extend({
                       JSON.parse(JSON
                         .stringify((e.layer as any).toGeoJSON()))
                     )
+                    // const coords = JSON.parse(
+                    //   JSON.stringify((e.layer as any).toGeoJSON()))
                   })
 
                   map.on('pm:create', (e) => {
@@ -260,6 +262,7 @@ export default Vue.extend({
       //   .getLayer(this.layerId + 1).getLayer(this.layerId)
       //   .feature.geometry.coordinates)
       // console.log(this.map)
+      console.log((this.map as any).areaLayerGroup.getLayers())
     },
     centerArea(area: any) {
       if (area == null || area == undefined) console.log('Help')
@@ -289,8 +292,16 @@ export default Vue.extend({
       this.newFeature.geometry.coordinates.push(
         this.newGeoJSON.geometry.coordinates)
 
-      this.$emit('editFeature', 0, {}, this.newFeature)
+      this.$emit('editFeature', 0, {}, this.newFeature);
+      const IDs: any[] = [];
 
+      (this.map as any).areaLayerGroup.getLayers().forEach(
+        (layer: L.Layer) => {
+          IDs.push((this.map as any).areaLayerGroup.getLayerId(layer))
+        }
+      )
+
+      console.log(IDs)
       this.newArea = null
       this.showLayerDialog = false
     }
