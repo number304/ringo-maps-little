@@ -33,7 +33,7 @@
           </v-btn>
           <v-btn
             color="green darken-1" text
-            @click.stop=""
+            @click.stop="pushNewPolygon"
           >
             As part of this one
           </v-btn>
@@ -83,7 +83,8 @@ export default Vue.extend({
     return {
       map: null as unknown as L.Map,
       showLayerDialog: false,
-      newLayer: null as any,
+      newArea: null as any,
+      newGeoJSON: null as any,
       layerId: null as any,
     }
   },
@@ -198,8 +199,8 @@ export default Vue.extend({
                   })
 
                   map.on('pm:create', (e) => {
-                    console.log(e)
                     const { layer } = e;
+                    console.log(layer)
 
                     layer.on({
                       mouseover: () => {
@@ -226,7 +227,7 @@ export default Vue.extend({
                     })
 
                     const geoJson = (layer as any).toGeoJSON();
-                    self.newLayer = {
+                    self.newArea = {
                       FeatureCollection: {
                         type: 'FeatureCollection',
                         features: [{
@@ -239,6 +240,7 @@ export default Vue.extend({
                       },
                       name: [{label: '',language: 'he'},{label: '', language: 'en'},{label: '',language: 'ar'}]
                     }
+                    self.newGeoJSON = geoJson
                     map.removeLayer(layer)
                     self.showLayerDialog = true
                   });
@@ -251,12 +253,12 @@ export default Vue.extend({
 
         (map as any).areaLayerGroup.addTo(map);
       })(this)
-      console.log(this.layerId)
-      // This is all the route to the coords array of the nb layer
-      console.log((this.map as any).areaLayerGroup
-        .getLayer(this.layerId + 1).getLayer(this.layerId)
-        .feature.geometry.coordinates)
-      console.log(this.map)
+      // console.log(this.layerId)
+      // // This is all the route to the coords array of the nb layer
+      // console.log((this.map as any).areaLayerGroup
+      //   .getLayer(this.layerId + 1).getLayer(this.layerId)
+      //   .feature.geometry.coordinates)
+      // console.log(this.map)
     },
     centerArea(area: any) {
       if (area == null || area == undefined) console.log('Help')
@@ -274,17 +276,18 @@ export default Vue.extend({
       this.map.invalidateSize();
       (this.map.attributionControl as any)._map.fitBounds(cords);
     },
-    setNewLayer() {
-      this.setNeighborhood(this.newLayer)
+    setNewArea() {
+      this.setNeighborhood(this.newArea)
       this.$emit('createNewNeighborhood')
       this.showLayerDialog = false
     },
-    // pushNewPolygon() {
-    // Useless, but I mantain the comment for now
-    // because it tells me the route to new coords to push
-    //   this.pushPolygon(this.newLayer.FeatureCollection
-    //     .features[0].geometry.coordinates[0])
-    // }
+    pushNewPolygon() {
+      (this.map as any).areaLayerGroup
+        .addLayer(L.geoJSON(JSON.parse(JSON.stringify(this.newGeoJSON))))
+
+      console.log(this.map)
+      this.showLayerDialog = false
+    }
   },
   watch: {
     area: function() {
