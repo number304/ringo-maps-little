@@ -155,6 +155,7 @@ export default Vue.extend({
                 },
                 onEachFeature: function (f, layer) {
                   self.layerId = (map as any).areaLayerGroup.getLayerId(layer)
+                  // console.log(geometry.coordinates.length)
 
                   self.$watch(
                     function () {
@@ -197,8 +198,12 @@ export default Vue.extend({
                   layer.on('pm:update', (e) => {
                     const updGeoJSON = JSON.parse(
                       JSON.stringify((e.layer as any).toGeoJSON()))
-                    self.editNewFeature(featureIndex,
-                      updGeoJSON.geometry.coordinates[0])
+                    if (geometry.coordinates.length < 2) {
+                      self.editNewFeature(featureIndex,
+                        updGeoJSON.geometry.coordinates[0], false)
+                    }
+                    else self.editNewFeature(featureIndex,
+                      updGeoJSON.geometry.coordinates, true)
                   })
 
                   map.on('pm:create', (e) => {
@@ -247,8 +252,11 @@ export default Vue.extend({
       this.map.invalidateSize();
       (this.map.attributionControl as any)._map.fitBounds(cords);
     },
-    editNewFeature(index: number, coordinates: any[]) {
-      this.newFeature.geometry
+    editNewFeature(index: number, coordinates: any[], isMultiPolygon: boolean) {
+      if (isMultiPolygon) this.newFeature.geometry.coordinates
+          .splice(index, coordinates.length, ...coordinates)
+
+      else this.newFeature.geometry
         .coordinates[index] = coordinates
 
       this.$emit('editFeature', 0, {}, this.newFeature);
@@ -325,7 +333,7 @@ export default Vue.extend({
               console.log(featureIndex)
 
               self.editNewFeature(featureIndex,
-                updGeoJSON.geometry.coordinates)
+                updGeoJSON.geometry.coordinates, false)
             })
           },
         }))
