@@ -70,6 +70,7 @@
               :key="getArea.neighborhood.id"
               :settings="{ color: form.color }"
               :dialog="dialog"
+              :formIsChanged="isChanged"
               @createNewNeighborhood="reloadModal"
               @editFeature="layerChanges"
               @restauredArea="restauredArea"

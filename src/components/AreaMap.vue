@@ -27,7 +27,7 @@
         <div class="d-flex flex-column mt-4">
           <v-btn
             color="green darken-1" text
-            @click.stop="setNewLayer"
+            @click.stop="setNewArea"
           >
             As a new neighborhood
           </v-btn>
@@ -64,6 +64,10 @@ export default Vue.extend({
       required: true,
     },
     dialog: {
+      type: Boolean,
+      required: true,
+    },
+    formIsChanged: {
       type: Boolean,
       required: true,
     },
@@ -274,6 +278,15 @@ export default Vue.extend({
       this.$emit('editFeature', 0, {}, this.newFeature);
     },
     setNewArea() {
+      if (this.formIsChanged) {
+        const ask = confirm('Previous area is not saved, continue?')
+        if (ask) {
+          this.setNeighborhood(this.newArea)
+          this.$emit('createNewNeighborhood')
+          this.showLayerDialog = false
+        }
+        return;
+      }
       this.setNeighborhood(this.newArea)
       this.$emit('createNewNeighborhood')
       this.showLayerDialog = false
