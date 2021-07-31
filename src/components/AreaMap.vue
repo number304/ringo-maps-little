@@ -203,32 +203,8 @@ export default Vue.extend({
 
                   map.on('pm:create', (e) => {
                     const { layer } = e;
-
-                    layer.on({
-                      mouseover: () => {
-                      (layer as any).setStyle({
-                        color: getColor("hover"),
-                        weight: 2,
-                        opacity: 0.65,
-                      });
-                    },
-                    mouseout: () => {
-                      (layer as any).setStyle({
-                        color: getColor("active"),
-                        weight: 2,
-                        opacity: 0.65,
-                      });
-                    },
-                    preclick: () => {
-                      (layer as any).setStyle({
-                        color: getColor("status"),
-                        weight: 2,
-                        opacity: 0.65,
-                      });
-                    },
-                    })
-
                     const geoJson = (layer as any).toGeoJSON();
+
                     self.newArea = {
                       FeatureCollection: {
                         type: 'FeatureCollection',
@@ -315,6 +291,7 @@ export default Vue.extend({
                 })
               }
             );
+
             layer.on({
               mouseover: () => {
                 (layer as any).setStyle({
@@ -338,12 +315,15 @@ export default Vue.extend({
                 })
               },
             });
+
             layer.on('pm:update', (e) => {
               const featureIndex = index
               const updGeoJSON = JSON.parse(
                 JSON.stringify((e.layer as any).toGeoJSON()))
+
               console.log(updGeoJSON)
               console.log(featureIndex)
+
               self.editNewFeature(featureIndex,
                 updGeoJSON.geometry.coordinates)
             })
