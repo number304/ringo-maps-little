@@ -191,15 +191,10 @@ export default Vue.extend({
                   });
 
                   layer.on('pm:update', (e) => {
-                    self.$emit(
-                      'editFeature',
-                      featureIndex,
-                      feature,
-                      JSON.parse(JSON
-                        .stringify((e.layer as any).toGeoJSON()))
-                    )
-                    // const coords = JSON.parse(
-                    //   JSON.stringify((e.layer as any).toGeoJSON()))
+                    const updGeoJSON = JSON.parse(
+                      JSON.stringify((e.layer as any).toGeoJSON()))
+                    self.editNewFeature(featureIndex,
+                      updGeoJSON.geometry.coordinates[0])
                   })
 
                   map.on('pm:create', (e) => {
@@ -243,11 +238,10 @@ export default Vue.extend({
                       },
                       name: [{label: '',language: 'he'},{label: '', language: 'en'},{label: '',language: 'ar'}]
                     }
-                    self.newGeoJSON = geoJson
+                    self.newGeoJSON = JSON.parse(JSON.stringify(geoJson))
                     map.removeLayer(layer)
                     self.showLayerDialog = true
                   });
-
                 }
               })
             )
@@ -256,13 +250,6 @@ export default Vue.extend({
 
         (map as any).areaLayerGroup.addTo(map);
       })(this)
-      // console.log(this.layerId)
-      // // This is all the route to the coords array of the nb layer
-      // console.log((this.map as any).areaLayerGroup
-      //   .getLayer(this.layerId + 1).getLayer(this.layerId)
-      //   .feature.geometry.coordinates)
-      // console.log(this.map)
-      console.log((this.map as any).areaLayerGroup.getLayers())
     },
     centerArea(area: any) {
       if (area == null || area == undefined) console.log('Help')
@@ -280,28 +267,79 @@ export default Vue.extend({
       this.map.invalidateSize();
       (this.map.attributionControl as any)._map.fitBounds(cords);
     },
+    editNewFeature(index: number, coordinates: any[]) {
+      this.newFeature.geometry
+        .coordinates[index] = coordinates
+
+      this.$emit('editFeature', 0, {}, this.newFeature);
+    },
     setNewArea() {
       this.setNeighborhood(this.newArea)
       this.$emit('createNewNeighborhood')
       this.showLayerDialog = false
     },
     pushNewPolygon() {
-      (this.map as any).areaLayerGroup
-        .addLayer(L.geoJSON(JSON.parse(JSON.stringify(this.newGeoJSON))))
+      const index = (this.map as any).areaLayerGroup.getLayers().length
+      const getColor = (type: 'active' | 'hover' | 'status') => {
+        return this.settings.color[type] || '#000'
+      }
+
+      ((self) => {(self.map as any).areaLayerGroup
+        .addLayer(L.geoJSON(self.newGeoJSON.geometry, {
+          style: () => {
+            return { color: getColor('active'), weight: 2, opacity: 0.65 };
+          },
+          onEachFeature: function (f: any, layer: L.Layer) {
+            self.$watch(
+              function () {
+                return this.settings.color.active;
+              },
+              (n: any) => {
+                (layer as any).setStyle({
+                  color: n,
+                  weight: 2,
+                  opacity: 0.65,
+                })
+              }
+            );
+            layer.on({
+              mouseover: () => {
+                (layer as any).setStyle({
+                  color: getColor('hover'),
+                  weight: 2,
+                  opacity: 0.65,
+                })
+              },
+              mouseout: () => {
+                (layer as any).setStyle({
+                  color: getColor('active'),
+                  weight: 2,
+                  opacity: 0.65,
+                })
+              },
+              preclick: () => {
+                (layer as any).setStyle({
+                  color: getColor('status'),
+                  weight: 2,
+                  opacity: 0.65,
+                })
+              },
+            });
+            layer.on('pm:update', (e) => {
+              const updGeoJSON = JSON.parse(
+                JSON.stringify((e.layer as any).toGeoJSON()))
+              console.log(updGeoJSON)
+              self.editNewFeature(index,
+                updGeoJSON.geometry.coordinates)
+            })
+          },
+        }))
+      })(this)
 
       this.newFeature.geometry.coordinates.push(
         this.newGeoJSON.geometry.coordinates)
 
       this.$emit('editFeature', 0, {}, this.newFeature);
-      const IDs: any[] = [];
-
-      (this.map as any).areaLayerGroup.getLayers().forEach(
-        (layer: L.Layer) => {
-          IDs.push((this.map as any).areaLayerGroup.getLayerId(layer))
-        }
-      )
-
-      console.log(IDs)
       this.newArea = null
       this.showLayerDialog = false
     }
