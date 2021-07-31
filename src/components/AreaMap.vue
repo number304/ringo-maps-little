@@ -292,7 +292,7 @@ export default Vue.extend({
       this.showLayerDialog = false
     },
     pushNewPolygon() {
-      const index = (this.map as any).areaLayerGroup.getLayers().length
+      const index = this.newFeature.geometry.coordinates.length
       const getColor = (type: 'active' | 'hover' | 'status') => {
         return this.settings.color[type] || '#000'
       }
@@ -339,10 +339,12 @@ export default Vue.extend({
               },
             });
             layer.on('pm:update', (e) => {
+              const featureIndex = index
               const updGeoJSON = JSON.parse(
                 JSON.stringify((e.layer as any).toGeoJSON()))
               console.log(updGeoJSON)
-              self.editNewFeature(index,
+              console.log(featureIndex)
+              self.editNewFeature(featureIndex,
                 updGeoJSON.geometry.coordinates)
             })
           },
