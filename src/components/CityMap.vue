@@ -299,14 +299,27 @@ export default Vue.extend({
             pmIgnore: true, // To ignore the hoods in City view
             onEachFeature: (feature: any, layer: any) => {
               if (neighborhoodName) {
+                let selected = false;
+                const styleObject = (color: string) => {
+                  return { color: color, weight: 2, opacity: 0.65 }
+                }
+
                 layer.on({
-                  // Event to change the value of selected
-                  // to the last hood selected
                   click: (event: any) => {
                     this.setArea([event, neighborhood, this.city])
                     setTimeout(() => {
                       layer.bindPopup(neighborhoodName);
                     }, 500);
+                    if (event.originalEvent.shiftKey) {
+                      if (!selected) {
+                        layer.setStyle(styleObject('#55915C'))
+                        selected = !selected
+                      }
+                      else {
+                        layer.setStyle(styleObject(neighborhoodColor))
+                        selected = !selected
+                      }
+                    }
                   }
                 });
               }
