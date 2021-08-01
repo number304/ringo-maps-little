@@ -312,7 +312,7 @@ export default Vue.extend({
                     }, 500);
                     if (event.originalEvent.shiftKey) {
                       if (!selected) {
-                        layer.setStyle(styleObject('#55915C'))
+                        layer.setStyle(styleObject('#E30202'))
                         selected = !selected
                       }
                       else {
