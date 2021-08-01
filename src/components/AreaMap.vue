@@ -348,11 +348,9 @@ export default Vue.extend({
     }
   },
   watch: {
-    area: function() {
-      if (this.dialog) {
-        this.areaLayer(this.map)
-        this.centerArea(this.area)
-      }
+    dialog: function() {
+      this.areaLayer(this.map)
+      this.centerArea(this.area)
     }
   }
 })
