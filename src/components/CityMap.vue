@@ -334,6 +334,9 @@ export default Vue.extend({
           .neighborhood
         delete (this.cityGeoJson as any).properties.neighborhood
 
+        this.setArea([{}, newNeighborhood, this.city])
+        this.$emit('editNeighborhood')
+
         this.setCityArea([this.city.id, JSON.parse(
           JSON.stringify(this.cityGeoJson))])
 
@@ -342,7 +345,8 @@ export default Vue.extend({
           this.newCityLayer = null;
         }
       }
-      else console.log(JSON.parse(JSON.stringify(this.cityGeoJson)))
+      else this.setCityArea([this.city.id, JSON.parse(
+          JSON.stringify(this.cityGeoJson))])
 
       this.confirmEditCity = false
     },
@@ -352,7 +356,7 @@ export default Vue.extend({
 
       if (!this.neighborhoods.length) return;
 
-      this.cleanNeighborhood()
+      if (this.editCity) this.cleanNeighborhood()
 
       if ((map as any).neighborhoodsLayerGroup) {
         map.removeLayer((map as any).neighborhoodsLayerGroup);
