@@ -34,7 +34,7 @@
               <v-col>
                 <p>{{ city.id }}</p>
               </v-col>
-              <v-col>
+              <v-col style="user-select: none">
                 <CityMap
                   :city="city"
                   @editNeighborhood="toggleModalEditNeighborhood"

@@ -3,9 +3,21 @@ import { nanoid } from 'nanoid';
 
 const url = 'http://localhost:3000/cities';
 
-export default async function getCities(): Promise<any> {
+export async function getCities(): Promise<any> {
   return Axios.get(url)
     .then((res) => res.data);
+}
+
+export async function patchCityArea(cityId: string, newCityArea: any): Promise<any> {
+  console.log(newCityArea)
+  return Axios.patch(`${url}/${cityId}`, {
+    FeatureCollection: {
+      type: 'FeatureCollection',
+      features: [
+        newCityArea
+      ]
+    }
+  })
 }
 
 export async function addArea(cityId: string, formData: any): Promise<any> {

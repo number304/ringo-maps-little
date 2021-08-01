@@ -1,4 +1,4 @@
-import { addArea, default as getCities, patchArea } from '@/plugins/http'
+import * as http from '@/plugins/http'
 import { default as State } from '../types'
 
 const state: State = {
@@ -19,7 +19,7 @@ const getters = {
 
 const actions = {
   async fetchCities(context: any): Promise<any> { //eslint-disable-line
-    const response = await getCities()
+    const response = await http.getCities()
     // console.log(response)
 
     context.commit('setCities', response)
@@ -29,16 +29,21 @@ const actions = {
   },
   //eslint-disable-next-line
   async createArea(context: any, data: any[]): Promise<any> {
-    await addArea(data[0], data[1])
+    await http.addArea(data[0], data[1])
     context.dispatch('fetchCities')
   },
   //eslint-disable-next-line
   async editArea(context: any, data: any[]): Promise<any> {
-    await patchArea(data[0], data[1], data[2])
+    await http.patchArea(data[0], data[1], data[2])
     context.dispatch('fetchCities')
   },
   cleanNeighborhood(context: any): void {
     context.commit('cleanNeighborhood')
+  },
+  async setCityArea(context: any, data: any[]): Promise<any> {
+    console.log(data[1])
+    await http.patchCityArea(data[0], data[1])
+    context.dispatch('fetchCities')
   },
   setNeighborhood(context: any, neighborhood: any): void {
     context.commit('setNeighborhood', neighborhood)
@@ -46,6 +51,7 @@ const actions = {
 }
 
 const mutations = {
+  cleanNeighborhood: (state: State) => state.area.neighborhood = null,
   setCities: (state: State, cities: any[]): any[] => state.cities = cities,
   setArea: (state: State, data: any[]) => {
     state.area.letleafEvent = data[0];
@@ -55,7 +61,6 @@ const mutations = {
   setNeighborhood: (state: State, neighborhood: any) => {
     state.area.neighborhood = neighborhood
   },
-  cleanNeighborhood: (state: State) => state.area.neighborhood = null,
 }
 
 export default {

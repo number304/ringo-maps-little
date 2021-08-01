@@ -33,7 +33,6 @@
           fab
           dark
           class="orange darken-2 btn"
-          :disabled="neighborhoods.length === 0"
           @click.prevent="toggleNeighborhoods(map)"
           title="Toggle Neighborhoods"
         >
@@ -76,6 +75,30 @@
     <div v-if="fullscreen" class="fixed-center-bottom">
       <h2 class="text-center">{{ city.name[1].label }}</h2>
     </div>
+    <div v-if="fullscreen" class="fixed-right-bottom">
+      <p v-if="editCity">Editing city</p>
+      <p v-else>Editing neighborhoods</p>
+    </div>
+    <v-dialog v-model="confirmEditCity" max-width="240px" persistent>
+      <v-card class="py-4">
+        <h3 class="mb-4">Confirm changes?</h3>
+        <v-divider></v-divider>
+        <div class="mt-4">
+          <v-btn
+            color="green darken-1" text
+            @click.stop="patchCity"
+          >
+            Yes
+          </v-btn>
+          <v-btn
+            color="green darken-1" text
+            @click.stop="restaureCityGeoJson"
+          >
+            Cancel
+          </v-btn>
+        </div>
+      </v-card>
+    </v-dialog>
   </div>
 </template>
 
@@ -98,9 +121,13 @@ export default Vue.extend({
   },
   data() {
     return {
+      cityGeoJson: null as unknown as L.GeoJSON,
       map: (null as unknown) as L.Map,
       neighborhoods: [],
+      newCityLayer: null as any,
       fullscreen: false,
+      editCity: true,
+      confirmEditCity: false,
     };
   },
   mounted() {
@@ -116,10 +143,10 @@ export default Vue.extend({
       return this.fullscreen
       && this.getArea.neighborhood
       && this.getArea.neighborhood.id ? true : false
-    }
+    },
   },
   methods: {
-    ...mapActions(['setArea', 'cleanNeighborhood']),
+    ...mapActions(['setArea', 'cleanNeighborhood', 'setCityArea']),
     initMap() {
       this.map = L.map((this as any)._uid + "_map");
       L.tileLayer("http://{s}.tile.osm.org/{z}/{x}/{y}.png", {
@@ -151,11 +178,9 @@ export default Vue.extend({
       // Creates an event listener that returns on console the
       // coordinates of the layer created by user
       this.map.on("pm:create", event => {
-        // console.log(event);
         const { layer } = event;
         // const coords = (layer as any).getLatLngs();
         const polyedit = (layer as any).toGeoJSON();
-        // console.log(coords);
         const newNeighborhood = {
           FeatureCollection: {
             type: 'FeatureCollection',
@@ -169,10 +194,22 @@ export default Vue.extend({
           },
           name: [{label: '',language: 'he'},{label: '', language: 'en'},{label: '',language: 'ar'}]
         }
+        this.newCityLayer = layer
 
-        this.setArea([event, newNeighborhood, this.city])
-        this.map.removeLayer(layer)
-        this.$emit('editNeighborhood')
+        if (this.editCity) {
+          (this.cityGeoJson as any).geometry
+            .coordinates.push(polyedit.geometry.coordinates);
+
+          (this.cityGeoJson as any).properties
+            .neighborhood = newNeighborhood
+
+          this.confirmEditCity = true
+        }
+        else {
+          this.setArea([event, newNeighborhood, this.city])
+          this.map.removeLayer(layer)
+          this.$emit('editNeighborhood')
+        }
       });
 
       this.cityLayer(this.map);
@@ -213,6 +250,7 @@ export default Vue.extend({
 
       // Get the information inside city object of his LayerGroup
       this.city.FeatureCollection.features.forEach((feature: any) => {
+        this.cityGeoJson = JSON.parse(JSON.stringify(feature));
         (map as any).cityLayerGroup.addLayer(
           L.geoJSON(feature.geometry, {
             style: () => {
@@ -220,9 +258,17 @@ export default Vue.extend({
             },
             onEachFeature: (feature, layer) => {
               layer.on("pm:update", event => {
-                // Creates an event listener for any modification
-                // of a pre-existent polygon
-                console.log(event);
+                const { layer } = event
+                const polyEdit = (layer as any).toGeoJSON();
+
+                (this.cityGeoJson as any).geometry = polyEdit.geometry
+
+                console.log(polyEdit)
+                console.log((this.cityGeoJson as any).geometry
+                  .coordinates.length)
+                console.log(event)
+
+                this.confirmEditCity = true
               });
             }
           })
@@ -273,7 +319,37 @@ export default Vue.extend({
         );
       }
     },
+    restaureCityGeoJson() {
+      this.cityGeoJson = this.city.FeatureCollection.features[0]
+      if (this.newCityLayer) {
+        this.map.removeLayer(this.newCityLayer)
+        this.newCityLayer = null;
+      }
+      this.confirmEditCity = false;
+      this.cityLayer(this.map)
+    },
+    patchCity() {
+      if ((this.cityGeoJson as any).properties.neighborhood) {
+        const newNeighborhood = (this.cityGeoJson as any).properties
+          .neighborhood
+        delete (this.cityGeoJson as any).properties.neighborhood
+
+        this.setCityArea([this.city.id, JSON.parse(
+          JSON.stringify(this.cityGeoJson))])
+
+        if (this.newCityLayer) {
+          this.map.removeLayer(this.newCityLayer)
+          this.newCityLayer = null;
+        }
+      }
+      else console.log(JSON.parse(JSON.stringify(this.cityGeoJson)))
+
+      this.confirmEditCity = false
+    },
     toggleNeighborhoods(map: L.Map, draw?: boolean) {
+      if (this.editCity) this.editCity = false
+      else this.editCity = true
+
       if (!this.neighborhoods.length) return;
 
       this.cleanNeighborhood()
@@ -346,6 +422,7 @@ export default Vue.extend({
     city: {
       handler: function() {
         this.loadNeighborhoods()
+        this.cityLayer(this.map)
       }
     }
   }
@@ -414,6 +491,22 @@ $success: #3f9967;
       margin-top: -50px;
       margin-left: -60px;
       z-index: 999;
+    }
+    .fixed-right-bottom {
+      position: fixed;
+      background-color: white;
+      padding: 0 8px;
+      border-radius: 10px;
+      opacity: 0.85;
+      bottom: 2em;
+      right: 10px;
+      z-index: 999;
+
+      p {
+        font-weight: bold;
+        margin-top: 4px;
+        margin-bottom: 4px;
+      }
     }
   }
 
