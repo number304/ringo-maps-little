@@ -33,7 +33,7 @@
           fab
           dark
           class="orange darken-2 btn"
-          @click.prevent="toggleNeighborhoods(map)"
+          @click.prevent="toggleNeighborhoods(map);toggleEdition()"
           title="Toggle Neighborhoods"
         >
           <v-icon dark>mdi-home-group</v-icon>
@@ -142,7 +142,8 @@ export default Vue.extend({
     toggleAreaButtons(): boolean {
       return this.fullscreen
       && this.getArea.neighborhood
-      && this.getArea.neighborhood.id ? true : false
+      && this.getArea.neighborhood.id
+      && !this.editCity ? true : false
     },
   },
   methods: {
@@ -170,7 +171,7 @@ export default Vue.extend({
         editMode: true, // edit shapes
         dragMode: false,
         cutPolygon: false,
-        removalMode: true, // erase shapes
+        removalMode: false, // erase shapes
         pinningOption: false,
         snappingOption: false
       });
@@ -350,13 +351,14 @@ export default Vue.extend({
 
       this.confirmEditCity = false
     },
-    toggleNeighborhoods(map: L.Map, draw?: boolean) {
-      if (this.editCity) this.editCity = false
-      else this.editCity = true
-
+    toggleEdition() {
+      this.editCity = !this.editCity
+      this.cleanNeighborhood()
+    },
+    toggleNeighborhoods(map: L.Map, draw?: boolean, changeEdit?: boolean) {
       if (!this.neighborhoods.length) return;
 
-      if (this.editCity) this.cleanNeighborhood()
+      if (changeEdit) this.editCity = false
 
       if ((map as any).neighborhoodsLayerGroup) {
         map.removeLayer((map as any).neighborhoodsLayerGroup);
@@ -420,7 +422,7 @@ export default Vue.extend({
       immediate: false,
       handler: function(val, oldVal) {
         if (!val.length || !oldVal.length) return;
-        this.toggleNeighborhoods(this.map, true);
+        this.toggleNeighborhoods(this.map, true, true);
       }
     },
     city: {
