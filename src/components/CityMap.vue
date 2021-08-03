@@ -219,10 +219,10 @@ export default Vue.extend({
       const cords: L.LatLng[] = this.city.FeatureCollection.features.reduce(
         (o: L.LatLng[], v: any) => {
           return o.concat(
-            v.geometry.coordinates[0][0].map((x: any) => {
+            v.geometry.coordinates.map((pol: any[]) => pol[0].map((x: any) => {
               return L.GeoJSON.coordsToLatLng(x);
             })
-          );
+          ));
         },
         []
       );
@@ -300,6 +300,7 @@ export default Vue.extend({
         }
       }
       this.$nextTick(() => {
+        this.editCity = true;
         this.center(this.map);
         this.zoomControl(this.map, this.fullscreen);
         this.drag(this.map, this.fullscreen);
@@ -357,6 +358,7 @@ export default Vue.extend({
     },
     toggleNeighborhoods(map: L.Map, draw?: boolean, changeEdit?: boolean) {
       if (!this.neighborhoods.length) return;
+      if (!this.fullscreen) return;
 
       if (changeEdit) this.editCity = false
 
