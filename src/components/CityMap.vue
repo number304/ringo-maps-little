@@ -122,12 +122,13 @@ export default Vue.extend({
   data() {
     return {
       cityGeoJson: null as unknown as L.GeoJSON,
+      confirmEditCity: false,
+      editCity: true,
+      fullscreen: false,
       map: (null as unknown) as L.Map,
       neighborhoods: [],
       newCityLayer: null as any,
-      fullscreen: false,
-      editCity: true,
-      confirmEditCity: false,
+      selectedNeighborhoods: [],
     };
   },
   mounted() {
@@ -394,8 +395,9 @@ export default Vue.extend({
                     setTimeout(() => {
                       layer.bindPopup(neighborhoodName);
                     }, 500);
-                    if (event.originalEvent.shiftKey) {
+                    if (event.originalEvent.ctrlKey) {
                       if (!selected) {
+                        console.log(event)
                         layer.setStyle(styleObject('#E30202'))
                         selected = !selected
                       }
