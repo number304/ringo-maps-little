@@ -128,7 +128,7 @@ export default Vue.extend({
       map: (null as unknown) as L.Map,
       neighborhoods: [],
       newCityLayer: null as any,
-      selectedNeighborhoods: [],
+      selectedNeighborhoods: [] as any[],
     };
   },
   mounted() {
@@ -380,7 +380,7 @@ export default Vue.extend({
           (this.neighborhoods[i] as any).color.active : '#ff8900';
 
         (map as any).neighborhoodsLayerGroup.addLayer(
-          L.geoJSON(neighborhood.FeatureCollection.features[0].geometry, {
+          L.geoJSON(neighborhood.FeatureCollection.features[0], {
             pmIgnore: true, // To ignore the hoods in City view
             onEachFeature: (feature: any, layer: any) => {
               if (neighborhoodName) {
@@ -396,12 +396,15 @@ export default Vue.extend({
                       layer.bindPopup(neighborhoodName);
                     }, 500);
                     if (event.originalEvent.ctrlKey) {
+                      console.log(neighborhoodName)
                       if (!selected) {
-                        console.log(event)
+                        this.selectedNeighborhoods.push(feature)
                         layer.setStyle(styleObject('#E30202'))
                         selected = !selected
                       }
                       else {
+                        this.selectedNeighborhoods = this.selectedNeighborhoods
+                          .filter((nb) => nb.properties.name[1].label != neighborhoodName)
                         layer.setStyle(styleObject(neighborhoodColor))
                         selected = !selected
                       }
