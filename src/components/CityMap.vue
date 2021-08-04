@@ -43,7 +43,7 @@
 
     <!-- Buttons related to the selected neighborhood -->
     <template v-if="toggleAreaButtons">
-      <div class="fixed-center-top menu">
+      <div v-if="selectedNeighborhoods.length === 0" class="fixed-center-top menu">
         <h2 class="text-center">
           {{ neighborhoodLabel }}
         </h2>
@@ -71,7 +71,24 @@
 
         </div>
       </div>
+
+      <!-- Selection Mode header -->
+      <div v-else class="fixed-center-top menu">
+        <h2 class="text-center">Selection Mode</h2>
+        <p class="text-center font-weight-bold mb-0">
+          <span v-if="selectedNeighborhoods.length < 2">
+            {{ selectedNeighborhoods[0].name[1].label }} selected.
+          </span>
+          <span v-else>
+            {{ selectedNeighborhoods.length }} selected areas.
+          </span>
+        </p>
+        <v-btn fab dark class="orange darken-2 btn" title="Merge neighborhoods">
+          <v-icon dark>mdi-table-merge-cells</v-icon>
+        </v-btn>
+      </div>
     </template>
+
     <div v-if="fullscreen" class="fixed-center-bottom">
       <h2 class="text-center">{{ city.name[1].label }}</h2>
     </div>
@@ -138,7 +155,7 @@ export default Vue.extend({
   computed: {
     ...mapGetters(['getArea']),
     neighborhoodLabel(): string {
-      return this.getArea.neighborhood.name.find((name: any) => name.language == "en").label
+      return this.getArea.neighborhood.name[1].label
     },
     toggleAreaButtons(): boolean {
       return this.fullscreen
@@ -146,6 +163,20 @@ export default Vue.extend({
       && this.getArea.neighborhood.id
       && !this.editCity ? true : false
     },
+    // selectedNbNames(): string {
+    //   if(this.selectedNeighborhoods.length > 0) {
+    //     const names = this.selectedNeighborhoods.reduce(
+    //       (o: string, nb: any, index: number) => {
+    //         if (index === 0) o = nb.name[1].label
+    //         else if (index <= 1) o = o + ', ' + nb.name[1].label
+    //         else if (index === 2) o = o + '...'
+    //         return o
+    //       }
+    //     , '')
+    //     return names
+    //   }
+    //   return ''
+    // }
   },
   methods: {
     ...mapActions(['setArea', 'cleanNeighborhood', 'setCityArea']),
@@ -398,13 +429,13 @@ export default Vue.extend({
                     if (event.originalEvent.ctrlKey) {
                       console.log(neighborhoodName)
                       if (!selected) {
-                        this.selectedNeighborhoods.push(feature)
+                        this.selectedNeighborhoods.push(neighborhood)
                         layer.setStyle(styleObject('#E30202'))
                         selected = !selected
                       }
                       else {
                         this.selectedNeighborhoods = this.selectedNeighborhoods
-                          .filter((nb) => nb.properties.name[1].label != neighborhoodName)
+                          .filter((nb) => nb.name[1].label != neighborhoodName)
                         layer.setStyle(styleObject(neighborhoodColor))
                         selected = !selected
                       }
