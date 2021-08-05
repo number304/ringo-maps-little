@@ -363,6 +363,10 @@ export default Vue.extend({
       const dissolved = dissolve(nbCollection)
       console.log(dissolved)
 
+      const nbIDs = this.selectedNeighborhoods.map(nb => nb.id)
+
+      console.log(nbIDs)
+
       if (dissolved.features.length < 2) {
         const newNeighborhood = {
           'FeatureCollection': dissolved,
@@ -373,7 +377,7 @@ export default Vue.extend({
         this.$emit('editNeighborhood')
       }
       else {
-        console.log(
+        alert(
           "There are neighborhoods who don't touch each other. Edit them and try again."
         )
       }
@@ -454,9 +458,12 @@ export default Vue.extend({
 
                     if (event.originalEvent.ctrlKey) {
                       if (!selected) {
-                        this.selectedNeighborhoods.push(neighborhood)
-                        layer.setStyle(styleObject('#E30202'))
-                        selected = !selected
+                        if (this.selectedNeighborhoods.length < 5) {
+                          this.selectedNeighborhoods.push(neighborhood)
+                          layer.setStyle(styleObject('#E30202'))
+                          selected = !selected
+                        }
+                        else alert('Reached limit of 5 neighborhoods.')
                       }
                       else {
                         this.selectedNeighborhoods = this.selectedNeighborhoods
