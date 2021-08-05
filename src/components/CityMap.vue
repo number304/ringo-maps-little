@@ -163,20 +163,6 @@ export default Vue.extend({
       && this.getArea.neighborhood.id
       && !this.editCity ? true : false
     },
-    // selectedNbNames(): string {
-    //   if(this.selectedNeighborhoods.length > 0) {
-    //     const names = this.selectedNeighborhoods.reduce(
-    //       (o: string, nb: any, index: number) => {
-    //         if (index === 0) o = nb.name[1].label
-    //         else if (index <= 1) o = o + ', ' + nb.name[1].label
-    //         else if (index === 2) o = o + '...'
-    //         return o
-    //       }
-    //     , '')
-    //     return names
-    //   }
-    //   return ''
-    // }
   },
   methods: {
     ...mapActions(['setArea', 'cleanNeighborhood', 'setCityArea']),
