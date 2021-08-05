@@ -256,12 +256,16 @@ export default Vue.extend({
           this.form.mapData = [0, {}, newNeighborhood]
         }
         this.createArea([this.getArea.city.id, this.form])
+        if (this.getArea.neighborhood.IDsToErase) {
+          // Run a function to erase this areas from API
+          setTimeout(() => this.deleteNeighborhoods([this.getArea.city.id, this.getArea.neighborhood.IDsToErase]), 1000)
+        }
       }
       else this.editArea([this.getArea.city.id, this.getArea.neighborhood, this.form]);
 
       this.$emit('closeModal')
     },
-    ...mapActions(['editArea', 'createArea']),
+    ...mapActions(['editArea', 'createArea', 'deleteNeighborhoods']),
   },
 })
 </script>

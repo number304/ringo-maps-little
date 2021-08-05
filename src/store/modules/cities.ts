@@ -32,6 +32,10 @@ const actions = {
     await http.addArea(data[0], data[1])
     context.dispatch('fetchCities')
   },
+  async deleteNeighborhoods(context: any, data: any[]): Promise<any> {
+    await http.deleteAreas(data[0], data[1])
+    context.dispatch('fetchCities')
+  },
   //eslint-disable-next-line
   async editArea(context: any, data: any[]): Promise<any> {
     await http.patchArea(data[0], data[1], data[2])

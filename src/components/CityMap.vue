@@ -370,11 +370,13 @@ export default Vue.extend({
       if (dissolved.features.length < 2) {
         const newNeighborhood = {
           'FeatureCollection': dissolved,
-          'name': [{label: '',language: 'he'},{label: '', language: 'en'},{label: '',language: 'ar'}]
+          'name': [{label: '',language: 'he'},{label: '', language: 'en'},{label: '',language: 'ar'}],
+          'IDsToErase': nbIDs
         }
 
         this.setArea([{}, newNeighborhood, this.city])
         this.$emit('editNeighborhood')
+        this.selectedNeighborhoods = []
       }
       else {
         alert(
