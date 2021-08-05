@@ -238,15 +238,31 @@ export default Vue.extend({
     },
     centerArea(area: any) {
       if (area == null || area == undefined) console.log('Help')
-      const cords: L.LatLng[] = area.FeatureCollection.features.reduce(
-        (o: L.LatLng[], v: any) => {
-          return o.concat(
-            v.geometry.coordinates[0][0].map((x: any) =>
-              L.GeoJSON.coordsToLatLng(x))
-          )
-        },
-        []
-      )
+
+      let cords: L.LatLng[]
+
+      if (area.FeatureCollection.features[0].geometry.type === 'MultiPolygon') {
+        cords = area.FeatureCollection.features.reduce(
+          (o: L.LatLng[], v: any) => {
+            return o.concat(
+              v.geometry.coordinates[0][0].map((x: any) =>
+                L.GeoJSON.coordsToLatLng(x))
+            )
+          },
+          []
+        )
+      }
+      else {
+        cords = area.FeatureCollection.features.reduce(
+          (o: L.LatLng[], v: any) => {
+            return o.concat(
+              v.geometry.coordinates[0].map((x: any) =>
+                L.GeoJSON.coordsToLatLng(x))
+            )
+          },
+          []
+        )
+      }
 
       // Again, force rerender the map tiles
       this.map.invalidateSize();

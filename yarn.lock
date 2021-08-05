@@ -1056,6 +1056,16 @@
     "@turf/helpers" "^6.4.0"
     "@turf/invariant" "^6.4.0"
 
+"@turf/dissolve@^6.5.0":
+  "integrity" "sha512-WBVbpm9zLTp0Bl9CE35NomTaOL1c4TQCtEoO43YaAhNEWJOOIhZMFJyr8mbvYruKl817KinT3x7aYjjCMjTAsQ=="
+  "resolved" "https://registry.npmjs.org/@turf/dissolve/-/dissolve-6.5.0.tgz"
+  "version" "6.5.0"
+  dependencies:
+    "@turf/helpers" "^6.5.0"
+    "@turf/invariant" "^6.5.0"
+    "@turf/meta" "^6.5.0"
+    "polygon-clipping" "^0.15.3"
+
 "@turf/distance@^6.4.0":
   "integrity" "sha512-EyNEfHfFNVwLHsD31hIpaDInoxlwUFZAVryTWxDu6O+XNE+VfVomMUxLYPm3t0tVqVNUGwOhYo5Z4HfTlr6V1g=="
   "resolved" "https://registry.npmjs.org/@turf/distance/-/distance-6.4.0.tgz"
@@ -1064,17 +1074,25 @@
     "@turf/helpers" "^6.4.0"
     "@turf/invariant" "^6.4.0"
 
-"@turf/helpers@^6.3.0", "@turf/helpers@^6.4.0", "@turf/helpers@6.x":
-  "integrity" "sha512-7vVpWZwHP0Qn8DDSlM++nhs3/6zfPt+GODjvLVZ+sWIG4S3vOtUUOfO5eIjRzxsUHHqhgiIL0QA17u79uLM+mQ=="
-  "resolved" "https://registry.npmjs.org/@turf/helpers/-/helpers-6.4.0.tgz"
-  "version" "6.4.0"
-
-"@turf/invariant@^6.3.0", "@turf/invariant@^6.4.0":
-  "integrity" "sha512-ncAiOLkL6Ul6NnyOZSSmEbTwcZZ8PTx7O1IzB89Ed/mAe1g5PvFnyFieWbcnERGmuqH1ftzgtWMFFHFi2PQLsg=="
-  "resolved" "https://registry.npmjs.org/@turf/invariant/-/invariant-6.4.0.tgz"
-  "version" "6.4.0"
+"@turf/flatten@^6.5.0":
+  "integrity" "sha512-IBZVwoNLVNT6U/bcUUllubgElzpMsNoCw8tLqBw6dfYg9ObGmpEjf9BIYLr7a2Yn5ZR4l7YIj2T7kD5uJjZADQ=="
+  "resolved" "https://registry.npmjs.org/@turf/flatten/-/flatten-6.5.0.tgz"
+  "version" "6.5.0"
   dependencies:
-    "@turf/helpers" "^6.4.0"
+    "@turf/helpers" "^6.5.0"
+    "@turf/meta" "^6.5.0"
+
+"@turf/helpers@^6.3.0", "@turf/helpers@^6.4.0", "@turf/helpers@^6.5.0", "@turf/helpers@6.x":
+  "integrity" "sha512-VbI1dV5bLFzohYYdgqwikdMVpe7pJ9X3E+dlr425wa2/sMJqYDhTO++ec38/pcPvPE6oD9WEEeU3Xu3gza+VPw=="
+  "resolved" "https://registry.npmjs.org/@turf/helpers/-/helpers-6.5.0.tgz"
+  "version" "6.5.0"
+
+"@turf/invariant@^6.3.0", "@turf/invariant@^6.4.0", "@turf/invariant@^6.5.0":
+  "integrity" "sha512-Wv8PRNCtPD31UVbdJE/KVAWKe7l6US+lJItRR/HOEW3eh+U/JwRCSUl/KZ7bmjM/C+zLNoreM2TU6OoLACs4eg=="
+  "resolved" "https://registry.npmjs.org/@turf/invariant/-/invariant-6.5.0.tgz"
+  "version" "6.5.0"
+  dependencies:
+    "@turf/helpers" "^6.5.0"
 
 "@turf/kinks@6.3.0":
   "integrity" "sha512-BLWvbl2/fa4SeJzVMbleT6Vo1cmzwmzRfxL2xxMei2jmf6JSvqDoMJFwIHGXrLZXvhOCb1b2C+MhBfhtc7kYkQ=="
@@ -1130,12 +1148,12 @@
     "@turf/truncate" "^6.3.0"
     "geojson-rbush" "3.x"
 
-"@turf/meta@^6.3.0", "@turf/meta@^6.4.0", "@turf/meta@6.x":
-  "integrity" "sha512-fMra6vMskwz1knn0/tb22ppOeE8CCmpvOvTIxLdV1WYWAoC4bJ4WdXKvZRsJKpHOX5iFehx4DT8aaGdROA4Y3Q=="
-  "resolved" "https://registry.npmjs.org/@turf/meta/-/meta-6.4.0.tgz"
-  "version" "6.4.0"
+"@turf/meta@^6.3.0", "@turf/meta@^6.4.0", "@turf/meta@^6.5.0", "@turf/meta@6.x":
+  "integrity" "sha512-RrArvtsV0vdsCBegoBtOalgdSOfkBrTJ07VkpiCnq/491W67hnMWmDu7e6Ztw0C3WldRYTXkg3SumfdzZxLBHA=="
+  "resolved" "https://registry.npmjs.org/@turf/meta/-/meta-6.5.0.tgz"
+  "version" "6.5.0"
   dependencies:
-    "@turf/helpers" "^6.4.0"
+    "@turf/helpers" "^6.5.0"
 
 "@turf/nearest-point-on-line@^6.3.0":
   "integrity" "sha512-r/F7rR6yuKa/ezJjbscRaWlIsTGj+SW75B7zFkfNBn85hy6jU/uKERvA/KR2Rrfqrt0s4/QxEiSoVdG9QTRbJA=="
@@ -6994,7 +7012,7 @@
   dependencies:
     "ts-pnp" "^1.1.6"
 
-"polygon-clipping@0.15.3":
+"polygon-clipping@^0.15.3", "polygon-clipping@0.15.3":
   "integrity" "sha512-ho0Xx5DLkgxRx/+n4O74XyJ67DcyN3Tu9bGYKsnTukGAW6ssnuak6Mwcyb1wHy9MZc9xsUWqIoiazkZB5weECg=="
   "resolved" "https://registry.npmjs.org/polygon-clipping/-/polygon-clipping-0.15.3.tgz"
   "version" "0.15.3"

@@ -83,7 +83,11 @@
             {{ selectedNeighborhoods.length }} selected areas.
           </span>
         </p>
-        <v-btn fab dark class="orange darken-2 btn" title="Merge neighborhoods">
+        <v-btn
+          fab dark class="orange darken-2 btn"
+          @click.stop="mergeSelectedNb"
+          title="Merge neighborhoods"
+        >
           <v-icon dark>mdi-table-merge-cells</v-icon>
         </v-btn>
       </div>
@@ -123,11 +127,14 @@
 import Vue from "vue";
 import { mapGetters, mapActions } from 'vuex'
 
-import L from "leaflet";
+import L, { Polygon } from "leaflet";
 import "leaflet/dist/leaflet.css";
 
 import "@geoman-io/leaflet-geoman-free";
 import "@geoman-io/leaflet-geoman-free/dist/leaflet-geoman.css";
+
+import dissolve from '@turf/dissolve'
+import { featureCollection, polygon, Properties } from '@turf/helpers'
 
 export default Vue.extend({
   props: {
@@ -339,6 +346,38 @@ export default Vue.extend({
         );
       }
     },
+    mergeSelectedNb() {
+      const nbCollection: any = featureCollection(
+        this.selectedNeighborhoods.reduce(
+          (total: any[], nb: any): any[] => {
+            nb.FeatureCollection.features[0].geometry.coordinates.map(
+              (pol: any[]) => {
+                total.push(polygon(pol))
+              }
+            )
+            return total
+          }, []
+      ))
+
+      console.log(nbCollection)
+      const dissolved = dissolve(nbCollection)
+      console.log(dissolved)
+
+      if (dissolved.features.length < 2) {
+        const newNeighborhood = {
+          'FeatureCollection': dissolved,
+          'name': [{label: '',language: 'he'},{label: '', language: 'en'},{label: '',language: 'ar'}]
+        }
+
+        this.setArea([{}, newNeighborhood, this.city])
+        this.$emit('editNeighborhood')
+      }
+      else {
+        console.log(
+          "There are neighborhoods who don't touch each other. Edit them and try again."
+        )
+      }
+    },
     restaureCityGeoJson() {
       this.cityGeoJson = this.city.FeatureCollection.features[0]
       if (this.newCityLayer) {
@@ -412,8 +451,8 @@ export default Vue.extend({
                     setTimeout(() => {
                       layer.bindPopup(neighborhoodName);
                     }, 500);
+
                     if (event.originalEvent.ctrlKey) {
-                      console.log(neighborhoodName)
                       if (!selected) {
                         this.selectedNeighborhoods.push(neighborhood)
                         layer.setStyle(styleObject('#E30202'))
@@ -426,6 +465,7 @@ export default Vue.extend({
                         selected = !selected
                       }
                     }
+
                   }
                 });
               }
