@@ -22,7 +22,13 @@ export async function patchCityArea(cityId: string, newCityArea: any): Promise<a
 
 export async function addArea(cityId: string, formData: any): Promise<any> {
   const oldNeighborhoods = await getOldAreas(cityId, '_')
-  console.log(formData)
+  let geometry = formData.mapData[2].geometry
+  if (formData.mapData[2].geometry.type === 'Polygon') {
+    geometry = {
+      type: 'MultiPolygon',
+      coordinates: [ formData.mapData[2].geometry.coordinates ]
+    }
+  }
 
   return Axios.patch(`${url}/${cityId}`, {
     neighborhoods: [
@@ -34,7 +40,7 @@ export async function addArea(cityId: string, formData: any): Promise<any> {
           type: 'FeatureCollection',
           features: [{
             type: 'Feature',
-            geometry: formData.mapData[2].geometry,
+            geometry,
             properties: {
               name: formData.name,
             }
@@ -49,16 +55,6 @@ export async function addArea(cityId: string, formData: any): Promise<any> {
 // eslint-disable-next-line
 export async function patchArea(cityId: string, oldArea: any, formData: any): Promise<any> {
   const oldNeighborhoods = await getOldAreas(cityId, oldArea.id)
-  // TODO: merged polygon produces a Polygon, needs to be MultiPolygon
-  // Maybe this is not the function it uses
-  let geometry = formData.mapData[2].geometry
-  if (formData.mapData[2].geometry.type === 'Polygon') {
-    geometry = {
-      type: 'MultiPolygon',
-      coordinates: [ formData.mapData[2].geometry.coordinates ]
-    }
-  }
-  console.log(geometry)
 
   if (formData.mapTouched) {
     return Axios.patch(`${url}/${cityId}`, {
@@ -71,7 +67,7 @@ export async function patchArea(cityId: string, oldArea: any, formData: any): Pr
             type: 'FeatureCollection',
             features: [{
               type: 'Feature',
-              geometry,
+              geometry: formData.mapData[2].geometry,
               properties: {
                 name: formData.name,
               }
