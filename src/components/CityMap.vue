@@ -270,6 +270,7 @@ export default Vue.extend({
         map.removeLayer((map as any).cityLayerGroup);
         delete (map as any).cityLayerGroup;
       }
+      // const isNb = false;
 
       // Now create a new one
       (map as any).cityLayerGroup = new L.LayerGroup();
@@ -288,12 +289,6 @@ export default Vue.extend({
                 const polyEdit = (layer as any).toGeoJSON();
 
                 (this.cityGeoJson as any).geometry = polyEdit.geometry
-
-                console.log(polyEdit)
-                console.log((this.cityGeoJson as any).geometry
-                  .coordinates.length)
-                console.log(event)
-
                 this.confirmEditCity = true
               });
             }
@@ -437,6 +432,7 @@ export default Vue.extend({
       }
 
       (map as any).neighborhoodsLayerGroup = new L.LayerGroup();
+      const isNb = true;
 
       // A loop that will add all the hoods into a layer group
       // in the map, that are ignored in City view
@@ -481,6 +477,11 @@ export default Vue.extend({
                     }
 
                   }
+                });
+
+                map.on('pm:globaleditmodetoggled', (e: any) => {
+                  console.log(e);
+                  if (isNb) console.log('I am a neighborhood')
                 });
               }
             },
