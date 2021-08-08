@@ -392,6 +392,11 @@ export default Vue.extend({
       }
       this.confirmEditCity = false;
       this.cityLayer(this.map)
+
+      if (!this.editCity) {
+        this.toggleNeighborhoods(this.map)
+        this.toggleEdition()
+      }
     },
     patchCity() {
       if ((this.cityGeoJson as any).properties.neighborhood) {
