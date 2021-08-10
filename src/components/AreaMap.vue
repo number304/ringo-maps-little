@@ -3,7 +3,7 @@
     <div ref="areaMap" class="areaMap"></div>
     <div class="d-flex justify-center mt-4">
       <v-btn
-        @click.prevent="centerArea(area)"
+        @click.prevent="centerArea(area.neighborhood)"
         dark
         color="orange darken-2"
       >
@@ -106,9 +106,11 @@ export default Vue.extend({
       }).addTo(this.map)
 
       setTimeout(() => {
-        this.centerArea(this.area)
+        this.centerArea(this.area.neighborhood)
       }, 1000)
 
+      this.cityLayer(this.map)
+      this.nbLayer(this.map)
       this.areaLayer(this.map)
 
       this.map.pm.addControls({
@@ -143,7 +145,7 @@ export default Vue.extend({
       (map as any).areaLayerGroup = new L.LayerGroup();
 
       ((self) => {
-        self.area.FeatureCollection.features.forEach(
+        self.area.neighborhood.FeatureCollection.features.forEach(
           function (feature: any, featureIndex: number) {
             const geometry = JSON.parse(JSON.stringify(feature.geometry));
             self.newFeature = JSON.parse(JSON.stringify(feature));
@@ -268,6 +270,27 @@ export default Vue.extend({
       this.map.invalidateSize();
       (this.map.attributionControl as any)._map.fitBounds(cords);
     },
+    cityLayer(map: L.Map) {
+      if ((map as any).cityLayerGroup) {
+        map.removeLayer((map as any).cityLayerGroup)
+        delete (map as any).cityLayerGroup
+      }
+
+      (map as any).cityLayerGroup = new L.LayerGroup()
+
+      this.area.city.FeatureCollection.features.forEach((feature: any) => {
+        (map as any).cityLayerGroup.addLayer(
+          L.geoJSON(feature.geometry, {
+            pmIgnore: true,
+            style: () => {
+              return { color: '#007bff', weight: 2, opacity: 0.65 }
+            }
+          })
+        )
+      });
+
+      (map as any).cityLayerGroup.addTo(map)
+    },
     editNewFeature(index: number, coordinates: any[], isMultiPolygon: boolean) {
       if (isMultiPolygon) this.newFeature.geometry.coordinates
           .splice(index, coordinates.length, ...coordinates)
@@ -276,6 +299,31 @@ export default Vue.extend({
         .coordinates[index] = coordinates
 
       this.$emit('editFeature', 0, {}, this.newFeature);
+    },
+    nbLayer(map: L.Map) {
+      if((map as any).neighborhoodsLayerGroup) {
+        map.removeLayer((map as any).neighborhoodsLayerGroup)
+        delete (map as any).neighborhoodsLayerGroup
+      }
+
+      (map as any).neighborhoodsLayerGroup = new L.LayerGroup()
+
+      for (let i = 0; i < this.area.city.neighborhoods.length; i++) {
+        const neighborhood: any = this.area.city.neighborhoods[i]
+        // const neighborhoodName = neighborhood.name.find((x: any) => x.language === 'en').label
+        const neighborhoodColor = neighborhood.color ? neighborhood.color.active : '#ff8900';
+
+        (map as any).neighborhoodsLayerGroup.addLayer(
+          L.geoJSON(neighborhood.FeatureCollection.features[0], {
+            pmIgnore: true,
+            style: () => {
+              return { color: '#7F7E80FF', weight: 2, opacity: 0.65 }
+            }
+          })
+        )
+      }
+
+      (map as any).neighborhoodsLayerGroup.addTo(map)
     },
     setNewArea() {
       if (this.formIsChanged) {
@@ -366,7 +414,7 @@ export default Vue.extend({
   watch: {
     dialog: function() {
       this.areaLayer(this.map)
-      this.centerArea(this.area)
+      this.centerArea(this.area.neighborhood)
     }
   }
 })

@@ -66,7 +66,7 @@
           </v-col>
           <v-col>
             <AreaMap
-              :area="getArea.neighborhood"
+              :area="getArea"
               :key="getArea.neighborhood.id"
               :settings="{ color: form.color }"
               :dialog="dialog"
