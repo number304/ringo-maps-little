@@ -8,11 +8,13 @@ const state: State = {
     city: null,
     letleafEvent: null,
   },
+  collidingNBs: []
 }
 
 const getters = {
   allCities: (state: State): any[] => state.cities,
   getArea: (state: State): any => state.area,
+  getCollidingNBs: (state: State): any[] => state.collidingNBs,
   // getCity: (state: State): any => (cityId: String) =>
   //   state.cities.find(city => city.id === cityId),
 }
@@ -44,6 +46,9 @@ const actions = {
   cleanNeighborhood(context: any): void {
     context.commit('cleanNeighborhood')
   },
+  pushCollidingNBs(context: any, collidingNBsArray: any[]): void {
+    context.commit('setCollidingNBs', collidingNBsArray)
+  },
   async setCityArea(context: any, data: any[]): Promise<any> {
     console.log(data[1])
     await http.patchCityArea(data[0], data[1])
@@ -61,6 +66,9 @@ const mutations = {
     state.area.letleafEvent = data[0];
     state.area.neighborhood = data[1];
     state.area.city = data[2];
+  },
+  setCollidingNBs: (state: State, collidingNBsArray: any[]) => {
+    state.collidingNBs.push(...collidingNBsArray)
   },
   setNeighborhood: (state: State, neighborhood: any) => {
     state.area.neighborhood = neighborhood
