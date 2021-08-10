@@ -44,10 +44,18 @@
     <!-- Buttons related to the selected neighborhood -->
     <template v-if="toggleAreaButtons">
       <div v-if="selectedNeighborhoods.length === 0" class="fixed-center-top menu">
-        <h2 class="text-center">
-          {{ neighborhoodLabel }}
-        </h2>
-        <div class="mt-2">
+        <div class="nb-title-label pt-1 pb-2">
+          <h2 class="text-center">
+            {{ neighborhoodLabel }}
+          </h2>
+          <p
+            class="mb-0 font-weight-bold"
+            v-if="getArea.neighborhood.userMade"
+          >
+            (User made area)
+          </p>
+        </div>
+        <div class="mt-1">
           <!-- Center neighborhood -->
           <v-btn
             fab
@@ -607,6 +615,13 @@ $success: #3f9967;
   }
   .hiddenButtons {
     display: none;
+  }
+
+  .nb-title-label {
+    background-color: white;
+    padding: 0 8px;
+    border-radius: 10px;
+    opacity: 0.85;
   }
 }
 </style>

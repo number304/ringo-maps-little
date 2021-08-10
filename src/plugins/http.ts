@@ -35,6 +35,7 @@ export async function addArea(cityId: string, formData: any): Promise<any> {
       {
         id: nanoid(24),
         name: formData.name,
+        'userMade': true,
         color: formData.color,
         FeatureCollection: {
           type: 'FeatureCollection',
@@ -62,6 +63,7 @@ export async function patchArea(cityId: string, oldArea: any, formData: any): Pr
         {
           id: oldArea.id,
           name: formData.name,
+          'userMade': true,
           color: formData.color,
           FeatureCollection: {
             type: 'FeatureCollection',
@@ -83,6 +85,7 @@ export async function patchArea(cityId: string, oldArea: any, formData: any): Pr
       {
         id: oldArea.id,
         name: formData.name,
+        'userMade': true,
         color: formData.color,
         FeatureCollection: {
           type: 'FeatureCollection',
