@@ -60,9 +60,16 @@
                 v-model="form.color.status"
               >
             </div>
-            <p class="mt-4 mb-0 text-left mx-4">
-              Form has {{ isChanged ? '' : 'not' }} changed.
-            </p>
+            <div class="px-4 pb-4 pt-2 text-left select-to-merge">
+              <v-select
+                :disabled="collideNBs.length === 0"
+                :label="selectToMergeLabel"
+                v-model="nbSelectedToMerge"
+              ></v-select>
+              <div class="d-flex justify-center">
+                <v-btn dark small color="orange darken-2">Merge</v-btn>
+              </div>
+            </div>
           </v-col>
           <v-col>
             <AreaMap
@@ -81,6 +88,9 @@
 
       <v-divider></v-divider>
       <v-card-actions>
+        <p class="mb-0 ml-2 text-body-2">
+          Form has {{ isChanged ? '' : 'not' }} changed.
+        </p>
         <v-spacer></v-spacer>
         <v-btn color="green darken-1" text
           @click.stop="newArea"
@@ -130,6 +140,8 @@ export default Vue.extend({
       form: null as any,
       nbColors: { active: '#e3a702', hover: '#571414', status: '#55915c' },
       touchedOldArea: false,
+      collideNBs: [] as any[],
+      nbSelectedToMerge: null as any,
     };
   },
   created() {
@@ -183,6 +195,9 @@ export default Vue.extend({
       if (this.form.name[1].label.length === 0) return 'New neighborhood'
       else return this.form.name[1].label
     },
+    selectToMergeLabel(): string {
+      return this.collideNBs.length === 0 ? 'No neighborhoods colliding' : 'Select a neighborhood to merge'
+    }
   },
   methods: {
     close() {
@@ -269,3 +284,11 @@ export default Vue.extend({
   },
 })
 </script>
+
+<style lang="scss" scoped>
+  .select-to-merge {
+    background-color: rgba($color: whitesmoke, $alpha: 0.75);
+    border-radius: 4px;
+    margin-top: 8px;
+  }
+</style>

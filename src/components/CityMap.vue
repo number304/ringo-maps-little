@@ -135,14 +135,14 @@
 import Vue from "vue";
 import { mapGetters, mapActions } from 'vuex'
 
-import L, { Polygon } from "leaflet";
+import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 
 import "@geoman-io/leaflet-geoman-free";
 import "@geoman-io/leaflet-geoman-free/dist/leaflet-geoman.css";
 
 import dissolve from '@turf/dissolve'
-import { featureCollection, polygon, Properties } from '@turf/helpers'
+import { featureCollection, polygon } from '@turf/helpers'
 
 export default Vue.extend({
   props: {
