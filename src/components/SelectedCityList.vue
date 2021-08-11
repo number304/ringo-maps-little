@@ -73,7 +73,7 @@ export default Vue.extend({
       dialog: false,
     };
   },
-  async mounted() {
+  async created() {
     this.fetchCities()
   },
   methods: {
