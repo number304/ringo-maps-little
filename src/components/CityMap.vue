@@ -206,7 +206,8 @@ export default Vue.extend({
         cutPolygon: false,
         removalMode: false, // erase shapes
         pinningOption: false,
-        snappingOption: false
+        snappingOption: false,
+        rotateMode: false
       });
 
       // Creates an event listener that returns on console the
