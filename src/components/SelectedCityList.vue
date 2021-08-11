@@ -1,7 +1,26 @@
 <template>
   <div>
+
+    <v-autocomplete multiple :items="allCities" v-model="selectedCities" :filter="filterCities">
+      <template v-slot:selection="data">
+                <v-chip
+                  v-bind="data.attrs"
+                  :input-value="data.selected"
+                  close
+                  @click="data.select"
+                  @click:close="removeCity(data.item)"
+                >
+
+                 {{data.item.name.find(x=>x.language=='en').label}}
+                </v-chip>
+              </template>
+      <template v-slot:item="{item}">
+        {{item.name.find(x=>x.language=='en').label}}
+      </template>
+    </v-autocomplete>
+
     <v-data-iterator
-      :items="allCities"
+      :items="selectedCities"
     >
       <template v-slot:header>
         <v-row>
@@ -71,10 +90,12 @@ export default Vue.extend({
     return {
       headers: ['Index', 'Name', 'Translations', 'Id', 'Map'],
       dialog: false,
+      selectedCities: []
     };
   },
-  async mounted() {
-    this.fetchCities()
+  async created() {
+    await this.fetchCities();
+    this.selectedCities = (JSON.parse(JSON.stringify((this.allCities || []) ))).filter((x: any)=>["5f197ceda69db72eb094bce7"].indexOf(x.id)!=-1)
   },
   methods: {
     toLatLng(array: Array<number>) {
@@ -82,6 +103,14 @@ export default Vue.extend({
     },
     toggleModalEditNeighborhood() {
       this.dialog = !this.dialog
+    },
+    filterCities: function(item: any, queryText: string){
+      const match = new RegExp(queryText, 'ig');
+      return !!item.name.filter((x:any)=>x.label.match(match)).length;
+    },
+    removeCity: function(city: any){
+      const index = this.selectedCities.findIndex((x: any)=>x._id==city._id);
+      if(index > -1) this.selectedCities.splice(index, 1);
     },
     ...mapActions(['fetchCities'])
   },
