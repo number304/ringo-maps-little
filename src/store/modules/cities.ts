@@ -43,11 +43,14 @@ const actions = {
     await http.patchArea(data[0], data[1], data[2])
     context.dispatch('fetchCities')
   },
+  cleanCollidingNBs(context: any): void {
+    context.commit('cleanCollidingNBs')
+  },
   cleanNeighborhood(context: any): void {
     context.commit('cleanNeighborhood')
   },
-  pushCollidingNBs(context: any, collidingNBsArray: any[]): void {
-    context.commit('setCollidingNBs', collidingNBsArray)
+  pushCollidingNb(context: any, collidingNb: any): void {
+    context.commit('setCollidingNBs', collidingNb)
   },
   async setCityArea(context: any, data: any[]): Promise<any> {
     console.log(data[1])
@@ -60,6 +63,7 @@ const actions = {
 }
 
 const mutations = {
+  cleanCollidingNBs: (state: State) => state.collidingNBs = [],
   cleanNeighborhood: (state: State) => state.area.neighborhood = null,
   setCities: (state: State, cities: any[]): any[] => state.cities = cities,
   setArea: (state: State, data: any[]) => {
@@ -67,8 +71,8 @@ const mutations = {
     state.area.neighborhood = data[1];
     state.area.city = data[2];
   },
-  setCollidingNBs: (state: State, collidingNBsArray: any[]) => {
-    state.collidingNBs.push(...collidingNBsArray)
+  setCollidingNBs: (state: State, collidingNb: any) => {
+    state.collidingNBs.push(collidingNb)
   },
   setNeighborhood: (state: State, neighborhood: any) => {
     state.area.neighborhood = neighborhood

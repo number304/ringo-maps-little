@@ -89,19 +89,19 @@ export default Vue.extend({
   },
   data() {
     return {
+      layerId: null as any,
       map: null as unknown as L.Map,
-      showLayerDialog: false,
       newArea: null as any,
       newFeature: null as any,
       newGeoJSON: null as any,
-      layerId: null as any,
+      showLayerDialog: false,
     }
   },
   mounted() {
-    this.initMap();
+    if (this.dialog) this.initMap();
   },
   methods: {
-    ...mapActions(['setNeighborhood', 'pushCollidingNBs']),
+    ...mapActions(['setNeighborhood', 'pushCollidingNb']),
     initMap() {
       this.map = L.map(this.$refs.areaMap as HTMLElement, undefined)
       L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
@@ -135,6 +135,7 @@ export default Vue.extend({
       })
 
       this.map.invalidateSize()
+      console.log('Mapa iniciado')
     },
     areaLayer(map: L.Map) {
       if ((map as any).areaLayerGroup) {
@@ -331,7 +332,7 @@ export default Vue.extend({
                 const intersects = this.checkIntersection(feature)
                 // console.log(`${neighborhoodName} ${intersects}`)
                 // console.log(feature)
-                if (intersects) console.log(neighborhood)
+                if (intersects) this.pushCollidingNb(neighborhood)
               }
             },
             style: () => {
@@ -431,6 +432,7 @@ export default Vue.extend({
   },
   watch: {
     dialog: function() {
+      if (this.dialog) this.initMap()
       this.areaLayer(this.map)
       this.centerArea(this.area.neighborhood)
     }
