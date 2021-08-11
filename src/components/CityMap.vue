@@ -466,7 +466,7 @@ export default Vue.extend({
                       layer.bindPopup(neighborhoodName);
                     }, 500);
 
-                    if (event.originalEvent.ctrlKey) {
+                    if (event.originalEvent.ctrlKey || event.originalEvent.shiftKey) {
                       if (!selected) {
                         if (this.selectedNeighborhoods.length < 5) {
                           this.selectedNeighborhoods.push(neighborhood)
