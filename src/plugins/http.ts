@@ -1,7 +1,7 @@
 import Axios from 'axios';
 import { nanoid } from 'nanoid';
 
-const url = 'http://localhost:3000/cities';
+const url = 'http://localhost:3004/cities';
 
 export async function getCities(): Promise<any> {
   return Axios.get(url)
