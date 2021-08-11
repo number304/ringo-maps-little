@@ -51,11 +51,15 @@
 
 <script lang="ts">
 import Vue from 'vue'
+import { mapActions } from 'vuex'
+
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
+
 import "@geoman-io/leaflet-geoman-free";
 import "@geoman-io/leaflet-geoman-free/dist/leaflet-geoman.css";
-import { mapActions } from 'vuex'
+
+import booleanIntersects from '@turf/boolean-intersects'
 
 export default Vue.extend({
   props: {
@@ -97,7 +101,7 @@ export default Vue.extend({
     this.initMap();
   },
   methods: {
-    ...mapActions(['setNeighborhood']),
+    ...mapActions(['setNeighborhood', 'pushCollidingNBs']),
     initMap() {
       this.map = L.map(this.$refs.areaMap as HTMLElement, undefined)
       L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
@@ -270,6 +274,10 @@ export default Vue.extend({
       this.map.invalidateSize();
       (this.map.attributionControl as any)._map.fitBounds(cords);
     },
+    checkIntersection(nb: any) {
+      return booleanIntersects(nb, this.area
+        .neighborhood.FeatureCollection.features[0])
+    },
     cityLayer(map: L.Map) {
       if ((map as any).cityLayerGroup) {
         map.removeLayer((map as any).cityLayerGroup)
@@ -307,14 +315,25 @@ export default Vue.extend({
       }
 
       (map as any).neighborhoodsLayerGroup = new L.LayerGroup()
+      const nbArray = this.area.city.neighborhoods
+        .filter((nb: any) =>
+          nb.name[1].label !== this.area.neighborhood.name[1].label);
 
-      for (let i = 0; i < this.area.city.neighborhoods.length; i++) {
-        const neighborhood: any = this.area.city.neighborhoods[i];
-        // const neighborhoodName = neighborhood.name.find((x: any) => x.language === 'en').label
+      for (let i = 0; i < nbArray.length; i++) {
+        const neighborhood: any = nbArray[i];
+        const neighborhoodName = neighborhood.name.find((x: any) => x.language === 'en').label;
 
         (map as any).neighborhoodsLayerGroup.addLayer(
           L.geoJSON(neighborhood.FeatureCollection.features[0], {
             pmIgnore: true,
+            onEachFeature: (feature: any, layer: any) => {
+              if (neighborhoodName) {
+                const intersects = this.checkIntersection(feature)
+                // console.log(`${neighborhoodName} ${intersects}`)
+                // console.log(feature)
+                if (intersects) console.log(neighborhood)
+              }
+            },
             style: () => {
               return { color: '#7F7E80FF', weight: 2, opacity: 0.65 }
             }
