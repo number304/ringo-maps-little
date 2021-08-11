@@ -59,7 +59,9 @@ import 'leaflet/dist/leaflet.css'
 import "@geoman-io/leaflet-geoman-free";
 import "@geoman-io/leaflet-geoman-free/dist/leaflet-geoman.css";
 
-import booleanIntersects from '@turf/boolean-intersects'
+// Evaluate uninstall this npm package
+// import booleanIntersects from '@turf/boolean-intersects'
+import booleanOverlap from '@turf/boolean-overlap'
 
 export default Vue.extend({
   props: {
@@ -135,7 +137,6 @@ export default Vue.extend({
       })
 
       this.map.invalidateSize()
-      console.log('Mapa iniciado')
     },
     areaLayer(map: L.Map) {
       if ((map as any).areaLayerGroup) {
@@ -276,7 +277,7 @@ export default Vue.extend({
       (this.map.attributionControl as any)._map.fitBounds(cords);
     },
     checkIntersection(nb: any) {
-      return booleanIntersects(nb, this.area
+      return booleanOverlap(nb, this.area
         .neighborhood.FeatureCollection.features[0])
     },
     cityLayer(map: L.Map) {
@@ -330,9 +331,12 @@ export default Vue.extend({
             onEachFeature: (feature: any, layer: any) => {
               if (neighborhoodName) {
                 const intersects = this.checkIntersection(feature)
-                // console.log(`${neighborhoodName} ${intersects}`)
-                // console.log(feature)
                 if (intersects) this.pushCollidingNb(neighborhood)
+
+                map.on('pm:globaleditmodetoggled', (e: any) => {
+                  console.log(e);
+                  console.log('I am a neighborhood')
+                });
               }
             },
             style: () => {

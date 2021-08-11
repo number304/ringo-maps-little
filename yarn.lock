@@ -1013,13 +1013,13 @@
     "@turf/helpers" "^6.4.0"
     "@turf/meta" "^6.4.0"
 
-"@turf/bearing@^6.4.0":
-  "integrity" "sha512-CmMsT8hSzzhZWe0+49OP48m/EAXryZjNh/7D/0nqMIlayslRZ+bHuV3KcrOCD20xoDFtBuSEdwEd6i4+2Nw3LA=="
-  "resolved" "https://registry.npmjs.org/@turf/bearing/-/bearing-6.4.0.tgz"
-  "version" "6.4.0"
+"@turf/bearing@^6.5.0":
+  "integrity" "sha512-dxINYhIEMzgDOztyMZc20I7ssYVNEpSv04VbMo5YPQsqa80KO3TFvbuCahMsCAW5z8Tncc8dwBlEFrmRjJG33A=="
+  "resolved" "https://registry.npmjs.org/@turf/bearing/-/bearing-6.5.0.tgz"
+  "version" "6.5.0"
   dependencies:
-    "@turf/helpers" "^6.4.0"
-    "@turf/invariant" "^6.4.0"
+    "@turf/helpers" "^6.5.0"
+    "@turf/invariant" "^6.5.0"
 
 "@turf/boolean-contains@6.3.0":
   "integrity" "sha512-1MW7B5G5tIu1lnAv3pXyFzl75wfBYnbA2GhwHDb4okIXMhloy/r5uIqAZHo0fOXykKVJS/gIfA/MioKIftoTug=="
@@ -1052,6 +1052,18 @@
     "@turf/helpers" "^6.5.0"
     "@turf/meta" "^6.5.0"
 
+"@turf/boolean-overlap@^6.5.0":
+  "integrity" "sha512-8btMIdnbXVWUa1M7D4shyaSGxLRw6NjMcqKBcsTXcZdnaixl22k7ar7BvIzkaRYN3SFECk9VGXfLncNS3ckQUw=="
+  "resolved" "https://registry.npmjs.org/@turf/boolean-overlap/-/boolean-overlap-6.5.0.tgz"
+  "version" "6.5.0"
+  dependencies:
+    "@turf/helpers" "^6.5.0"
+    "@turf/invariant" "^6.5.0"
+    "@turf/line-intersect" "^6.5.0"
+    "@turf/line-overlap" "^6.5.0"
+    "@turf/meta" "^6.5.0"
+    "geojson-equality" "0.1.6"
+
 "@turf/boolean-point-in-polygon@^6.3.0", "@turf/boolean-point-in-polygon@^6.5.0":
   "integrity" "sha512-DtSuVFB26SI+hj0SjrvXowGTUCHlgevPAIsukssW6BG5MlNSBQAo70wpICBNJL6RjukXg8d2eXaAWuD/CqL00A=="
   "resolved" "https://registry.npmjs.org/@turf/boolean-point-in-polygon/-/boolean-point-in-polygon-6.5.0.tgz"
@@ -1060,21 +1072,21 @@
     "@turf/helpers" "^6.5.0"
     "@turf/invariant" "^6.5.0"
 
-"@turf/boolean-point-on-line@^6.3.0":
-  "integrity" "sha512-Xz/SUVTyJ/0LPuU4mE7N9uujrXPKrx5+p8QUWroLxi9am3YgmcYPWWt/FVvJvwoUgOQ6xXGoGR95b94ASVQAHg=="
-  "resolved" "https://registry.npmjs.org/@turf/boolean-point-on-line/-/boolean-point-on-line-6.4.0.tgz"
-  "version" "6.4.0"
+"@turf/boolean-point-on-line@^6.3.0", "@turf/boolean-point-on-line@^6.5.0":
+  "integrity" "sha512-A1BbuQ0LceLHvq7F/P7w3QvfpmZqbmViIUPHdNLvZimFNLo4e6IQunmzbe+8aSStH9QRZm3VOflyvNeXvvpZEQ=="
+  "resolved" "https://registry.npmjs.org/@turf/boolean-point-on-line/-/boolean-point-on-line-6.5.0.tgz"
+  "version" "6.5.0"
   dependencies:
-    "@turf/helpers" "^6.4.0"
-    "@turf/invariant" "^6.4.0"
+    "@turf/helpers" "^6.5.0"
+    "@turf/invariant" "^6.5.0"
 
-"@turf/destination@^6.4.0":
-  "integrity" "sha512-jSZtFhwG2JMUc3MLH5z6IVbvk/MYfsQmqOhjc7Lv6twjdipJ/KzKfLD8FRClaDm/ByCMcO7ZYG3z5AagyQu31g=="
-  "resolved" "https://registry.npmjs.org/@turf/destination/-/destination-6.4.0.tgz"
-  "version" "6.4.0"
+"@turf/destination@^6.5.0":
+  "integrity" "sha512-4cnWQlNC8d1tItOz9B4pmJdWpXqS0vEvv65bI/Pj/genJnsL7evI0/Xw42RvEGROS481MPiU80xzvwxEvhQiMQ=="
+  "resolved" "https://registry.npmjs.org/@turf/destination/-/destination-6.5.0.tgz"
+  "version" "6.5.0"
   dependencies:
-    "@turf/helpers" "^6.4.0"
-    "@turf/invariant" "^6.4.0"
+    "@turf/helpers" "^6.5.0"
+    "@turf/invariant" "^6.5.0"
 
 "@turf/dissolve@^6.5.0":
   "integrity" "sha512-WBVbpm9zLTp0Bl9CE35NomTaOL1c4TQCtEoO43YaAhNEWJOOIhZMFJyr8mbvYruKl817KinT3x7aYjjCMjTAsQ=="
@@ -1086,13 +1098,13 @@
     "@turf/meta" "^6.5.0"
     "polygon-clipping" "^0.15.3"
 
-"@turf/distance@^6.4.0":
-  "integrity" "sha512-EyNEfHfFNVwLHsD31hIpaDInoxlwUFZAVryTWxDu6O+XNE+VfVomMUxLYPm3t0tVqVNUGwOhYo5Z4HfTlr6V1g=="
-  "resolved" "https://registry.npmjs.org/@turf/distance/-/distance-6.4.0.tgz"
-  "version" "6.4.0"
+"@turf/distance@^6.4.0", "@turf/distance@^6.5.0":
+  "integrity" "sha512-xzykSLfoURec5qvQJcfifw/1mJa+5UwByZZ5TZ8iaqjGYN0vomhV9aiSLeYdUGtYRESZ+DYC/OzY+4RclZYgMg=="
+  "resolved" "https://registry.npmjs.org/@turf/distance/-/distance-6.5.0.tgz"
+  "version" "6.5.0"
   dependencies:
-    "@turf/helpers" "^6.4.0"
-    "@turf/invariant" "^6.4.0"
+    "@turf/helpers" "^6.5.0"
+    "@turf/invariant" "^6.5.0"
 
 "@turf/flatten@^6.5.0":
   "integrity" "sha512-IBZVwoNLVNT6U/bcUUllubgElzpMsNoCw8tLqBw6dfYg9ObGmpEjf9BIYLr7a2Yn5ZR4l7YIj2T7kD5uJjZADQ=="
@@ -1107,7 +1119,7 @@
   "resolved" "https://registry.npmjs.org/@turf/helpers/-/helpers-6.5.0.tgz"
   "version" "6.5.0"
 
-"@turf/invariant@^6.3.0", "@turf/invariant@^6.4.0", "@turf/invariant@^6.5.0":
+"@turf/invariant@^6.3.0", "@turf/invariant@^6.5.0":
   "integrity" "sha512-Wv8PRNCtPD31UVbdJE/KVAWKe7l6US+lJItRR/HOEW3eh+U/JwRCSUl/KZ7bmjM/C+zLNoreM2TU6OoLACs4eg=="
   "resolved" "https://registry.npmjs.org/@turf/invariant/-/invariant-6.5.0.tgz"
   "version" "6.5.0"
@@ -1132,17 +1144,6 @@
     "@turf/meta" "^6.3.0"
     "geojson-rbush" "3.x"
 
-"@turf/line-intersect@^6.4.0":
-  "integrity" "sha512-Zpe5XAz5qCH/8hVKCULvV2ZEfFK+0xS0wlA4TqSIKLLUBOG3zvy2a0M1aCse+/9OSE5kyb/X+q4i5CrYqLORfw=="
-  "resolved" "https://registry.npmjs.org/@turf/line-intersect/-/line-intersect-6.4.0.tgz"
-  "version" "6.4.0"
-  dependencies:
-    "@turf/helpers" "^6.4.0"
-    "@turf/invariant" "^6.4.0"
-    "@turf/line-segment" "^6.4.0"
-    "@turf/meta" "^6.4.0"
-    "geojson-rbush" "3.x"
-
 "@turf/line-intersect@^6.5.0":
   "integrity" "sha512-CS6R1tZvVQD390G9Ea4pmpM6mJGPWoL82jD46y0q1KSor9s6HupMIo1kY4Ny+AEYQl9jd21V3Scz20eldpbTVA=="
   "resolved" "https://registry.npmjs.org/@turf/line-intersect/-/line-intersect-6.5.0.tgz"
@@ -1154,7 +1155,21 @@
     "@turf/meta" "^6.5.0"
     "geojson-rbush" "3.x"
 
-"@turf/line-segment@^6.3.0", "@turf/line-segment@^6.4.0", "@turf/line-segment@^6.5.0":
+"@turf/line-overlap@^6.5.0":
+  "integrity" "sha512-xHOaWLd0hkaC/1OLcStCpfq55lPHpPNadZySDXYiYjEz5HXr1oKmtMYpn0wGizsLwrOixRdEp+j7bL8dPt4ojQ=="
+  "resolved" "https://registry.npmjs.org/@turf/line-overlap/-/line-overlap-6.5.0.tgz"
+  "version" "6.5.0"
+  dependencies:
+    "@turf/boolean-point-on-line" "^6.5.0"
+    "@turf/helpers" "^6.5.0"
+    "@turf/invariant" "^6.5.0"
+    "@turf/line-segment" "^6.5.0"
+    "@turf/meta" "^6.5.0"
+    "@turf/nearest-point-on-line" "^6.5.0"
+    "deep-equal" "1.x"
+    "geojson-rbush" "3.x"
+
+"@turf/line-segment@^6.3.0", "@turf/line-segment@^6.5.0":
   "integrity" "sha512-jI625Ho4jSuJESNq66Mmi290ZJ5pPZiQZruPVpmHkUw257Pew0alMmb6YrqYNnLUuiVVONxAAKXUVeeUGtycfw=="
   "resolved" "https://registry.npmjs.org/@turf/line-segment/-/line-segment-6.5.0.tgz"
   "version" "6.5.0"
@@ -1186,18 +1201,18 @@
   dependencies:
     "@turf/helpers" "^6.5.0"
 
-"@turf/nearest-point-on-line@^6.3.0":
-  "integrity" "sha512-r/F7rR6yuKa/ezJjbscRaWlIsTGj+SW75B7zFkfNBn85hy6jU/uKERvA/KR2Rrfqrt0s4/QxEiSoVdG9QTRbJA=="
-  "resolved" "https://registry.npmjs.org/@turf/nearest-point-on-line/-/nearest-point-on-line-6.4.0.tgz"
-  "version" "6.4.0"
+"@turf/nearest-point-on-line@^6.3.0", "@turf/nearest-point-on-line@^6.5.0":
+  "integrity" "sha512-WthrvddddvmymnC+Vf7BrkHGbDOUu6Z3/6bFYUGv1kxw8tiZ6n83/VG6kHz4poHOfS0RaNflzXSkmCi64fLBlg=="
+  "resolved" "https://registry.npmjs.org/@turf/nearest-point-on-line/-/nearest-point-on-line-6.5.0.tgz"
+  "version" "6.5.0"
   dependencies:
-    "@turf/bearing" "^6.4.0"
-    "@turf/destination" "^6.4.0"
-    "@turf/distance" "^6.4.0"
-    "@turf/helpers" "^6.4.0"
-    "@turf/invariant" "^6.4.0"
-    "@turf/line-intersect" "^6.4.0"
-    "@turf/meta" "^6.4.0"
+    "@turf/bearing" "^6.5.0"
+    "@turf/destination" "^6.5.0"
+    "@turf/distance" "^6.5.0"
+    "@turf/helpers" "^6.5.0"
+    "@turf/invariant" "^6.5.0"
+    "@turf/line-intersect" "^6.5.0"
+    "@turf/meta" "^6.5.0"
 
 "@turf/polygon-to-line@^6.5.0":
   "integrity" "sha512-5p4n/ij97EIttAq+ewSnKt0ruvuM+LIDzuczSzuHTpq4oS7Oq8yqg5TQ4nzMVuK41r/tALCk7nAoBuw3Su4Gcw=="
@@ -3517,7 +3532,7 @@
   "resolved" "https://registry.npmjs.org/decode-uri-component/-/decode-uri-component-0.2.0.tgz"
   "version" "0.2.0"
 
-"deep-equal@^1.0.1":
+"deep-equal@^1.0.0", "deep-equal@^1.0.1", "deep-equal@1.x":
   "integrity" "sha512-yd9c5AdiqVcR+JjcwUQb9DkhJc8ngNr0MahEBGvDiJw8puWab2yZlh+nkasOnZP+EGTAP6rRp2JzJhJZzvNF8g=="
   "resolved" "https://registry.npmjs.org/deep-equal/-/deep-equal-1.1.1.tgz"
   "version" "1.1.1"
@@ -4705,6 +4720,13 @@
   "integrity" "sha512-3hN7NaskYvMDLQY55gnW3NQ+mesEAepTqlg+VEbj7zzqEMBVNhzcGYYeqFo/TlYz6eQiFcp1HcsCZO+nGgS8zg=="
   "resolved" "https://registry.npmjs.org/gensync/-/gensync-1.0.0-beta.2.tgz"
   "version" "1.0.0-beta.2"
+
+"geojson-equality@0.1.6":
+  "integrity" "sha1-oXE3TvBD5dR5eZWEC65GSOB1LXI="
+  "resolved" "https://registry.npmjs.org/geojson-equality/-/geojson-equality-0.1.6.tgz"
+  "version" "0.1.6"
+  dependencies:
+    "deep-equal" "^1.0.0"
 
 "geojson-rbush@3.x":
   "integrity" "sha512-grkfdg3HIeTjwTfiJe5FT8+fGU3fABCc+vRJDBwdQz9kkLF0Sbif2gs2JUzjewwgmnvLGy9fInySDeADoNuk7w=="

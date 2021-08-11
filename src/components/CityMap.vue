@@ -486,11 +486,6 @@ export default Vue.extend({
 
                   }
                 });
-
-                map.on('pm:globaleditmodetoggled', (e: any) => {
-                  console.log(e);
-                  console.log('I am a neighborhood')
-                });
               }
             },
             style: () => {
