@@ -218,6 +218,8 @@ export default Vue.extend({
           this.form.color.hover = this.nbColors.hover;
           this.form.color.status = this.nbColors.status;
           this.restauredArea();
+          this.cleanCollidingNBs();
+          this.nbSelectedToMerge = null;
         }
         return;
       }

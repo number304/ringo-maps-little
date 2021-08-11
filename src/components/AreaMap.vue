@@ -11,7 +11,7 @@
       </v-btn>
       <div class="mx-4"></div>
        <v-btn
-        @click.prevent="areaLayer(map);$emit('restauredArea')"
+        @click.prevent="resetMap"
         dark
         color="orange darken-2"
       >
@@ -103,7 +103,6 @@ export default Vue.extend({
     if (this.dialog) this.initMap();
   },
   methods: {
-    ...mapActions(['setNeighborhood', 'pushCollidingNb']),
     initMap() {
       this.map = L.map(this.$refs.areaMap as HTMLElement, undefined)
       L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
@@ -276,9 +275,8 @@ export default Vue.extend({
       this.map.invalidateSize();
       (this.map.attributionControl as any)._map.fitBounds(cords);
     },
-    checkIntersection(nb: any) {
-      return booleanOverlap(nb, this.area
-        .neighborhood.FeatureCollection.features[0])
+    checkOverlap(nb: any, area: any) {
+      return booleanOverlap(nb, area)
     },
     cityLayer(map: L.Map) {
       if ((map as any).cityLayerGroup) {
@@ -314,6 +312,7 @@ export default Vue.extend({
       if((map as any).neighborhoodsLayerGroup) {
         map.removeLayer((map as any).neighborhoodsLayerGroup)
         delete (map as any).neighborhoodsLayerGroup
+        return
       }
 
       (map as any).neighborhoodsLayerGroup = new L.LayerGroup()
@@ -330,12 +329,20 @@ export default Vue.extend({
             pmIgnore: true,
             onEachFeature: (feature: any, layer: any) => {
               if (neighborhoodName) {
-                const intersects = this.checkIntersection(feature)
-                if (intersects) this.pushCollidingNb(neighborhood)
+                const initialIntersects = this.checkOverlap(feature,
+                  this.area.neighborhood.FeatureCollection.features[0])
+                if (initialIntersects) this.pushCollidingNb(neighborhood)
 
                 map.on('pm:globaleditmodetoggled', (e: any) => {
-                  console.log(e);
-                  console.log('I am a neighborhood')
+                  if (e.enabled === false) {
+                    // console.log(e);
+                    if (!initialIntersects) {
+                      const intersects = this.checkOverlap(feature,
+                        this.newFeature)
+                      console.log(neighborhoodName + ' ' + intersects)
+                      if (intersects) this.pushCollidingNb(neighborhood)
+                    }
+                  }
                 });
               }
             },
@@ -347,20 +354,6 @@ export default Vue.extend({
       }
 
       (map as any).neighborhoodsLayerGroup.addTo(map)
-    },
-    setNewArea() {
-      if (this.formIsChanged) {
-        const ask = confirm('Previous area is not saved, continue?')
-        if (ask) {
-          this.setNeighborhood(this.newArea)
-          this.$emit('createNewNeighborhood')
-          this.showLayerDialog = false
-        }
-        return;
-      }
-      this.setNeighborhood(this.newArea)
-      this.$emit('createNewNeighborhood')
-      this.showLayerDialog = false
     },
     pushNewPolygon() {
       const index = this.newFeature.geometry.coordinates.length
@@ -432,11 +425,33 @@ export default Vue.extend({
       this.$emit('editFeature', 0, {}, this.newFeature);
       this.newArea = null
       this.showLayerDialog = false
-    }
+    },
+    resetMap() {
+      this.nbLayer(this.map);
+      this.areaLayer(this.map);
+      this.cleanCollidingNBs();
+      this.$emit('restauredArea');
+      this.nbLayer(this.map);
+    },
+    setNewArea() {
+      if (this.formIsChanged) {
+        const ask = confirm('Previous area is not saved, continue?')
+        if (ask) {
+          this.setNeighborhood(this.newArea)
+          this.$emit('createNewNeighborhood')
+          this.showLayerDialog = false
+        }
+        return;
+      }
+      this.setNeighborhood(this.newArea)
+      this.$emit('createNewNeighborhood')
+      this.showLayerDialog = false
+    },
+    ...mapActions(['setNeighborhood', 'pushCollidingNb', 'cleanCollidingNBs']),
   },
   watch: {
     dialog: function() {
-      if (this.dialog) this.initMap()
+      if (this.dialog && this.map === null) this.initMap()
       this.areaLayer(this.map)
       this.centerArea(this.area.neighborhood)
     }
