@@ -1032,13 +1032,33 @@
     "@turf/helpers" "^6.3.0"
     "@turf/invariant" "^6.3.0"
 
-"@turf/boolean-point-in-polygon@^6.3.0":
-  version "6.4.0"
-  resolved "https://registry.npmjs.org/@turf/boolean-point-in-polygon/-/boolean-point-in-polygon-6.4.0.tgz"
-  integrity sha512-hJnhasLc2HyVozzQmWYAiN9D1z/JbuAJkyzfnp3HvGUp0Xdt6BsARqcLgRXbsm+AJNKG1D8d0549YKOuLGRhzA==
+"@turf/boolean-disjoint@^6.5.0":
+  "integrity" "sha512-rZ2ozlrRLIAGo2bjQ/ZUu4oZ/+ZjGvLkN5CKXSKBcu6xFO6k2bgqeM8a1836tAW+Pqp/ZFsTA5fZHsJZvP2D5g=="
+  "resolved" "https://registry.npmjs.org/@turf/boolean-disjoint/-/boolean-disjoint-6.5.0.tgz"
+  "version" "6.5.0"
   dependencies:
-    "@turf/helpers" "^6.4.0"
-    "@turf/invariant" "^6.4.0"
+    "@turf/boolean-point-in-polygon" "^6.5.0"
+    "@turf/helpers" "^6.5.0"
+    "@turf/line-intersect" "^6.5.0"
+    "@turf/meta" "^6.5.0"
+    "@turf/polygon-to-line" "^6.5.0"
+
+"@turf/boolean-intersects@^6.5.0":
+  "integrity" "sha512-nIxkizjRdjKCYFQMnml6cjPsDOBCThrt+nkqtSEcxkKMhAQj5OO7o2CecioNTaX8EayqwMGVKcsz27oP4mKPTw=="
+  "resolved" "https://registry.npmjs.org/@turf/boolean-intersects/-/boolean-intersects-6.5.0.tgz"
+  "version" "6.5.0"
+  dependencies:
+    "@turf/boolean-disjoint" "^6.5.0"
+    "@turf/helpers" "^6.5.0"
+    "@turf/meta" "^6.5.0"
+
+"@turf/boolean-point-in-polygon@^6.3.0", "@turf/boolean-point-in-polygon@^6.5.0":
+  "integrity" "sha512-DtSuVFB26SI+hj0SjrvXowGTUCHlgevPAIsukssW6BG5MlNSBQAo70wpICBNJL6RjukXg8d2eXaAWuD/CqL00A=="
+  "resolved" "https://registry.npmjs.org/@turf/boolean-point-in-polygon/-/boolean-point-in-polygon-6.5.0.tgz"
+  "version" "6.5.0"
+  dependencies:
+    "@turf/helpers" "^6.5.0"
+    "@turf/invariant" "^6.5.0"
 
 "@turf/boolean-point-on-line@^6.3.0":
   version "6.4.0"
@@ -1123,14 +1143,32 @@
     "@turf/meta" "^6.4.0"
     geojson-rbush "3.x"
 
+<<<<<<< HEAD
 "@turf/line-segment@^6.3.0", "@turf/line-segment@^6.4.0":
   version "6.4.0"
   resolved "https://registry.npmjs.org/@turf/line-segment/-/line-segment-6.4.0.tgz"
   integrity sha512-avtrD2mZd0z+tbOK+qirNASQ79XWVaCDP7Dy2/QHv68ruWdp839QwO4/ZssRwTTkTPIwS9bLjon1hUIFLGRi5w==
+=======
+"@turf/line-intersect@^6.5.0":
+  "integrity" "sha512-CS6R1tZvVQD390G9Ea4pmpM6mJGPWoL82jD46y0q1KSor9s6HupMIo1kY4Ny+AEYQl9jd21V3Scz20eldpbTVA=="
+  "resolved" "https://registry.npmjs.org/@turf/line-intersect/-/line-intersect-6.5.0.tgz"
+  "version" "6.5.0"
+>>>>>>> 1d8bf8e6ad5fb40e9012f9b1b6fd400bf6f4f5b2
   dependencies:
-    "@turf/helpers" "^6.4.0"
-    "@turf/invariant" "^6.4.0"
-    "@turf/meta" "^6.4.0"
+    "@turf/helpers" "^6.5.0"
+    "@turf/invariant" "^6.5.0"
+    "@turf/line-segment" "^6.5.0"
+    "@turf/meta" "^6.5.0"
+    "geojson-rbush" "3.x"
+
+"@turf/line-segment@^6.3.0", "@turf/line-segment@^6.4.0", "@turf/line-segment@^6.5.0":
+  "integrity" "sha512-jI625Ho4jSuJESNq66Mmi290ZJ5pPZiQZruPVpmHkUw257Pew0alMmb6YrqYNnLUuiVVONxAAKXUVeeUGtycfw=="
+  "resolved" "https://registry.npmjs.org/@turf/line-segment/-/line-segment-6.5.0.tgz"
+  "version" "6.5.0"
+  dependencies:
+    "@turf/helpers" "^6.5.0"
+    "@turf/invariant" "^6.5.0"
+    "@turf/meta" "^6.5.0"
 
 "@turf/line-split@6.3.0":
   version "6.3.0"
@@ -1167,6 +1205,14 @@
     "@turf/invariant" "^6.4.0"
     "@turf/line-intersect" "^6.4.0"
     "@turf/meta" "^6.4.0"
+
+"@turf/polygon-to-line@^6.5.0":
+  "integrity" "sha512-5p4n/ij97EIttAq+ewSnKt0ruvuM+LIDzuczSzuHTpq4oS7Oq8yqg5TQ4nzMVuK41r/tALCk7nAoBuw3Su4Gcw=="
+  "resolved" "https://registry.npmjs.org/@turf/polygon-to-line/-/polygon-to-line-6.5.0.tgz"
+  "version" "6.5.0"
+  dependencies:
+    "@turf/helpers" "^6.5.0"
+    "@turf/invariant" "^6.5.0"
 
 "@turf/square@^6.3.0":
   version "6.4.0"

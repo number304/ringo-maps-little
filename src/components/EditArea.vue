@@ -62,7 +62,7 @@
             </div>
             <div class="px-4 pb-4 pt-2 text-left select-to-merge">
               <v-select
-                :disabled="collideNBs.length === 0"
+                :disabled="getCollidingNBs.length === 0"
                 :label="selectToMergeLabel"
                 v-model="nbSelectedToMerge"
               ></v-select>
@@ -140,7 +140,6 @@ export default Vue.extend({
       form: null as any,
       nbColors: { active: '#e3a702', hover: '#571414', status: '#55915c' },
       touchedOldArea: false,
-      collideNBs: [] as any[],
       nbSelectedToMerge: null as any,
     };
   },
@@ -160,7 +159,7 @@ export default Vue.extend({
     }
   },
   computed: {
-    ...mapGetters(['getArea']),
+    ...mapGetters(['getArea', 'getCollidingNBs']),
     isChanged() {
       if (!this.getArea.neighborhood) return;
 
@@ -196,7 +195,7 @@ export default Vue.extend({
       else return this.form.name[1].label
     },
     selectToMergeLabel(): string {
-      return this.collideNBs.length === 0 ? 'No neighborhoods colliding' : 'Select a neighborhood to merge'
+      return this.getCollidingNBs.length === 0 ? 'No neighborhoods colliding' : 'Select a neighborhood to merge'
     }
   },
   methods: {

@@ -440,7 +440,6 @@ export default Vue.extend({
       }
 
       (map as any).neighborhoodsLayerGroup = new L.LayerGroup();
-      const isNb = true;
 
       // A loop that will add all the hoods into a layer group
       // in the map, that are ignored in City view
@@ -467,7 +466,7 @@ export default Vue.extend({
                       layer.bindPopup(neighborhoodName);
                     }, 500);
 
-                    if (event.originalEvent.ctrlKey) {
+                    if (event.originalEvent.ctrlKey || event.originalEvent.shiftKey) {
                       if (!selected) {
                         if (this.selectedNeighborhoods.length < 5) {
                           this.selectedNeighborhoods.push(neighborhood)
@@ -489,7 +488,7 @@ export default Vue.extend({
 
                 map.on('pm:globaleditmodetoggled', (e: any) => {
                   console.log(e);
-                  if (isNb) console.log('I am a neighborhood')
+                  console.log('I am a neighborhood')
                 });
               }
             },
