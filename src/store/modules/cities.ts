@@ -2,7 +2,10 @@ import * as http from '@/plugins/http'
 import { default as State } from '../types'
 
 const state: State = {
-  cities: [],
+  cities: {
+    items: [],
+    selected: []
+  },
   area: {
     neighborhood: null,
     city: null,
@@ -12,36 +15,33 @@ const state: State = {
 }
 
 const getters = {
-  allCities: (state: State): any[] => state.cities,
+  allCities: (state: State): any[] => state.cities.items,
+  selectedCities: (state: State): any[] => state.cities.selected,
   getArea: (state: State): any => state.area,
-  getCollidingNBs: (state: State): any[] => state.collidingNBs,
-  // getCity: (state: State): any => (cityId: String) =>
-  //   state.cities.find(city => city.id === cityId),
+  getCollidingNBs: (state: State): any[] => state.collidingNBs
 }
 
 const actions = {
-  async fetchCities(context: any): Promise<any> { //eslint-disable-line
-    const response = await http.getCities()
-    // console.log(response)
-
-    context.commit('setCities', response)
+  "cities/selected": function(context: any, payload: {item: any, action: "add"|"remove"}){
+    context.commit('cities/selected/'+payload.action, payload.item);
+  },
+  async fetchCities(context: any): Promise<any> {
+    return http.getCities().then(res=>context.commit('setCities', res)).catch(e=>{
+      throw e;
+    })
   },
   setArea(context: any, data: []): void {
     context.commit('setArea', data)
   },
-  //eslint-disable-next-line
   async createArea(context: any, data: any[]): Promise<any> {
-    await http.addArea(data[0], data[1])
-    context.dispatch('fetchCities')
+    return  http.addArea(data[0], data[1]).then(()=>context.dispatch('fetchCities'))
   },
   async deleteNeighborhoods(context: any, data: any[]): Promise<any> {
     await http.deleteAreas(data[0], data[1])
     context.dispatch('fetchCities')
   },
-  //eslint-disable-next-line
   async editArea(context: any, data: any[]): Promise<any> {
-    await http.patchArea(data[0], data[1], data[2])
-    context.dispatch('fetchCities')
+    return http.patchArea(data[0], data[1], data[2]).then(()=>context.dispatch('fetchCities'))
   },
   cleanCollidingNBs(context: any): void {
     context.commit('cleanCollidingNBs')
@@ -53,9 +53,7 @@ const actions = {
     context.commit('setCollidingNBs', collidingNb)
   },
   async setCityArea(context: any, data: any[]): Promise<any> {
-    console.log(data[1])
-    await http.patchCityArea(data[0], data[1])
-    context.dispatch('fetchCities')
+    return http.patchCityArea(data[0], data[1]).then(()=>context.dispatch('fetchCities'))
   },
   setNeighborhood(context: any, neighborhood: any): void {
     context.commit('setNeighborhood', neighborhood)
@@ -65,7 +63,7 @@ const actions = {
 const mutations = {
   cleanCollidingNBs: (state: State) => state.collidingNBs = [],
   cleanNeighborhood: (state: State) => state.area.neighborhood = null,
-  setCities: (state: State, cities: any[]): any[] => state.cities = cities,
+  setCities: (state: State, cities: any[]): any[] => state.cities.items = cities,
   setArea: (state: State, data: any[]) => {
     state.area.letleafEvent = data[0];
     state.area.neighborhood = data[1];
@@ -77,6 +75,20 @@ const mutations = {
   setNeighborhood: (state: State, neighborhood: any) => {
     state.area.neighborhood = neighborhood
   },
+  "cities/selected/add": (state: State, item: any)=>{
+    console.log(item)
+    if(!item || !item.id || state.cities.selected.find(x=>x.id==item.id)) return;
+    state.cities.selected.push(item);
+  },
+  "cities/selected/remove": (state: State, item: any)=>{
+    const index = state.cities.selected.findIndex(x=>x.id==item.id);
+    if(index == -1) return;
+    state.cities.selected.splice(index, 1);
+  },
+  "cities/selected/replace": (state: State, items: any[])=>{
+    state.cities.selected = items;
+  },
+
 }
 
 export default {

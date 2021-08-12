@@ -1,5 +1,8 @@
 export default interface State {
-  cities: any[],
+  cities: {
+    items: any[],
+    selected: any[]
+  },
   area: {
     letleafEvent: Object | null,
     neighborhood: Object | null,

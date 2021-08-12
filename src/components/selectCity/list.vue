@@ -1,26 +1,9 @@
 <template>
   <div>
-
-    <v-autocomplete multiple :items="allCities" v-model="selectedCities" :filter="filterCities">
-      <template v-slot:selection="data">
-                <v-chip
-                  v-bind="data.attrs"
-                  :input-value="data.selected"
-                  close
-                  @click="data.select"
-                  @click:close="removeCity(data.item)"
-                >
-
-                 {{data.item.name.find(x=>x.language=='en').label}}
-                </v-chip>
-              </template>
-      <template v-slot:item="{item}">
-        {{item.name.find(x=>x.language=='en').label}}
-      </template>
-    </v-autocomplete>
+    <CityAutoComplete />
 
     <v-data-iterator
-      :items="selectedCities"
+      :items="$store.getters.selectedCities"
     >
       <template v-slot:header>
         <v-row>
@@ -76,26 +59,25 @@
 <script lang="ts">
 import Vue from 'vue';
 import { GeoJSON } from 'leaflet';
-import CityMap from './CityMap.vue';
-import EditArea from './EditArea.vue';
 import { mapGetters, mapActions } from 'vuex';
 
 export default Vue.extend({
   name: 'components.selectedCityList',
   components: {
-    CityMap,
-    EditArea,
+    CityMap: ()=>import("@/components/CityMap.vue"),
+    EditArea: ()=>import("@/components/EditArea.vue"),
+    CityAutoComplete: ()=>import("@/components/selectCity/autocomplete.vue")
   },
   data() {
     return {
       headers: ['Index', 'Name', 'Translations', 'Id', 'Map'],
       dialog: false,
-      selectedCities: []
     };
   },
   async created() {
     await this.fetchCities();
-    this.selectedCities = (JSON.parse(JSON.stringify((this.allCities || []) ))).filter((x: any)=>["5f197ceda69db72eb094bce7"].indexOf(x.id)!=-1)
+    this.$store.dispatch("cities/selected", {item: this.allCities.find((x: any)=>x.id=="5f197ceda69db72eb094bce7"), action: 'add'});
+    // this.selectedCities = (JSON.parse(JSON.stringify((this.allCities || []) ))).filter((x: any)=>["5f197ceda69db72eb094bce7"].indexOf(x.id)!=-1)
   },
   methods: {
     toLatLng(array: Array<number>) {
@@ -103,14 +85,6 @@ export default Vue.extend({
     },
     toggleModalEditNeighborhood() {
       this.dialog = !this.dialog
-    },
-    filterCities: function(item: any, queryText: string){
-      const match = new RegExp(queryText, 'ig');
-      return !!item.name.filter((x:any)=>x.label.match(match)).length;
-    },
-    removeCity: function(city: any){
-      const index = this.selectedCities.findIndex((x: any)=>x._id==city._id);
-      if(index > -1) this.selectedCities.splice(index, 1);
     },
     ...mapActions(['fetchCities'])
   },

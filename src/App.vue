@@ -6,7 +6,7 @@
 
 <script lang="ts">
 import Vue from 'vue';
-import SelectedCityList from './components/SelectedCityList.vue';
+import SelectedCityList from './components/selectCity/list.vue';
 
 export default Vue.extend({
   name: 'App',
