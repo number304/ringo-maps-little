@@ -32,8 +32,8 @@
         <v-btn
           fab
           dark
-          class="orange darken-2 btn"
-          @click.prevent="toggleNeighborhoods(map);toggleEdition()"
+          :class="[!neighborhoods.length ? 'red' : map.neighborhoodsLayerGroup ? 'green': 'orange', 'darken-2', 'btn']"
+          @click.prevent="(exists=>{if(exists)toggleNeighborhoods(map);toggleEdition()})(neighborhoods.length)"
           title="Toggle Neighborhoods"
         >
           <v-icon dark>mdi-home-group</v-icon>
@@ -105,8 +105,8 @@
       <h2 class="text-center">{{ city.name[1].label }}</h2>
     </div>
     <div v-if="fullscreen" class="fixed-right-bottom">
-      <p v-if="editCity">Editing city</p>
-      <p v-else>Editing neighborhoods</p>
+      <div class="text-center">Edit Mode</div>
+      <div class="text-center font-weight-bold light-green--text darken-4">{{editCity ? 'CITY' : 'NEIGHBORHOODS'}}</div>
     </div>
     <v-dialog v-model="confirmEditCity" max-width="240px" persistent>
       <v-card class="py-4">
