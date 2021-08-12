@@ -142,7 +142,9 @@ import "@geoman-io/leaflet-geoman-free";
 import "@geoman-io/leaflet-geoman-free/dist/leaflet-geoman.css";
 
 import dissolve from '@turf/dissolve'
-import { featureCollection, polygon } from '@turf/helpers'
+import { featureCollection, polygon } from '@turf/helpers';
+
+import {multiPolygan2itm} from '@/helpers/itm'
 
 export default Vue.extend({
   props: {
@@ -463,6 +465,9 @@ export default Vue.extend({
                 layer.on({
                   click: (event: any) => {
                     this.setArea([event, neighborhood, this.city])
+                    multiPolygan2itm(neighborhood.FeatureCollection.features[0].geometry.coordinates[0][0])
+                    .then(itmPolygonStr=>console.log(itmPolygonStr))
+                    .catch(e=>console.log(e))
                     setTimeout(() => {
                       layer.bindPopup(neighborhoodName);
                     }, 500);

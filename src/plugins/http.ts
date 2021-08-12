@@ -2,7 +2,11 @@ import Axios, { AxiosResponse } from 'axios';
 import { nanoid } from 'nanoid';
 
 export const $api = Axios.create({
-  baseURL: "/api"
+  baseURL: "/api",
+  headers: {
+    'Content-Type': 'application/json',
+    Authorization: process.env.VUE_APP_API_TOKEN
+  }
 });
 
 const RINGO_API = !!process.env.VUE_APP_RINGO_API;
