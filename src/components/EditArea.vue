@@ -62,12 +62,21 @@
             </div>
             <div class="px-4 pb-4 pt-2 text-left select-to-merge">
               <v-select
+                :items="getCollidingNBs"
+                item-text="name[1].label"
                 :disabled="getCollidingNBs.length === 0"
                 :label="selectToMergeLabel"
+                return-object
                 v-model="nbSelectedToMerge"
               ></v-select>
               <div class="d-flex justify-center">
-                <v-btn dark small color="orange darken-2">Merge</v-btn>
+                <v-btn
+                  :disabled="nbSelectedToMerge === null"
+                  small style="color: white"
+                  color="orange darken-2"
+                >
+                  Merge
+                </v-btn>
               </div>
             </div>
           </v-col>
@@ -209,10 +218,14 @@ export default Vue.extend({
           this.form.color.hover = this.nbColors.hover;
           this.form.color.status = this.nbColors.status;
           this.restauredArea();
+          this.cleanCollidingNBs();
+          this.nbSelectedToMerge = null;
         }
         return;
       }
       this.$emit('closeModal');
+      this.cleanCollidingNBs();
+      this.nbSelectedToMerge = null;
     },
     // Just to set the names in form object by argument's name property
     setNeighborhood(neighborhood: any) {
@@ -279,7 +292,7 @@ export default Vue.extend({
 
       this.$emit('closeModal')
     },
-    ...mapActions(['editArea', 'createArea', 'deleteNeighborhoods']),
+    ...mapActions(['editArea', 'createArea', 'deleteNeighborhoods', 'cleanCollidingNBs']),
   },
 })
 </script>

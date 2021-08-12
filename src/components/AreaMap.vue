@@ -11,7 +11,7 @@
       </v-btn>
       <div class="mx-4"></div>
        <v-btn
-        @click.prevent="areaLayer(map);$emit('restauredArea')"
+        @click.prevent="resetMap"
         dark
         color="orange darken-2"
       >
@@ -59,7 +59,9 @@ import 'leaflet/dist/leaflet.css'
 import "@geoman-io/leaflet-geoman-free";
 import "@geoman-io/leaflet-geoman-free/dist/leaflet-geoman.css";
 
-import booleanIntersects from '@turf/boolean-intersects'
+// Evaluate uninstall this npm package
+// import booleanIntersects from '@turf/boolean-intersects'
+import booleanOverlap from '@turf/boolean-overlap'
 
 export default Vue.extend({
   props: {
@@ -89,19 +91,18 @@ export default Vue.extend({
   },
   data() {
     return {
+      layerId: null as any,
       map: null as unknown as L.Map,
-      showLayerDialog: false,
       newArea: null as any,
       newFeature: null as any,
       newGeoJSON: null as any,
-      layerId: null as any,
+      showLayerDialog: false,
     }
   },
   mounted() {
-    this.initMap();
+    if (this.dialog) this.initMap();
   },
   methods: {
-    ...mapActions(['setNeighborhood', 'pushCollidingNBs']),
     initMap() {
       this.map = L.map(this.$refs.areaMap as HTMLElement, undefined)
       L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
@@ -274,9 +275,8 @@ export default Vue.extend({
       this.map.invalidateSize();
       (this.map.attributionControl as any)._map.fitBounds(cords);
     },
-    checkIntersection(nb: any) {
-      return booleanIntersects(nb, this.area
-        .neighborhood.FeatureCollection.features[0])
+    checkOverlap(nb: any, area: any) {
+      return booleanOverlap(nb, area)
     },
     cityLayer(map: L.Map) {
       if ((map as any).cityLayerGroup) {
@@ -312,6 +312,7 @@ export default Vue.extend({
       if((map as any).neighborhoodsLayerGroup) {
         map.removeLayer((map as any).neighborhoodsLayerGroup)
         delete (map as any).neighborhoodsLayerGroup
+        return
       }
 
       (map as any).neighborhoodsLayerGroup = new L.LayerGroup()
@@ -328,10 +329,21 @@ export default Vue.extend({
             pmIgnore: true,
             onEachFeature: (feature: any, layer: any) => {
               if (neighborhoodName) {
-                const intersects = this.checkIntersection(feature)
-                // console.log(`${neighborhoodName} ${intersects}`)
-                // console.log(feature)
-                if (intersects) console.log(neighborhood)
+                const initialIntersects = this.checkOverlap(feature,
+                  this.area.neighborhood.FeatureCollection.features[0])
+                if (initialIntersects) this.pushCollidingNb(neighborhood)
+
+                map.on('pm:globaleditmodetoggled', (e: any) => {
+                  if (e.enabled === false) {
+                    // console.log(e);
+                    if (!initialIntersects) {
+                      const intersects = this.checkOverlap(feature,
+                        this.newFeature)
+                      console.log(neighborhoodName + ' ' + intersects)
+                      if (intersects) this.pushCollidingNb(neighborhood)
+                    }
+                  }
+                });
               }
             },
             style: () => {
@@ -342,20 +354,6 @@ export default Vue.extend({
       }
 
       (map as any).neighborhoodsLayerGroup.addTo(map)
-    },
-    setNewArea() {
-      if (this.formIsChanged) {
-        const ask = confirm('Previous area is not saved, continue?')
-        if (ask) {
-          this.setNeighborhood(this.newArea)
-          this.$emit('createNewNeighborhood')
-          this.showLayerDialog = false
-        }
-        return;
-      }
-      this.setNeighborhood(this.newArea)
-      this.$emit('createNewNeighborhood')
-      this.showLayerDialog = false
     },
     pushNewPolygon() {
       const index = this.newFeature.geometry.coordinates.length
@@ -427,10 +425,33 @@ export default Vue.extend({
       this.$emit('editFeature', 0, {}, this.newFeature);
       this.newArea = null
       this.showLayerDialog = false
-    }
+    },
+    resetMap() {
+      this.nbLayer(this.map);
+      this.areaLayer(this.map);
+      this.cleanCollidingNBs();
+      this.$emit('restauredArea');
+      this.nbLayer(this.map);
+    },
+    setNewArea() {
+      if (this.formIsChanged) {
+        const ask = confirm('Previous area is not saved, continue?')
+        if (ask) {
+          this.setNeighborhood(this.newArea)
+          this.$emit('createNewNeighborhood')
+          this.showLayerDialog = false
+        }
+        return;
+      }
+      this.setNeighborhood(this.newArea)
+      this.$emit('createNewNeighborhood')
+      this.showLayerDialog = false
+    },
+    ...mapActions(['setNeighborhood', 'pushCollidingNb', 'cleanCollidingNBs']),
   },
   watch: {
     dialog: function() {
+      if (this.dialog && this.map === null) this.initMap()
       this.areaLayer(this.map)
       this.centerArea(this.area.neighborhood)
     }

@@ -11,6 +11,7 @@
   "dependencies": {
     "@geoman-io/leaflet-geoman-free": "^2.11.2",
     "@turf/boolean-intersects": "^6.5.0",
+    "@turf/boolean-overlap": "^6.5.0",
     "@turf/dissolve": "^6.5.0",
     "@turf/flatten": "^6.5.0",
     "@turf/helpers": "^6.5.0",
