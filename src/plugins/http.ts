@@ -1,11 +1,23 @@
 import Axios, { AxiosResponse } from 'axios';
 import { nanoid } from 'nanoid';
 
-const $http = Axios.create({
-  baseURL: process.env.VUE_APP_API_URL ||  "http://localhost:3000"
+export const $api = Axios.create({
+  baseURL: "/api"
 });
 
-export const getCities: () => Promise<any> = async () => $http.get("/cities").then((res) => res.data);
+const RINGO_API = !!process.env.VUE_APP_RINGO_API;
+
+const ap = {
+  get: {
+    cities: RINGO_API ? "/v1.0/areas/cities?all=true&FeatureCollection=true" : "/cities",
+    byId: (cityId: string)=>RINGO_API ? "/v1.0/areas/city/"+cityId+"/?FeatureCollection" : '/cities/'+cityId
+  },
+  patch: {
+    byId: (cityId: string)=>RINGO_API ? "/v1.0/areas/city/"+cityId : '/cities/' + cityId,
+  }
+}
+
+export const getCities: () => Promise<any> = async () => $api.get(ap.get.cities).then((res) => RINGO_API? res.data.payload :res.data);
 
 // PUT :: Replace city pologon bounderies
 export const patchCityArea: (cityId: string, newCityArea: any) => Promise<AxiosResponse<any>> = async (cityId, newCityArea) => {
@@ -17,7 +29,7 @@ export const patchCityArea: (cityId: string, newCityArea: any) => Promise<AxiosR
       ]
     }
   }
-  return $http.patch('/cities/' + cityId, data);
+  return $api.patch(ap.patch.byId(cityId), data);
 }
 
 // POST a new area layer to city (Neighborhood || cutom area in city)
@@ -48,7 +60,7 @@ export const addArea: (cityId: string, formData: any) => Promise<AxiosResponse<a
         ...oldNeighborhoods
       ]
     }
-    return $http.patch('/cities/' + cityId, data)
+    return $api.patch(ap.patch.byId(cityId), data)
   })
 }
 
@@ -76,17 +88,21 @@ export const patchArea: (cityId: string, oldArea: any, formData: any) => Promise
         ...oldNeighborhoods
       ]
     }
-    return $http.patch('/cities/' + cityId, data);
+    return $api.patch(ap.patch.byId(cityId), data);
   })
 
 }
 
 export const deleteAreas: (cityId: string, ids: string[])=>Promise<AxiosResponse<any>> = async (cityId, ids) =>{
-  return $http.get('/cities/'+cityId)
+  return $api.get(ap.get.byId(cityId))
       .then(res=>res.data.neighborhoods.filter((nb: any)=>ids.indexOf(nb.id)==-1))
-      .then(neighborhoods=>$http.patch('/cities/'+cityId, {neighborhoods}))
+      .then(neighborhoods=>$api.patch(ap.patch.byId(cityId), {neighborhoods}))
 }
 
 export const getOldAreas: (cityId: string, areaId: string)=>Promise<any[]> = async (cityId, areaId)=>{
-  return $http.get('/cities/'+cityId).then(res=>res.data.neighborhoods.filter((nb: any) => nb.id !== areaId))
+  return $api.get(ap.get.byId(cityId)).then(res=>res.data.neighborhoods.filter((nb: any) => nb.id !== areaId))
+}
+
+export const cityById: (cityId: string)=>Promise<any> = async (cityId)=>{
+  return $api.get(ap.get.byId(cityId)).then(res=>RINGO_API?res.data.payload[0]:res.data);
 }

@@ -76,8 +76,7 @@ export default Vue.extend({
   },
   async created() {
     await this.fetchCities();
-    this.$store.dispatch("cities/selected", {item: this.allCities.find((x: any)=>x.id=="5f197ceda69db72eb094bce7"), action: 'add'});
-    // this.selectedCities = (JSON.parse(JSON.stringify((this.allCities || []) ))).filter((x: any)=>["5f197ceda69db72eb094bce7"].indexOf(x.id)!=-1)
+    this.$store.dispatch("cities/selected", {item: this.allCities.find((x: any)=>(x.id || x._id)=="5f197ceda69db72eb094bce7"), action: 'add'});
   },
   methods: {
     toLatLng(array: Array<number>) {

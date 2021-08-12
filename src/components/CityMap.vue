@@ -336,10 +336,10 @@ export default Vue.extend({
       });
     },
     loadNeighborhoods() {
-      const cityId = this.city.id;
+      const cityId = process.env.VUE_APP_RINGO_API ? this.city._id:this.city.id;
 
       // If this city has an Array with id property, then it's true
-      if (cityId) {
+      if (cityId && this.city.neighborhoods && Array.isArray(this.city.neighborhoods)) {
         // Neighborhoods from city object inserted in same
         // name data value
         this.neighborhoods = this.city.neighborhoods;

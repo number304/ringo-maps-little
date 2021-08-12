@@ -1,5 +1,6 @@
 import * as http from '@/plugins/http'
-import { default as State } from '../types'
+import { default as State } from '../types';
+const RINGO_API = !!process.env.VUE_APP_RINGO_API;
 
 const state: State = {
   cities: {
@@ -22,8 +23,33 @@ const getters = {
 }
 
 const actions = {
-  "cities/selected": function(context: any, payload: {item: any, action: "add"|"remove"}){
+  "cities/selected": function(context: any, payload: {item: any, action: "add"|"remove"|"replace"}){
+   // load single neighborhood by add action
+    if(RINGO_API && payload.action == "add" && typeof payload.item == "object" && (payload.item.id || payload.item._id) && !payload.item.neighborhoods && !Array.isArray(payload.item.neighborhoods)){
+      return http.cityById(payload.item._id).then(city=>{
+        context.dispatch('cities/setCityNeighborhoods', {city: payload.item, neighborhoods: city.neighborhoods})
+        context.commit('cities/selected/'+payload.action, payload.item);
+      }).catch(e=>console.log(e))
+    }
+    // ensure all neighborhoods are loaded via api on selected cities
+    if(RINGO_API && payload.action == "replace"){
+      return Promise.all(payload.item.map((item: any)=>new Promise((res, rej)=>{
+          const city = state.cities.items.find((x: any)=>x._id==item._id);
+          if(!city) return rej(new Error('No city found with such id!'));
+          if(city && city.neighborhoods && Array.isArray(city.neighborhoods)) return res(city);
+        return http.cityById(item._id).then(cityData=>{
+            context.dispatch("cities/setCityNeighborhoods", {city, neighborhoods: cityData.neighborhoods});
+            res(city);
+        }).catch(e=>rej(e))
+      }))).then(cities=>{
+        context.commit("cities/selected/replace", cities)
+      })
+  }
+
     context.commit('cities/selected/'+payload.action, payload.item);
+  },
+  "cities/setCityNeighborhoods": function(context: any, payload: {city: any, neighborhoods: any[]}){
+    context.commit("cities/set/neighborhoods", payload);
   },
   async fetchCities(context: any): Promise<any> {
     return http.getCities().then(res=>context.commit('setCities', res)).catch(e=>{
@@ -76,8 +102,10 @@ const mutations = {
     state.area.neighborhood = neighborhood
   },
   "cities/selected/add": (state: State, item: any)=>{
-    console.log(item)
-    if(!item || !item.id || state.cities.selected.find(x=>x.id==item.id)) return;
+    if(!item || !(item._id || item.id) || state.cities.selected.find(x=>(x.id || x._id)==(item._id || item.id))){
+      console.log(item, new Error('item not found'))
+      return;
+    }
     state.cities.selected.push(item);
   },
   "cities/selected/remove": (state: State, item: any)=>{
@@ -88,6 +116,14 @@ const mutations = {
   "cities/selected/replace": (state: State, items: any[])=>{
     state.cities.selected = items;
   },
+  "cities/set/byId": (state: State, city: any)=>{
+    const index = state.cities.items.findIndex(x=>RINGO_API?x._id==city._id:x.id==city.id);
+    if(index != -1) state.cities.items[index] = city;
+  },
+  "cities/set/neighborhoods": (state: State, payload: {city: any, neighborhoods: any[]})=>{
+    const index = state.cities.items.findIndex(x=>(x._id || x.id) == (payload.city.id || payload.city._id));
+    if(index > -1) state.cities.items[index].neighborhoods = payload.neighborhoods;
+  }
 
 }
 
