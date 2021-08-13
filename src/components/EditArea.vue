@@ -83,7 +83,7 @@
           <v-col>
             <AreaMap
               :area="getArea"
-              :key="getArea.neighborhood.id"
+              :key="getArea.neighborhood.id || getArea.neighborhood._id"
               :settings="{ color: form.color }"
               :dialog="dialog"
               :formIsChanged="isChanged"
@@ -196,7 +196,7 @@ export default Vue.extend({
     },
     isNewArea(): boolean {
       return this.getArea.neighborhood
-        && !this.getArea.neighborhood.id
+        && !(this.getArea.neighborhood.id || this.getArea.neighborhood._id)
         && this.touchedOldArea
     },
     neighborhoodLabel(): string {
@@ -277,18 +277,18 @@ export default Vue.extend({
     },
     newArea() {
       // If neighborhood don't have id then is new
-      if (!this.getArea.neighborhood.id) {
+      if (!(this.getArea.neighborhood.id || this.getArea.neighborhood._id)) {
         if (!this.form.mapTouched) {
           const newNeighborhood = this.getArea.neighborhood.FeatureCollection.features[0]
           this.form.mapData = [0, {}, newNeighborhood]
         }
-        this.createArea([this.getArea.city.id, this.form])
+        this.createArea([this.getArea.city.id || this.getArea.city._id, this.form])
         if (this.getArea.neighborhood.IDsToErase) {
           // Run a function to erase this areas from API
-          setTimeout(() => this.deleteNeighborhoods([this.getArea.city.id, this.getArea.neighborhood.IDsToErase]), 1000)
+          setTimeout(() => this.deleteNeighborhoods([(this.getArea.city.id || this.getArea.city._id), this.getArea.neighborhood.IDsToErase]), 1000)
         }
       }
-      else this.editArea([this.getArea.city.id, this.getArea.neighborhood, this.form]);
+      else this.editArea([(this.getArea.city.id || this.getArea.city._id), this.getArea.neighborhood, this.form]);
 
       this.$emit('closeModal')
     },

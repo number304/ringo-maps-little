@@ -125,7 +125,7 @@ const mutations = {
     state.cities.selected.push(item);
   },
   "cities/selected/remove": (state: State, item: any)=>{
-    const index = state.cities.selected.findIndex(x=>x.id==item.id);
+    const index = state.cities.selected.findIndex(x=>(x.id || x._id)==(item.id || item._id));
     if(index == -1) return;
     state.cities.selected.splice(index, 1);
   },

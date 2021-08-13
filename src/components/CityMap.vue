@@ -177,7 +177,7 @@ export default Vue.extend({
     toggleAreaButtons(): boolean {
       return this.fullscreen
       && this.getArea.neighborhood
-      && this.getArea.neighborhood.id
+      && (this.getArea.neighborhood.id || this.getArea.neighborhood._id)
       && !this.editCity ? true : false
     },
   },
@@ -369,7 +369,7 @@ export default Vue.extend({
       const dissolved = dissolve(nbCollection)
       console.log(dissolved)
 
-      const nbIDs = this.selectedNeighborhoods.map(nb => nb.id)
+      const nbIDs = this.selectedNeighborhoods.map(nb => (nb.id || nb._id))
 
       console.log(nbIDs)
 
@@ -413,7 +413,7 @@ export default Vue.extend({
         this.setArea([{}, newNeighborhood, this.city])
         this.$emit('editNeighborhood')
 
-        this.setCityArea([this.city.id, JSON.parse(
+        this.setCityArea([this.city.id || this.city._id, JSON.parse(
           JSON.stringify(this.cityGeoJson))])
 
         if (this.newCityLayer) {
@@ -421,7 +421,7 @@ export default Vue.extend({
           this.newCityLayer = null;
         }
       }
-      else this.setCityArea([this.city.id, JSON.parse(
+      else this.setCityArea([this.city.id || this.city._id, JSON.parse(
           JSON.stringify(this.cityGeoJson))])
 
       this.confirmEditCity = false
@@ -472,7 +472,9 @@ export default Vue.extend({
                       layer.bindPopup(neighborhoodName);
                     }, 500);
 
-                    if (event.originalEvent.ctrlKey || event.originalEvent.shiftKey) {
+                      console.log('click neighborhood selected', selected, neighborhood, event.originalEvent)
+                    
+                    if (['ctrlKey', 'metaKey', 'shiftKey'].filter(key=>event.originalEvent[key]).length) {
                       if (!selected) {
                         if (this.selectedNeighborhoods.length < 5) {
                           this.selectedNeighborhoods.push(neighborhood)

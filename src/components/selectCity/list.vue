@@ -34,7 +34,7 @@
                 <p>{{ city.name[0].label }}</p>
               </v-col>
               <v-col>
-                <p>{{ city.id }}</p>
+                <p>{{ city.id || city._id }}</p>
               </v-col>
               <v-col style="user-select: none">
                 <CityMap
