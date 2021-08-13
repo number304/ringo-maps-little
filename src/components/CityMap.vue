@@ -4,7 +4,7 @@
       mapWrapper: true,
       fullscreen
     }"
-    @dblclick="!fullscreen && toggleFullScreen()"
+    @dblclick="!fullscreen && toggleFullScreen();$emit('fullscreen')"
   >
     <!-- Here is the map -->
     <div :id="_uid + '_map'" class="myMap"></div>
@@ -19,6 +19,7 @@
           @click="
             toggleFullScreen();
             center(map);
+            $emit('fullscreenOut')
           "
           title="Exit Fullscreen"
         >

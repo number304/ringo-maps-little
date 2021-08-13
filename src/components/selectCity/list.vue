@@ -1,6 +1,6 @@
 <template>
   <div>
-    <CityAutoComplete />
+    <CityAutoComplete :style="mapFullscreen ? '' : 'z-index: 403'" />
 
     <v-data-iterator
       :items="$store.getters.selectedCities"
@@ -40,6 +40,8 @@
                 <CityMap
                   :city="city"
                   @editNeighborhood="toggleModalEditNeighborhood"
+                  @fullscreen="mapFullscreen = true"
+                  @fullscreenOut="mapFullscreen = false"
                 />
               </v-col>
             </v-row>
@@ -72,6 +74,7 @@ export default Vue.extend({
     return {
       headers: ['Index', 'Name', 'Translations', 'Id', 'Map'],
       dialog: false,
+      mapFullscreen: false,
     };
   },
   async created() {
