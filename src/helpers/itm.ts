@@ -35,11 +35,16 @@ export const itm2gps: (east: number, north: number) => Promise<any> = (east, nor
     });
 }
 
-export const multiPolygan2itm: (MultiPolygon: any[])=>Promise<string> = (MultiPolygon) => {
-    return new Promise((res, rej) => {
-        Promise.all(MultiPolygon.map((x: [number, number]) => {
-            return gps2itm(x[1], x[0]).then(data => [data.east, data.north])
-        })).then(data => res(`POLYGON((${data.map(x=>x.join(" ")).join(",")}))`)).catch(e => rej(e))
-
+export const multiPolygan2itm: (MultiPolygon: any[], type?: "string")=>string|any[] = (MultiPolygon, type) => {
+    const data = MultiPolygon.map((x: [number, number]) =>{
+        return (proj4('EPSG:4326', 'ITM', [parseFloat(x[0].toString()), parseFloat(x[1].toString())])).map(x=>parseFloat(x.toFixed(0)));
     })
+    return (type == "string") ? `POLYGON((${data.map(x=>x.join(" ")).join(",")}))`: data;
+
+    // return new Promise((res, rej) => {
+    //     Promise.all(MultiPolygon.map((x: [number, number]) => {
+    //         return gps2itm(x[1], x[0]).then(data => [data.east, data.north])
+    //     })).then(data => res(`POLYGON((${data.map(x=>x.join(" ")).join(",")}))`)).catch(e => rej(e))
+
+    // })
 }

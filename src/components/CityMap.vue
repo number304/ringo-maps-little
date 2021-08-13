@@ -464,10 +464,10 @@ export default Vue.extend({
 
                 layer.on({
                   click: (event: any) => {
-                    this.setArea([event, neighborhood, this.city])
-                    multiPolygan2itm(neighborhood.FeatureCollection.features[0].geometry.coordinates[0][0])
-                    .then(itmPolygonStr=>console.log(itmPolygonStr))
-                    .catch(e=>console.log(e))
+                    this.setArea([event, neighborhood, this.city]);
+                    // itm data
+                    console.log(neighborhood.itm)
+
                     setTimeout(() => {
                       layer.bindPopup(neighborhoodName);
                     }, 500);

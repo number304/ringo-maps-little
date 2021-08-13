@@ -1,3 +1,4 @@
+import { multiPolygan2itm } from '@/helpers/itm';
 import * as http from '@/plugins/http'
 import { default as State } from '../types';
 const RINGO_API = !!process.env.VUE_APP_RINGO_API;
@@ -49,6 +50,21 @@ const actions = {
     context.commit('cities/selected/'+payload.action, payload.item);
   },
   "cities/setCityNeighborhoods": function(context: any, payload: {city: any, neighborhoods: any[]}){
+
+    for(let i=0; i < payload.neighborhoods.length; i++){
+      try {
+        payload.neighborhoods[i].itm = {
+          data: multiPolygan2itm(payload.neighborhoods[i].FeatureCollection.features[0].geometry.coordinates[0][0]),
+          Wkt: multiPolygan2itm(payload.neighborhoods[i].FeatureCollection.features[0].geometry.coordinates[0][0], "string")
+        }
+      } catch (error) {
+        payload.neighborhoods[i].itm = {
+          data: [],
+          Wkt: ''
+        }
+      }
+    }
+
     context.commit("cities/set/neighborhoods", payload);
   },
   async fetchCities(context: any): Promise<any> {
