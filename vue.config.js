@@ -1,3 +1,8 @@
+console.log('~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~');
+console.log('CUSTOM ENV');
+console.log(`${(keys=>keys.map(key=>`${key} : ${process.env[key]}`).join("\n"))(Object.keys(process.env).filter(x=>x.startsWith('VUE_APP_')))}`);
+console.log('~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~');
+
 module.exports = {
   transpileDependencies: [
     'vuetify',

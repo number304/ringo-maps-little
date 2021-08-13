@@ -9,7 +9,7 @@ export const $api = Axios.create({
   }
 });
 
-const RINGO_API = !!process.env.VUE_APP_RINGO_API;
+const RINGO_API = process.env.VUE_APP_RINGO_API.toLowerCase() === 'true';
 
 const ap = {
   get: {
@@ -20,6 +20,8 @@ const ap = {
     byId: (cityId: string)=>RINGO_API ? "/v1.0/areas/city/"+cityId : '/cities/' + cityId,
   }
 }
+
+console.log(ap);
 
 export const getCities: () => Promise<any> = async () => $api.get(ap.get.cities).then((res) => RINGO_API? res.data.payload :res.data);
 
