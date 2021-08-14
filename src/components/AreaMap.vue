@@ -104,6 +104,7 @@ export default Vue.extend({
   },
   methods: {
     initMap() {
+      console.log('Init Map')
       this.map = L.map(this.$refs.areaMap as HTMLElement, undefined)
       L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
         attribution:
@@ -316,9 +317,16 @@ export default Vue.extend({
       }
 
       (map as any).neighborhoodsLayerGroup = new L.LayerGroup()
-      const nbArray = this.area.city.neighborhoods
+
+      let nbArray = this.area.city.neighborhoods
         .filter((nb: any) =>
           nb.name[1].label !== this.area.neighborhood.name[1].label);
+
+      if (this.area.neighborhood.IDsToErase) {
+        nbArray = this.area.city.neighborhoods.filter((nb: any) => {
+          return !this.area.neighborhood.IDsToErase.includes((nb.id || nb._id))
+        })
+      }
 
       for (let i = 0; i < nbArray.length; i++) {
         const neighborhood: any = nbArray[i];
@@ -339,7 +347,7 @@ export default Vue.extend({
                     if (!initialIntersects) {
                       const intersects = this.checkOverlap(feature,
                         this.newFeature)
-                      console.log(neighborhoodName + ' ' + intersects)
+                      // console.log(neighborhoodName + ' ' + intersects)
                       if (intersects) this.pushCollidingNb(neighborhood)
                     }
                   }

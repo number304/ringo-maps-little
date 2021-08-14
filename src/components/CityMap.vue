@@ -467,14 +467,12 @@ export default Vue.extend({
                   click: (event: any) => {
                     this.setArea([event, neighborhood, this.city]);
                     // itm data
-                    console.log(neighborhood.itm)
+                    console.log(neighborhood.itm) // undefined
 
                     setTimeout(() => {
                       layer.bindPopup(neighborhoodName);
                     }, 500);
 
-                      console.log('click neighborhood selected', selected, neighborhood, event.originalEvent)
-                    
                     if (['ctrlKey', 'metaKey', 'shiftKey'].filter(key=>event.originalEvent[key]).length) {
                       if (!selected) {
                         if (this.selectedNeighborhoods.length < 5) {
@@ -491,6 +489,8 @@ export default Vue.extend({
                         selected = !selected
                       }
                     }
+
+                    // console.log('click neighborhood selected', selected, neighborhood, event.originalEvent)
 
                   }
                 });

@@ -74,6 +74,7 @@
                   :disabled="nbSelectedToMerge === null"
                   small style="color: white"
                   color="orange darken-2"
+                  @click.stop="mergeSelectedNb"
                 >
                   Merge
                 </v-btn>
@@ -122,6 +123,9 @@
 import Vue from 'vue';
 import AreaMap from './AreaMap.vue'
 import { mapGetters, mapActions } from 'vuex'
+
+import dissolve from '@turf/dissolve'
+import { featureCollection, polygon } from '@turf/helpers'
 
 interface InitForm {
   name: { language: string, label: null }[];
@@ -227,6 +231,61 @@ export default Vue.extend({
       this.cleanCollidingNBs();
       this.nbSelectedToMerge = null;
     },
+    mergeSelectedNb() {
+      // Necessary cause dissolve doesn't work with MultiPolygons
+      const selectedPolygons = this.nbSelectedToMerge.FeatureCollection
+        .features[0].geometry.coordinates.reduce(
+          (total: any[], pol: any[]) => {
+            total.push(polygon(pol))
+            return total
+          }, []
+        )
+
+      const polType = this.getArea.neighborhood.FeatureCollection
+        .features[0].geometry.type
+
+      let areaPolygons
+      if (!this.form.mapData) {
+        if (polType === 'Polygon') areaPolygons = [this.getArea.neighborhood.FeatureCollection.features[0]]
+        else areaPolygons = this.getArea.neighborhood.FeatureCollection
+          .features[0].geometry.coordinates.reduce(
+            (total: any[], pol: any[]) => {
+              total.push(polygon(pol))
+              return total
+            }, []
+          )
+      }
+      else {
+        if (polType === 'Polygon') areaPolygons = [this.form.mapData[2]]
+        else areaPolygons = this.form.mapData[2].geometry.coordinates.reduce(
+              (total: any[], pol: any[]) => {
+                total.push(polygon(pol))
+                return total
+              }, []
+            )
+      }
+
+      const features: any = featureCollection([...areaPolygons, ...selectedPolygons])
+      // console.log(features)
+      const dissolved = dissolve(features)
+      // console.log(dissolved)
+
+      let IDsToErase
+
+      if (this.getArea.neighborhood.id) IDsToErase = [this.getArea.neighborhood.id, this.nbSelectedToMerge.id]
+      else IDsToErase = [...this.getArea.neighborhood.IDsToErase, this.nbSelectedToMerge.id]
+
+      const newNeighborhood = {
+        'FeatureCollection': dissolved,
+        'name': [{label: '',language: 'he'},{label: '', language: 'en'},{label: '',language: 'ar'}],
+        IDsToErase
+      }
+
+      console.log(newNeighborhood)
+
+      this.setArea([{}, newNeighborhood, this.getArea.city])
+      this.reloadModal()
+    },
     // Just to set the names in form object by argument's name property
     setNeighborhood(neighborhood: any) {
       // console.log(neighborhood)
@@ -244,11 +303,14 @@ export default Vue.extend({
       this.form.mapTouched = true;
     },
     reloadModal() {
+      console.log('Modal reloading')
       if (this.getArea.neighborhood.color)
         this.nbColors = this.getArea.neighborhood.color
       else this.nbColors = { active: '#e3a702', hover: '#571414', status: '#55915c' }
 
       this.form = this.initForm()
+      this.nbSelectedToMerge = null;
+      this.cleanCollidingNBs();
     },
     restauredArea() {
       this.form.mapData = null;
@@ -292,7 +354,7 @@ export default Vue.extend({
 
       this.$emit('closeModal')
     },
-    ...mapActions(['editArea', 'createArea', 'deleteNeighborhoods', 'cleanCollidingNBs']),
+    ...mapActions(['editArea', 'createArea', 'deleteNeighborhoods', 'cleanCollidingNBs', 'setArea']),
   },
 })
 </script>
