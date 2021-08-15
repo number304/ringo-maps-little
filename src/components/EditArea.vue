@@ -84,7 +84,7 @@
           <v-col>
             <AreaMap
               :area="getArea"
-              :key="getArea.neighborhood.id || getArea.neighborhood._id"
+              :key="areaMapKey"
               :settings="{ color: form.color }"
               :dialog="dialog"
               :formIsChanged="isChanged"
@@ -126,6 +126,8 @@ import { mapGetters, mapActions } from 'vuex'
 
 import dissolve from '@turf/dissolve'
 import { featureCollection, polygon } from '@turf/helpers'
+
+import { nanoid } from 'nanoid';
 
 interface InitForm {
   name: { language: string, label: null }[];
@@ -173,6 +175,11 @@ export default Vue.extend({
   },
   computed: {
     ...mapGetters(['getArea', 'getCollidingNBs']),
+    areaMapKey(): string {
+      return this.getArea.neighborhood.id ||
+        this.getArea.neighborhood._id ||
+        nanoid(24)
+    },
     isChanged() {
       if (!this.getArea.neighborhood) return;
 
