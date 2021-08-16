@@ -122,7 +122,7 @@
           </v-btn>
           <v-btn
             color="green darken-1" text
-            @click.stop="restaureCityGeoJson"
+            @click.stop="restoreCityGeoJson"
           >
             Cancel
           </v-btn>
@@ -144,8 +144,6 @@ import "@geoman-io/leaflet-geoman-free/dist/leaflet-geoman.css";
 
 import dissolve from '@turf/dissolve'
 import { featureCollection, polygon } from '@turf/helpers';
-
-import {multiPolygan2itm} from '@/helpers/itm'
 
 export default Vue.extend({
   props: {
@@ -300,8 +298,9 @@ export default Vue.extend({
                 const { layer } = event
                 const polyEdit = (layer as any).toGeoJSON();
 
-                (this.cityGeoJson as any).geometry = polyEdit.geometry
-                this.confirmEditCity = true
+                (this.cityGeoJson as any).geometry = polyEdit.geometry;
+                console.log(polyEdit)
+                this.confirmEditCity = true;
               });
             }
           })
@@ -391,7 +390,7 @@ export default Vue.extend({
         )
       }
     },
-    restaureCityGeoJson() {
+    restoreCityGeoJson() {
       this.cityGeoJson = this.city.FeatureCollection.features[0]
       if (this.newCityLayer) {
         this.map.removeLayer(this.newCityLayer)
