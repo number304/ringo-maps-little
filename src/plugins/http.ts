@@ -42,7 +42,7 @@ export const patchCityArea: (cityId: string, newCityArea: any) => Promise<AxiosR
 export const addArea: (cityId: string, formData: any) => Promise<AxiosResponse<any>> = async (cityId, formData) => {
   return getOldAreas(cityId, '_').then(oldNeighborhoods => {
     const data = {
-      neighborhoods: [
+      areas: [
         {
           id: nanoid(24),
           name: formData.name,
@@ -74,7 +74,7 @@ export const patchArea: (cityId: string, oldArea: any, formData: any) => Promise
 
   return getOldAreas(cityId, (oldArea.id || oldArea._id)).then(oldNeighborhoods => {
     const data = {
-      neighborhoods: [
+      areas: [
         {
           id: (oldArea.id || oldArea._id),
           name: formData.name,
@@ -101,12 +101,12 @@ export const patchArea: (cityId: string, oldArea: any, formData: any) => Promise
 
 export const deleteAreas: (cityId: string, ids: string[])=>Promise<AxiosResponse<any>> = async (cityId, ids) =>{
   return $api.get(ap.get.byId(cityId))
-      .then(res=>res.data.neighborhoods.filter((nb: any)=>ids.indexOf((nb._id || nb.id))==-1))
-      .then(neighborhoods=>$api.patch(ap.patch.byId(cityId), {neighborhoods}))
+      .then(res=>res.data.areas.filter((nb: any)=>ids.indexOf((nb._id || nb.id))==-1))
+      .then(areas=>$api.patch(ap.patch.byId(cityId), {areas}))
 }
 
 export const getOldAreas: (cityId: string, areaId: string)=>Promise<any[]> = async (cityId, areaId)=>{
-  return $api.get(ap.get.byId(cityId)).then(res=>res.data.neighborhoods.filter((nb: any) => (nb._id || nb.id) !== areaId))
+  return $api.get(ap.get.byId(cityId)).then(res=>res.data.areas.filter((nb: any) => (nb._id || nb.id) !== areaId))
 }
 
 export const cityById: (cityId: string)=>Promise<any> = async (cityId)=>{

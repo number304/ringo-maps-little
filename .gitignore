@@ -2,6 +2,7 @@
 node_modules
 /dist
 db.json
+db2.json
 
 # local env files
 .env.local

@@ -26,20 +26,20 @@ const getters = {
 const actions = {
   "cities/selected": function(context: any, payload: {item: any, action: "add"|"remove"|"replace"}){
    // load single neighborhood by add action
-    if(RINGO_API && payload.action == "add" && typeof payload.item == "object" && (payload.item.id || payload.item._id) && !payload.item.neighborhoods && !Array.isArray(payload.item.neighborhoods)){
+    if(RINGO_API && payload.action == "add" && typeof payload.item == "object" && (payload.item.id || payload.item._id) && !payload.item.areas && !Array.isArray(payload.item.areas)){
       return http.cityById(payload.item._id).then(city=>{
-        context.dispatch('cities/setCityNeighborhoods', {city: payload.item, neighborhoods: city.neighborhoods})
+        context.dispatch('cities/setCityNeighborhoods', {city: payload.item, areas: city.areas})
         context.commit('cities/selected/'+payload.action, payload.item);
       }).catch(e=>console.log(e))
     }
-    // ensure all neighborhoods are loaded via api on selected cities
+    // ensure all areas are loaded via api on selected cities
     if(RINGO_API && payload.action == "replace"){
       return Promise.all(payload.item.map((item: any)=>new Promise((res, rej)=>{
           const city = state.cities.items.find((x: any)=>x._id==item._id);
           if(!city) return rej(new Error('No city found with such id!'));
-          if(city && city.neighborhoods && Array.isArray(city.neighborhoods)) return res(city);
+          if(city && city.areas && Array.isArray(city.areas)) return res(city);
         return http.cityById(item._id).then(cityData=>{
-            context.dispatch("cities/setCityNeighborhoods", {city, neighborhoods: cityData.neighborhoods});
+            context.dispatch("cities/setCityNeighborhoods", {city, areas: cityData.areas});
             res(city);
         }).catch(e=>rej(e))
       }))).then(cities=>{
@@ -49,23 +49,23 @@ const actions = {
 
     context.commit('cities/selected/'+payload.action, payload.item);
   },
-  "cities/setCityNeighborhoods": function(context: any, payload: {city: any, neighborhoods: any[]}){
+  "cities/setCityNeighborhoods": function(context: any, payload: {city: any, areas: any[]}){
 
-    for(let i=0; i < payload.neighborhoods.length; i++){
+    for(let i=0; i < payload.areas.length; i++){
       try {
-        payload.neighborhoods[i].itm = {
-          data: multiPolygan2itm(payload.neighborhoods[i].FeatureCollection.features[0].geometry.coordinates[0][0]),
-          Wkt: multiPolygan2itm(payload.neighborhoods[i].FeatureCollection.features[0].geometry.coordinates[0][0], "string")
+        payload.areas[i].itm = {
+          data: multiPolygan2itm(payload.areas[i].FeatureCollection.features[0].geometry.coordinates[0][0]),
+          Wkt: multiPolygan2itm(payload.areas[i].FeatureCollection.features[0].geometry.coordinates[0][0], "string")
         }
       } catch (error) {
-        payload.neighborhoods[i].itm = {
+        payload.areas[i].itm = {
           data: [],
           Wkt: ''
         }
       }
     }
 
-    context.commit("cities/set/neighborhoods", payload);
+    context.commit("cities/set/areas", payload);
   },
   async fetchCities(context: any): Promise<any> {
     return http.getCities().then(res=>context.commit('setCities', res)).catch(e=>{
@@ -136,9 +136,9 @@ const mutations = {
     const index = state.cities.items.findIndex(x=>RINGO_API?x._id==city._id:x.id==city.id);
     if(index != -1) state.cities.items[index] = city;
   },
-  "cities/set/neighborhoods": (state: State, payload: {city: any, neighborhoods: any[]})=>{
+  "cities/set/areas": (state: State, payload: {city: any, areas: any[]})=>{
     const index = state.cities.items.findIndex(x=>(x._id || x.id) == (payload.city.id || payload.city._id));
-    if(index > -1) state.cities.items[index].neighborhoods = payload.neighborhoods;
+    if(index > -1) state.cities.items[index].areas = payload.areas;
   }
 
 }

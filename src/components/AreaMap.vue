@@ -318,12 +318,12 @@ export default Vue.extend({
 
       (map as any).neighborhoodsLayerGroup = new L.LayerGroup()
 
-      let nbArray = this.area.city.neighborhoods
+      let nbArray = this.area.city.areas
         .filter((nb: any) =>
           nb.name[1].label !== this.area.neighborhood.name[1].label);
 
       if (this.area.neighborhood.IDsToErase) {
-        nbArray = this.area.city.neighborhoods.filter((nb: any) => {
+        nbArray = this.area.city.areas.filter((nb: any) => {
           return !this.area.neighborhood.IDsToErase.includes((nb.id || nb._id))
         })
       }

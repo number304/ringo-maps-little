@@ -342,10 +342,10 @@ export default Vue.extend({
       const cityId = process.env.VUE_APP_RINGO_API.toLowerCase() === 'true' ? this.city._id:this.city.id;
 
       // If this city has an Array with id property, then it's true
-      if (cityId && this.city.neighborhoods && Array.isArray(this.city.neighborhoods)) {
+      if (cityId && this.city.areas && Array.isArray(this.city.areas)) {
         // Neighborhoods from city object inserted in same
         // name data value
-        this.neighborhoods = this.city.neighborhoods;
+        this.neighborhoods = this.city.areas.filter((area: any) => !area.areaType || area.areaType === 'neighborhood');
       } else {
         console.log("No city hood in local data files");
         console.log(
