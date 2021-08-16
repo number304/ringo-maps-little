@@ -76,7 +76,7 @@ const actions = {
     context.commit('setArea', data)
   },
   async createArea(context: any, data: any[]): Promise<any> {
-    return  http.addArea(data[0], data[1]).then(()=>context.dispatch('fetchCities'))
+    return  http.addArea(data[0], data[1], data[2]).then(()=>context.dispatch('fetchCities'))
   },
   async deleteNeighborhoods(context: any, data: any[]): Promise<any> {
     await http.deleteAreas(data[0], data[1])

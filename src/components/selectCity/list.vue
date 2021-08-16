@@ -39,7 +39,7 @@
               <v-col style="user-select: none">
                 <CityMap
                   :city="city"
-                  @editNeighborhood="toggleModalEditNeighborhood"
+                  @editNeighborhood="toggleModalEditArea"
                   @fullscreen="mapFullscreen = true"
                   @fullscreenOut="mapFullscreen = false"
                 />
@@ -53,7 +53,11 @@
       style="z-index: 402" persistent
       v-model="dialog" max-width="800px"
     >
-      <EditArea :dialog="dialog" @closeModal="toggleModalEditNeighborhood"/>
+      <EditArea
+        :areaType="areaType"
+        :dialog="dialog"
+        @closeModal="toggleModalEditArea"
+      />
     </v-dialog>
   </div>
 </template>
@@ -72,6 +76,7 @@ export default Vue.extend({
   },
   data() {
     return {
+      areaType: 'neighborhood',
       headers: ['Index', 'Name', 'Translations', 'Id', 'Map'],
       dialog: false,
       mapFullscreen: false,
@@ -85,7 +90,10 @@ export default Vue.extend({
     toLatLng(array: Array<number>) {
       return GeoJSON.coordsToLatLng([array[0], array[1]]);
     },
-    toggleModalEditNeighborhood() {
+    toggleModalEditArea(typeOfArea?: any) {
+      console.log(typeOfArea)
+      if (typeOfArea) this.areaType = typeOfArea
+      else this.areaType = 'neighborhood'
       this.dialog = !this.dialog
     },
     ...mapActions(['fetchCities'])
