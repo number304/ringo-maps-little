@@ -3,7 +3,7 @@
     multiple
     menu-props="closeOnContentClick"
     :items="$store.getters.allCities"
-    :item-text="name.find((x) => x.language == $store.getters['i18n/current']).label"
+    item-text="name[0].label"
     return-object
     v-model="selectedCities"
     :filter="filterCities"

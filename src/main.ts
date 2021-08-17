@@ -5,8 +5,10 @@ import store from './store'
 
 Vue.config.productionTip = false;
 
-new Vue({
+export const app = new Vue({
   vuetify,
   store,
   render: (h) => h(App),
-}).$mount('#app');
+});
+
+app.$mount('#app');

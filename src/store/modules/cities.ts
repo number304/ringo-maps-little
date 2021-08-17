@@ -2,6 +2,7 @@ import { multiPolygan2itm } from '@/helpers/itm';
 import * as http from '@/plugins/http'
 import { default as State } from '../types';
 const RINGO_API = process.env.VUE_APP_RINGO_API.toLowerCase() === 'true';
+import {app} from '@/main'
 
 const state: State = {
   cities: {
@@ -77,14 +78,23 @@ const actions = {
     context.commit('setArea', data)
   },
   async createArea(context: any, data: any[]): Promise<any> {
-    return  http.addArea(data[0], data[1], data[2]).then(()=>context.dispatch('fetchCities'))
+    const [cityId, form, typeOfArea] = data;
+    return  http.addArea(cityId, form, typeOfArea).then(()=>{
+      const findCityIndex = state.cities.items.findIndex(x=>(x.id||x._id)==cityId);
+      if(findCityIndex == -1) return;
+      // @TODO insert the new gemotry 
+      // state.cities.items[findCityIndex];
+      // app.$forceUpdate();
+    })
+    //.then(()=>context.dispatch('fetchCities'))
   },
   async deleteNeighborhoods(context: any, data: any[]): Promise<any> {
     await http.deleteAreas(data[0], data[1])
     context.dispatch('fetchCities')
   },
   async editArea(context: any, data: any[]): Promise<any> {
-    return http.patchArea(data[0], data[1], data[2]).then(()=>context.dispatch('fetchCities'))
+    return http.patchArea(data[0], data[1], data[2])
+    //.then(()=>context.dispatch('fetchCities'))
   },
   cleanCollidingNBs(context: any): void {
     context.commit('cleanCollidingNBs')
