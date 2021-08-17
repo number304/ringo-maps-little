@@ -179,6 +179,7 @@ export default Vue.extend({
       cityGeoJson: null as unknown as L.GeoJSON,
       confirmCreateArea: false,
       confirmEditCity: false,
+      customController: null as unknown as L.Control.Layers,
       editCity: true,
       fullscreen: false,
       map: (null as unknown) as L.Map,
@@ -365,6 +366,37 @@ export default Vue.extend({
         this.drag(this.map, this.fullscreen);
       });
     },
+    loadCustomAreasLayer(map: L.Map) {
+      const cityId = process.env.VUE_APP_RINGO_API.toLowerCase() === 'true' ? this.city._id:this.city.id;
+
+      if (cityId && this.city.areas && Array.isArray(this.city.areas)) {
+        const customAreas = this.city.areas.filter((area: any) => area.areaType === 'custom');
+
+        (map as any).customAreasLayerGroup = new L.LayerGroup();
+
+        for (let i = 0; i < customAreas.length; i++) {
+          const customArea: any = customAreas[i];
+
+          (map as any).customAreasLayerGroup.addLayer(
+            L.geoJSON(customArea.FeatureCollection.features[0], {
+              pmIgnore: true,
+              onEachFeature: (feature: any, layer: any) => {
+                layer.on({
+                  click: () => {
+                    layer.bindPopup(customArea.name[1].label)
+                  }
+                })
+              }
+            })
+          )
+        }
+        (map as any).customAreasLayerGroup.addTo(map)
+
+        const overlays = { 'Custom': (map as any).customAreasLayerGroup }
+        this.customController = L.control.layers(undefined, overlays, { position: 'bottomright' });
+        this.customController.addTo(map)
+        }
+    },
     loadNeighborhoods() {
       const cityId = process.env.VUE_APP_RINGO_API.toLowerCase() === 'true' ? this.city._id:this.city.id;
 
@@ -467,6 +499,9 @@ export default Vue.extend({
       if ((map as any).neighborhoodsLayerGroup) {
         map.removeLayer((map as any).neighborhoodsLayerGroup);
         delete (map as any).neighborhoodsLayerGroup;
+        map.removeLayer((map as any).customAreasLayerGroup);
+        delete (map as any).customAreasLayerGroup;
+        map.removeControl(this.customController);
         if (!draw) return;
       }
 
@@ -494,7 +529,7 @@ export default Vue.extend({
                   click: (event: any) => {
                     this.setArea([event, neighborhood, this.city]);
                     // itm data
-                    console.log(neighborhood.itm) // undefined
+                    // console.log(neighborhood.itm) // undefined
 
                     setTimeout(() => {
                       layer.bindPopup(neighborhoodName);
@@ -516,9 +551,6 @@ export default Vue.extend({
                         selected = !selected
                       }
                     }
-
-                    // console.log('click neighborhood selected', selected, neighborhood, event.originalEvent)
-
                   }
                 });
               }
@@ -531,6 +563,7 @@ export default Vue.extend({
       }
 
       (map as any).neighborhoodsLayerGroup.addTo(map);
+      this.loadCustomAreasLayer(this.map);
     }
   },
   watch: {
