@@ -3,6 +3,8 @@
     multiple
     menu-props="closeOnContentClick"
     :items="$store.getters.allCities"
+    item-text="name[1].label"
+    return-object
     v-model="selectedCities"
     :filter="filterCities"
   >
