@@ -21,8 +21,6 @@ const ap = {
   }
 }
 
-console.log(ap);
-
 export const getCities: () => Promise<any> = async () => $api.get(ap.get.cities).then((res) => RINGO_API? res.data.payload :res.data);
 
 // PUT :: Replace city pologon bounderies

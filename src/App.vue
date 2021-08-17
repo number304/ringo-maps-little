@@ -6,12 +6,11 @@
 
 <script lang="ts">
 import Vue from 'vue';
-import SelectedCityList from './components/selectCity/list.vue';
 
 export default Vue.extend({
   name: 'App',
   components: {
-    SelectedCityList,
+    SelectedCityList: ()=>import("@/components/selectCity/list/index.vue"),
   },
 });
 </script>

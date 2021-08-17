@@ -14,11 +14,11 @@
         @click="data.select"
         @click:close="removeCity(data.item)"
       >
-        {{ data.item.name.find((x) => x.language == "en").label }}
+        {{ data.item.name.find((x) => x.language == $store.getters["i18n/current"]).label }}
       </v-chip>
     </template>
     <template v-slot:item="{ item }">
-      {{ item.name.find((x) => x.language == "en").label }}
+      {{ item.name.find((x) => x.language == $store.getters["i18n/current"]).label }}
     </template>
   </v-autocomplete>
 </template>
