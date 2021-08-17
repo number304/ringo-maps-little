@@ -358,6 +358,11 @@ export default Vue.extend({
           this.map.removeLayer((this.map as any).neighborhoodsLayerGroup);
           delete (this.map as any).neighborhoodsLayerGroup;
         }
+        if ((this.map as any).customAreasLayerGroup) {
+          this.map.removeLayer((this.map as any).customAreasLayerGroup);
+          delete (this.map as any).customAreasLayerGroup;
+          this.map.removeControl(this.customController);
+        }
       }
       this.$nextTick(() => {
         this.editCity = true;
@@ -499,9 +504,11 @@ export default Vue.extend({
       if ((map as any).neighborhoodsLayerGroup) {
         map.removeLayer((map as any).neighborhoodsLayerGroup);
         delete (map as any).neighborhoodsLayerGroup;
+
         map.removeLayer((map as any).customAreasLayerGroup);
         delete (map as any).customAreasLayerGroup;
         map.removeControl(this.customController);
+
         if (!draw) return;
       }
 
@@ -654,7 +661,7 @@ $success: #3f9967;
       padding: 0 8px;
       border-radius: 10px;
       opacity: 0.85;
-      bottom: 2em;
+      bottom: 4em;
       right: 10px;
       z-index: 999;
 
