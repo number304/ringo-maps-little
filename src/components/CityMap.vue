@@ -537,9 +537,9 @@ export default Vue.extend({
                     // itm data
                     // console.log(neighborhood.itm) // undefined
 
-                    setTimeout(() => {
-                      layer.bindPopup(neighborhoodName);
-                    }, 500);
+                    // setTimeout(() => {
+                    //   layer.bindPopup(neighborhoodName);
+                    // }, 500);
 
                     if (['ctrlKey', 'metaKey', 'shiftKey'].filter(key=>event.originalEvent[key]).length) {
                       if (!selected) {
