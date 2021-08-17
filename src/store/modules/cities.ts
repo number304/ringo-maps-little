@@ -51,6 +51,7 @@ const actions = {
   },
   "cities/setCityNeighborhoods": function(context: any, payload: {city: any, areas: any[]}){
 
+    if(payload.areas && Array.isArray(payload.areas))
     for(let i=0; i < payload.areas.length; i++){
       try {
         payload.areas[i].itm = {
