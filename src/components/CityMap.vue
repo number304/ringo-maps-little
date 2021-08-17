@@ -86,7 +86,7 @@
         <h2 class="text-center">Selection Mode</h2>
         <p class="text-center font-weight-bold mb-0">
           <span v-if="selectedNeighborhoods.length < 2">
-            {{ selectedNeighborhoods[0].name[1].label }} selected.
+            {{ selectedNeighborhoods[0].name.find(x=>x.language==$store.getters['i18n/current']).label }} selected.
           </span>
           <span v-else>
             {{ selectedNeighborhoods.length }} selected areas.
@@ -103,7 +103,7 @@
     </template>
 
     <div v-if="fullscreen" class="fixed-center-bottom">
-      <h2 class="text-center">{{ city.name[1].label }}</h2>
+      <h2 class="text-center">{{ city.name.find(x=>x.language==$store.getters['i18n/current']).label }}</h2>
     </div>
     <div v-if="fullscreen" class="fixed-right-bottom">
       <div class="text-center">Edit Mode</div>
@@ -193,7 +193,7 @@ export default Vue.extend({
   computed: {
     ...mapGetters(['getArea']),
     neighborhoodLabel(): string {
-      return this.getArea.neighborhood.name[1].label
+      return this.getArea.neighborhood.name.find((x: any)=>x.language==this.$store.getters['i18n/current']).label
     },
     toggleAreaButtons(): boolean {
       return this.fullscreen
