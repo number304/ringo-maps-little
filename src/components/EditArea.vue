@@ -60,10 +60,7 @@
                 v-model="form.color.status"
               >
             </div>
-            <div
-              v-if="!typeOfArea"
-              class="px-4 pb-4 pt-2 text-left select-to-merge"
-            >
+            <div class="px-4 pb-4 pt-2 text-left select-to-merge">
               <v-select
                 :items="getCollidingNBs"
                 item-text="name[1].label"
@@ -148,10 +145,6 @@ export default Vue.extend({
     AreaMap,
   },
   props: {
-    areaType: {
-      type: String,
-      required: true,
-    },
     dialog: {
       type: Boolean,
       required: true,
@@ -163,14 +156,13 @@ export default Vue.extend({
       nbColors: { active: '#e3a702', hover: '#571414', status: '#55915c' },
       touchedOldArea: false,
       nbSelectedToMerge: null as any,
-      typeOfArea: null as any
+      areaType: null as any
     };
   },
   created() {
     if (this.getArea.neighborhood.color) this.nbColors = this.getArea.neighborhood.color
 
     if (this.getArea) this.form = this.initForm()
-    if (this.areaType !== 'neighborhood') this.typeOfArea = 'custom'
   },
   beforeUpdate() {
     if (this.getArea.neighborhood && !this.dialog) {
@@ -221,7 +213,7 @@ export default Vue.extend({
     },
     neighborhoodLabel(): string {
       if (this.form.name[1].label.length === 0) {
-        return 'New ' + this.areaType
+        return 'New Neighborhood'
       }
       else return this.form.name[1].label
     },
@@ -248,7 +240,6 @@ export default Vue.extend({
       this.$emit('closeModal');
       this.cleanCollidingNBs();
       this.nbSelectedToMerge = null;
-      this.typeOfArea = null;
     },
     mergeSelectedNb() {
       // Necessary cause dissolve doesn't work with MultiPolygons
@@ -322,7 +313,7 @@ export default Vue.extend({
       this.form.mapTouched = true;
     },
     reloadModal() {
-      console.log('Modal reloading')
+      // console.log('Modal reloading')
       if (this.getArea.neighborhood.color)
         this.nbColors = this.getArea.neighborhood.color
       else this.nbColors = { active: '#e3a702', hover: '#571414', status: '#55915c' }
@@ -366,8 +357,8 @@ export default Vue.extend({
           const newNeighborhood = this.getArea.neighborhood.FeatureCollection.features[0]
           this.form.mapData = [0, {}, newNeighborhood]
         }
-        console.log(cityId, this.form, this.typeOfArea)
-        this.createArea([cityId, this.form, this.typeOfArea]);
+        console.log(cityId, this.form, this.areaType)
+        this.createArea([cityId, this.form]);
 
         if (this.getArea.neighborhood.IDsToErase) {
           // Run a function to erase this areas from API
@@ -381,31 +372,8 @@ export default Vue.extend({
         this.editArea([cityId, this.getArea.neighborhood, this.form])
         return this.$emit('closeModal');
       }
-
-      // If neighborhood don't have id then is new
-      // if (!(this.getArea.neighborhood.id || this.getArea.neighborhood._id)) {
-      //   if (!this.form.mapTouched) {
-      //     const newNeighborhood = this.getArea.neighborhood.FeatureCollection.features[0]
-      //     this.form.mapData = [0, {}, newNeighborhood]
-      //   }
-      //   this.createArea([this.getArea.city.id || this.getArea.city._id, this.form, this.typeOfArea])
-      //   if (this.getArea.neighborhood.IDsToErase) {
-      //     // Run a function to erase this areas from API
-      //     setTimeout(() => this.deleteNeighborhoods([(this.getArea.city.id || this.getArea.city._id), this.getArea.neighborhood.IDsToErase]), 1000)
-      //   }
-      // }
-      // else this.editArea([(this.getArea.city.id || this.getArea.city._id), this.getArea.neighborhood, this.form]);
-
-      // this.$emit('closeModal')
     },
     ...mapActions(['editArea', 'createArea', 'deleteNeighborhoods', 'cleanCollidingNBs', 'setArea']),
-  },
-  watch: {
-    areaType: {
-      handler: function (newVal) {
-        if (newVal === 'custom') this.typeOfArea = 'custom'
-      }
-    }
   }
 })
 </script>

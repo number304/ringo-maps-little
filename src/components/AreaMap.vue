@@ -104,7 +104,7 @@ export default Vue.extend({
   },
   methods: {
     initMap() {
-      console.log('Init Map')
+      // console.log('Init Map')
       this.map = L.map(this.$refs.areaMap as HTMLElement, undefined)
       L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
         attribution:

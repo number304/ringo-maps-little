@@ -147,26 +147,6 @@
         </div>
       </v-card>
     </v-dialog>
-    <v-dialog v-model="confirmCreateArea" max-width="240px" persistent>
-      <v-card class="py-4">
-        <h3 class="mb-4">Select a type of area</h3>
-        <v-divider></v-divider>
-        <div class="mt-4">
-          <v-btn
-            color="green darken-1" text
-            @click.stop="emitModal('neighborhood')"
-          >
-            New neighborhood
-          </v-btn>
-          <v-btn
-            color="green darken-1" text
-            @click.stop="emitModal('custom')"
-          >
-            Custom area
-          </v-btn>
-        </div>
-      </v-card>
-    </v-dialog>
   </div>
 </template>
 
@@ -193,7 +173,6 @@ export default Vue.extend({
   data() {
     return {
       cityGeoJson: null as unknown as L.GeoJSON,
-      confirmCreateArea: false,
       confirmEditCity: false,
       customController: null as unknown as L.Control.Layers,
       editCity: true,
@@ -284,8 +263,7 @@ export default Vue.extend({
         else {
           this.setArea([event, newNeighborhood, this.city])
           this.map.removeLayer(layer)
-          // this.$emit('editNeighborhood')
-          this.confirmCreateArea = true
+          this.$emit('editNeighborhood')
         }
       });
 
@@ -365,11 +343,6 @@ export default Vue.extend({
     },
     drag(map: L.Map, state: boolean) {
       map.dragging[state ? "enable" : "disable"]();
-    },
-    emitModal(type: string) {
-      if (type === 'custom') this.$emit('editNeighborhood', 'custom')
-      else this.$emit('editNeighborhood')
-      this.confirmCreateArea = false
     },
     exitSelectMode() {
       for(let i = 0; i < this.selectedNeighborhoods.length; i++) {

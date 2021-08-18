@@ -37,7 +37,7 @@ export const patchCityArea: (cityId: string, newCityArea: any) => Promise<AxiosR
 }
 
 // POST a new area layer to city (Neighborhood || cutom area in city)
-export const addArea: (cityId: string, formData: any, custom: any) => Promise<AxiosResponse<any>> = async (cityId, formData, custom) => {
+export const addArea: (cityId: string, formData: any, areaType: any) => Promise<AxiosResponse<any>> = async (cityId, formData, areaType) => {
   return getOldAreas(cityId, '_').then(oldNeighborhoods => {
     const data = {
       areas: [
@@ -64,7 +64,7 @@ export const addArea: (cityId: string, formData: any, custom: any) => Promise<Ax
         ...oldNeighborhoods
       ]
     }
-    if (custom) data.areas[0].areaType = 'custom'
+    if (areaType) data.areas[0].areaType = areaType
     return $api.patch(ap.patch.byId(cityId), data)
   })
 }
