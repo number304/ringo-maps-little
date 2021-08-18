@@ -12,9 +12,21 @@
       </v-btn>
     </v-card>
     <v-card v-else>
-      <v-card-title class="text-h5" style="word-break: normal">
-        {{ getArea.city.name[1].label }} - {{ neighborhoodLabel }}
-      </v-card-title>
+      <div class="d-flex">
+        <v-card-title class="text-h5" style="word-break: normal">
+          {{ getArea.city.name[1].label }} - {{ neighborhoodLabel }}
+        </v-card-title>
+        <v-spacer></v-spacer>
+        <div>
+          <v-select
+            class="px-4 pt-3 my-3"
+            hide-details
+            :items="['neighborhood','custom']"
+            label="What kind of area is this?"
+            v-model="form.areaType"
+          ></v-select>
+        </div>
+      </div>
       <v-divider></v-divider>
 
       <v-container>
@@ -60,7 +72,7 @@
                 v-model="form.color.status"
               >
             </div>
-            <div class="px-4 pb-4 pt-2 text-left select-to-merge">
+            <div class="px-4 pb-4 pt-2 mt-3 text-left select-to-merge">
               <v-select
                 :items="getCollidingNBs"
                 item-text="name[1].label"
@@ -138,6 +150,7 @@ interface InitForm {
   }
   mapTouched: boolean;
   mapData: null;
+  areaType: string;
 }
 
 export default Vue.extend({
@@ -156,11 +169,12 @@ export default Vue.extend({
       nbColors: { active: '#e3a702', hover: '#571414', status: '#55915c' },
       touchedOldArea: false,
       nbSelectedToMerge: null as any,
-      areaType: null as any
+      refType: 'neighborhood',
     };
   },
   created() {
     if (this.getArea.neighborhood.color) this.nbColors = this.getArea.neighborhood.color
+    if (this.getArea.neighborhood.areaType) this.refType = this.getArea.neighborhood.areaType
 
     if (this.getArea) this.form = this.initForm()
   },
@@ -194,6 +208,7 @@ export default Vue.extend({
       }
 
       if(JSON.stringify(data) != JSON.stringify(this.form.name)) check = true;
+      if (this.form.areaType != this.refType) check = true;
       if (this.form.color.active != this.nbColors.active) check = true;
       if (this.form.color.hover != this.nbColors.hover) check = true;
       if (this.form.color.status != this.nbColors.status) check = true;
@@ -317,6 +332,9 @@ export default Vue.extend({
       if (this.getArea.neighborhood.color)
         this.nbColors = this.getArea.neighborhood.color
       else this.nbColors = { active: '#e3a702', hover: '#571414', status: '#55915c' }
+      if (this.getArea.neighborhood.areaType)
+        this.refType = this.getArea.neighborhood.areaType
+      else this.refType = 'neighborhood'
 
       this.form = this.initForm()
       this.nbSelectedToMerge = null;
@@ -328,6 +346,7 @@ export default Vue.extend({
     },
     initForm(): InitForm {
       const names = JSON.parse(JSON.stringify(this.getArea.neighborhood.name))
+      // const areaType = this.getArea.neighborhood.areaType || 'neighborhood'
 
       return {
         name: names,
@@ -338,6 +357,7 @@ export default Vue.extend({
         },
         mapTouched: false,
         mapData: null,
+        areaType: this.getArea.neighborhood.areaType || 'neighborhood'
       }
     },
     formLabel(language: string): string | any {
@@ -357,7 +377,7 @@ export default Vue.extend({
           const newNeighborhood = this.getArea.neighborhood.FeatureCollection.features[0]
           this.form.mapData = [0, {}, newNeighborhood]
         }
-        console.log(cityId, this.form, this.areaType)
+        console.log(cityId, this.form)
         this.createArea([cityId, this.form]);
 
         if (this.getArea.neighborhood.IDsToErase) {

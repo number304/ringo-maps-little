@@ -424,22 +424,52 @@ export default Vue.extend({
       const cityId = process.env.VUE_APP_RINGO_API.toLowerCase() === 'true' ? this.city._id:this.city.id;
 
       if (cityId && this.city.areas && Array.isArray(this.city.areas)) {
-        const customAreas = this.city.areas.filter((area: any) => area.areaType === 'custom');
+        const customAreas = this.city.areas.filter((area: any) => area.areaType && area.areaType !== 'neighborhood');
 
         (map as any).customAreasLayerGroup = new L.LayerGroup();
 
         for (let i = 0; i < customAreas.length; i++) {
           const customArea: any = customAreas[i];
+          const areaName = customArea.name.find((x: any) => x.language == "en").label;
+          const areaColor = (customArea as any).color ?
+            (customArea as any).color.active : '#ff8900';
 
           (map as any).customAreasLayerGroup.addLayer(
             L.geoJSON(customArea.FeatureCollection.features[0], {
               pmIgnore: true,
               onEachFeature: (feature: any, layer: any) => {
-                layer.on({
-                  click: () => {
-                    layer.bindPopup(customArea.name[1].label)
+                if (areaName) {
+                  let selected = false;
+                  const styleObject = (color: string) => {
+                    return { color: color, weight: 2, opacity: 0.65 }
                   }
-                })
+
+                  layer.on({
+                    click: (event: any) => {
+                      this.setArea([event, customArea, this.city]);
+                      if (['ctrlKey', 'metaKey', 'shiftKey'].filter(key=>event.originalEvent[key]).length) {
+                        if (!selected) {
+                          if (this.selectedNeighborhoods.length < 5) {
+                            customArea.leaflet_id = (map as any).customAreasLayerGroup.getLayerId(layer)
+                            this.selectedNeighborhoods.push(customArea)
+                            layer.setStyle(styleObject('#E30202'))
+                            selected = !selected
+                          }
+                          else alert('Reached limit of 5 neighborhoods.')
+                        }
+                        else {
+                          this.selectedNeighborhoods = this.selectedNeighborhoods
+                                .filter((nb) => nb.name[1].label != areaName)
+                          layer.setStyle(styleObject(areaColor))
+                          selected = !selected
+                        }
+                      }
+                    }
+                  });
+                }
+              },
+              style: () => {
+                return { color: areaColor, weight: 2, opacity: 0.65 };
               }
             })
           )

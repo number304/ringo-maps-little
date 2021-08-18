@@ -78,11 +78,11 @@ const actions = {
     context.commit('setArea', data)
   },
   async createArea(context: any, data: any[]): Promise<any> {
-    const [cityId, form, areaType] = data;
-    return  http.addArea(cityId, form, areaType).then(()=>{
+    const [cityId, form] = data;
+    return  http.addArea(cityId, form).then(()=>{
       const findCityIndex = state.cities.items.findIndex(x=>(x.id||x._id)==cityId);
       if(findCityIndex == -1) return;
-      // @TODO insert the new gemotry 
+      // @TODO insert the new gemotry
       // state.cities.items[findCityIndex];
       // app.$forceUpdate();
     })

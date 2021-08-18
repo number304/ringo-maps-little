@@ -37,13 +37,14 @@ export const patchCityArea: (cityId: string, newCityArea: any) => Promise<AxiosR
 }
 
 // POST a new area layer to city (Neighborhood || cutom area in city)
-export const addArea: (cityId: string, formData: any, areaType: any) => Promise<AxiosResponse<any>> = async (cityId, formData, areaType) => {
+export const addArea: (cityId: string, formData: any) => Promise<AxiosResponse<any>> = async (cityId, formData) => {
   return getOldAreas(cityId, '_').then(oldNeighborhoods => {
     const data = {
       areas: [
         {
           id: nanoid(24),
           name: formData.name,
+          areaType: formData.areaType,
           userMade: true,
           color: formData.color,
           FeatureCollection: {
@@ -64,7 +65,7 @@ export const addArea: (cityId: string, formData: any, areaType: any) => Promise<
         ...oldNeighborhoods
       ]
     }
-    if (areaType) data.areas[0].areaType = areaType
+    // if (areaType) data.areas[0].areaType = areaType
     return $api.patch(ap.patch.byId(cityId), data)
   })
 }
@@ -77,7 +78,8 @@ export const patchArea: (cityId: string, oldArea: any, formData: any) => Promise
         {
           id: (oldArea.id || oldArea._id),
           name: formData.name,
-          'userMade': true,
+          areaType: formData.areaType,
+          userMade: true,
           color: formData.color,
           FeatureCollection: {
             type: 'FeatureCollection',
