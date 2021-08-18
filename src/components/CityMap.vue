@@ -116,7 +116,7 @@
     <div v-if="fullscreen" class="fixed-center-bottom d-flex">
       <v-btn
         fab dark class="orange-darken-2 btn mr-2"
-        @click.stop="changeCityName"
+        @click.stop="cityNameDialog = true"
         title="Change city name" x-small
       >
         <v-icon>mdi-pencil</v-icon>
@@ -141,6 +141,30 @@
           <v-btn
             color="green darken-1" text
             @click.stop="restoreCityGeoJson"
+          >
+            Cancel
+          </v-btn>
+        </div>
+      </v-card>
+    </v-dialog>
+    <v-dialog v-model="cityNameDialog" max-width="400px" persistent>
+      <v-card class="pt-4 pb-2">
+        <v-text-field
+          class="mx-4"
+          label="New city name"
+          v-model="cityName"
+        ></v-text-field>
+        <v-divider></v-divider>
+        <div class="mt-2">
+          <v-btn
+            color="green darken-1" text
+            @click.stop="cityNameDialog = false"
+          >
+            Confirm
+          </v-btn>
+          <v-btn
+            color="green darken-1" text
+            @click.stop="cityNameDialog = false"
           >
             Cancel
           </v-btn>
@@ -173,6 +197,8 @@ export default Vue.extend({
   data() {
     return {
       cityGeoJson: null as unknown as L.GeoJSON,
+      cityName: '',
+      cityNameDialog: false,
       confirmEditCity: false,
       customController: null as unknown as L.Control.Layers,
       editCity: true,
@@ -276,6 +302,7 @@ export default Vue.extend({
       });
 
       this.cityLayer(this.map);
+      this.cityName = this.city.name[1].label
     },
     center(map: L.Map) {
       const cords: L.LatLng[] = this.city.FeatureCollection.features.reduce(
