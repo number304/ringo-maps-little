@@ -53,7 +53,7 @@
             class="mb-0 font-weight-bold"
             v-if="getArea.neighborhood.userMade"
           >
-            (User made area)
+            (User made hood)
           </p>
         </div>
         <div class="mt-1">
@@ -83,7 +83,7 @@
 
       <!-- Selection Mode header -->
       <div v-else class="fixed-center-top menu">
-        <h2 class="text-center">Selection Mode</h2>
+        <h2 class="text-center">Merge Mode</h2>
         <p class="text-center font-weight-bold mb-0">
           <span v-if="selectedNeighborhoods.length < 2">
             {{ selectedNeighborhoods[0].name.find(x=>x.language==$store.getters['i18n/current']).label }} selected.
@@ -92,17 +92,35 @@
             {{ selectedNeighborhoods.length }} selected areas.
           </span>
         </p>
-        <v-btn
-          fab dark class="orange darken-2 btn"
-          @click.stop="mergeSelectedNb"
-          title="Merge neighborhoods"
-        >
-          <v-icon dark>mdi-table-merge-cells</v-icon>
-        </v-btn>
+        <div class="mt-1">
+          <!-- Merge Button -->
+          <v-btn
+            fab dark class="orange darken-2 btn"
+            @click.stop="mergeSelectedNb"
+            title="Merge neighborhoods"
+          >
+            <v-icon dark>mdi-table-merge-cells</v-icon>
+          </v-btn>
+          <!-- Exit Merge Mode -->
+          <v-btn
+            fab dark class="orange darken-2 btn"
+            @click.stop="exitSelectMode"
+            title="Exit merge mode"
+          >
+            <v-icon dark>mdi-location-exit</v-icon>
+          </v-btn>
+        </div>
       </div>
     </template>
 
-    <div v-if="fullscreen" class="fixed-center-bottom">
+    <div v-if="fullscreen" class="fixed-center-bottom d-flex">
+      <v-btn
+        fab dark class="orange-darken-2 btn mr-2"
+        @click.stop="changeCityName"
+        title="Change city name" x-small
+      >
+        <v-icon>mdi-pencil</v-icon>
+      </v-btn>
       <h2 class="text-center">{{ city.name.find(x=>x.language==$store.getters['i18n/current']).label }}</h2>
     </div>
     <div v-if="fullscreen" class="fixed-right-bottom">
@@ -333,6 +351,9 @@ export default Vue.extend({
       // Insert the LayerGroup from city object to map
       (map as any).cityLayerGroup.addTo(map);
     },
+    changeCityName() {
+      console.log('In development')
+    },
     zoomControl(map: L.Map, state: boolean) {
       map.touchZoom[state ? "enable" : "disable"]();
       map.doubleClickZoom[state ? "enable" : "disable"]();
@@ -349,6 +370,62 @@ export default Vue.extend({
       if (type === 'custom') this.$emit('editNeighborhood', 'custom')
       else this.$emit('editNeighborhood')
       this.confirmCreateArea = false
+    },
+    exitSelectMode() {
+      for(let i = 0; i < this.selectedNeighborhoods.length; i++) {
+        const neighborhood = this.selectedNeighborhoods[i];
+        const neighborhoodName = neighborhood.name[1]
+        const selectedLayerId = neighborhood.leaflet_id + 1;
+        const neighborhoodColor = (neighborhood as any).color ?
+          (neighborhood as any).color.active : '#ff8900';
+
+        (this.map as any).neighborhoodsLayerGroup.eachLayer((layer: L.Layer) => {
+          if (selectedLayerId === (this.map as any).neighborhoodsLayerGroup.getLayerId(layer)) {
+            layer.removeFrom(this.map);
+
+            (this.map as any).neighborhoodsLayerGroup.addLayer(
+              L.geoJSON(neighborhood.FeatureCollection.features[0], {
+                pmIgnore: true,
+                onEachFeature: (feature: any, layer: any) => {
+                  let selected = false;
+                  const styleObject = (color: string) => {
+                    return { color: color, weight: 2, opacity: 0.65 }
+                  }
+
+                  layer.on({
+                    click: (event: any) => {
+                      this.setArea([event, neighborhood, this.city]);
+                      if (['ctrlKey', 'metaKey', 'shiftKey'].filter(key=>event.originalEvent[key]).length) {
+                        if (!selected) {
+                          if (this.selectedNeighborhoods.length < 5) {
+                            neighborhood.leaflet_id = (this.map as any).neighborhoodsLayerGroup.getLayerId(layer)
+                            this.selectedNeighborhoods.push(neighborhood)
+                            layer.setStyle(styleObject('#E30202'))
+                            selected = !selected
+                          }
+                          else alert('Reached limit of 5 neighborhoods.')
+                        }
+                        else {
+                          this.selectedNeighborhoods = this.selectedNeighborhoods
+                            .filter((nb) => nb.name[1].label != neighborhoodName)
+                          layer.setStyle(styleObject(neighborhoodColor))
+                          selected = !selected
+                        }
+                      }
+                    }
+                  })
+                },
+                style: () => {
+                  return { color: neighborhoodColor, weight: 2, opacity: 0.65 };
+                }
+              })
+            )
+          }
+        })
+      }
+
+
+      this.selectedNeighborhoods = []
     },
     toggleFullScreen() {
       this.fullscreen = !this.fullscreen;
@@ -534,16 +611,10 @@ export default Vue.extend({
                 layer.on({
                   click: (event: any) => {
                     this.setArea([event, neighborhood, this.city]);
-                    // itm data
-                    // console.log(neighborhood.itm) // undefined
-
-                    // setTimeout(() => {
-                    //   layer.bindPopup(neighborhoodName);
-                    // }, 500);
-
                     if (['ctrlKey', 'metaKey', 'shiftKey'].filter(key=>event.originalEvent[key]).length) {
                       if (!selected) {
                         if (this.selectedNeighborhoods.length < 5) {
+                          neighborhood.leaflet_id = (map as any).neighborhoodsLayerGroup.getLayerId(layer)
                           this.selectedNeighborhoods.push(neighborhood)
                           layer.setStyle(styleObject('#E30202'))
                           selected = !selected
@@ -645,7 +716,7 @@ $success: #3f9967;
     .fixed-center-bottom {
       position: fixed;
       background-color: white;
-      padding: 0 10px;
+      padding: 10px;
       border-radius: 10px;
       opacity: 0.85;
       bottom: 2em;

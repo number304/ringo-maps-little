@@ -360,7 +360,7 @@ export default Vue.extend({
       // If neighborhood don't have id then is new
       const isNew = typeof (this.getArea.neighborhood.id || this.getArea.neighborhood._id) != "string";
       const cityId = this.$store.state.cities.area.city.id;
-      
+
       if(isNew){
         if (!this.form.mapTouched) {
           const newNeighborhood = this.getArea.neighborhood.FeatureCollection.features[0]
@@ -371,8 +371,8 @@ export default Vue.extend({
 
         if (this.getArea.neighborhood.IDsToErase) {
           // Run a function to erase this areas from API
-          setTimeout(() => 
-            this.deleteNeighborhoods([cityId, this.getArea.neighborhood.IDsToErase]), 
+          setTimeout(() =>
+            this.deleteNeighborhoods([cityId, this.getArea.neighborhood.IDsToErase]),
             1000
           )
         }
@@ -381,6 +381,22 @@ export default Vue.extend({
         this.editArea([cityId, this.getArea.neighborhood, this.form])
         return this.$emit('closeModal');
       }
+
+      // If neighborhood don't have id then is new
+      // if (!(this.getArea.neighborhood.id || this.getArea.neighborhood._id)) {
+      //   if (!this.form.mapTouched) {
+      //     const newNeighborhood = this.getArea.neighborhood.FeatureCollection.features[0]
+      //     this.form.mapData = [0, {}, newNeighborhood]
+      //   }
+      //   this.createArea([this.getArea.city.id || this.getArea.city._id, this.form, this.typeOfArea])
+      //   if (this.getArea.neighborhood.IDsToErase) {
+      //     // Run a function to erase this areas from API
+      //     setTimeout(() => this.deleteNeighborhoods([(this.getArea.city.id || this.getArea.city._id), this.getArea.neighborhood.IDsToErase]), 1000)
+      //   }
+      // }
+      // else this.editArea([(this.getArea.city.id || this.getArea.city._id), this.getArea.neighborhood, this.form]);
+
+      // this.$emit('closeModal')
     },
     ...mapActions(['editArea', 'createArea', 'deleteNeighborhoods', 'cleanCollidingNBs', 'setArea']),
   },

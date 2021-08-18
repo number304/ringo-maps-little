@@ -3,7 +3,7 @@
     multiple
     menu-props="closeOnContentClick"
     :items="$store.getters.allCities"
-    item-text="name[0].label"
+    :item-text="getItemLanguage()"
     return-object
     v-model="selectedCities"
     :filter="filterCities"
@@ -37,12 +37,18 @@ export default Vue.extend({
       set: function (items: any[]) {
           this.$store.dispatch("cities/selected", {item: items, action: "replace"})
       },
-    },
+    }
   },
   methods: {
     filterCities: function (item: any, queryText: string) {
       const match = new RegExp(queryText, "ig");
       return !!item.name.filter((x: any) => x.label.match(match)).length;
+    },
+    getItemLanguage: function (): string {
+      const language = this.$store.getters["i18n/current"]
+      if (language === 'he') return 'name[0].label'
+      else if (language === 'en') return 'name[1].label'
+      else return 'name[2].label'
     },
     removeCity: function (item: any) {
       this.$store.dispatch("cities/selected", {item, action: "remove"})
