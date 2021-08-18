@@ -53,7 +53,7 @@
             class="mb-0 font-weight-bold"
             v-if="getArea.neighborhood.userMade"
           >
-            (User made hood)
+            {{ areaHintSubtitle }}
           </p>
         </div>
         <div class="mt-1">
@@ -191,6 +191,14 @@ export default Vue.extend({
     ...mapGetters(['getArea']),
     neighborhoodLabel(): string {
       return this.getArea.neighborhood.name.find((x: any)=>x.language==this.$store.getters['i18n/current']).label
+    },
+    areaHintSubtitle(): string {
+      if (this.getArea.neighborhood.areaType) {
+        const type = this.getArea.neighborhood.areaType
+        if (type === 'neighborhood') return '(Custom hood)'
+        else return '(Custom area)'
+      }
+      else return '(Custom hood)'
     },
     toggleAreaButtons(): boolean {
       return this.fullscreen
