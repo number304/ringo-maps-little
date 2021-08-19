@@ -102,6 +102,10 @@ const actions = {
   cleanNeighborhood(context: any): void {
     context.commit('cleanNeighborhood')
   },
+  async editCityName(context: any, data: any[]): Promise<any> {
+    await http.patchCityNames(data[0], data[1])
+    context.commit('changeCityName', data)
+  },
   pushCollidingNb(context: any, collidingNb: any): void {
     context.commit('setCollidingNBs', collidingNb)
   },
@@ -114,6 +118,17 @@ const actions = {
 }
 
 const mutations = {
+  changeCityName: (state: State, data: any[]) => {
+    const [cityId, newCityNames] = data
+    const cityFunction = (city: any, cityId: any) => {
+      if (city.id !== cityId) return city;
+      city.name = newCityNames
+      return city
+    }
+
+    state.cities.selected = state.cities.selected.map((city: any) => cityFunction(city, cityId));
+    state.cities.items = state.cities.items.map((city: any) => cityFunction(city, cityId));
+  },
   cleanCollidingNBs: (state: State) => state.collidingNBs = [],
   cleanNeighborhood: (state: State) => state.area.neighborhood = null,
   setCities: (state: State, cities: any[]): any[] => state.cities.items = cities,

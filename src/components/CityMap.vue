@@ -127,6 +127,7 @@
       <div class="text-center">Edit Mode</div>
       <div class="text-center font-weight-bold light-green--text darken-4">{{editCity ? 'CITY' : 'NEIGHBORHOODS'}}</div>
     </div>
+    <!-- Dialog when editing city area layer -->
     <v-dialog v-model="confirmEditCity" max-width="240px" persistent>
       <v-card class="py-4">
         <h3 class="mb-4">Confirm changes?</h3>
@@ -147,18 +148,21 @@
         </div>
       </v-card>
     </v-dialog>
+    <!-- Dialog to edit city name -->
     <v-dialog v-model="cityNameDialog" max-width="400px" persistent>
       <v-card class="pt-4 pb-2">
         <v-text-field
           class="mx-4"
-          label="New city name"
-          v-model="cityName"
+          :key="name.language"
+          :label="`Change city name in ${name.language}`"
+          v-for="name in cityNames"
+          v-model="name.label"
         ></v-text-field>
         <v-divider></v-divider>
         <div class="mt-2">
           <v-btn
             color="green darken-1" text
-            @click.stop="cityNameDialog = false"
+            @click.stop="changeCityName"
           >
             Confirm
           </v-btn>
@@ -197,7 +201,7 @@ export default Vue.extend({
   data() {
     return {
       cityGeoJson: null as unknown as L.GeoJSON,
-      cityName: '',
+      cityNames: [] as any[],
       cityNameDialog: false,
       confirmEditCity: false,
       customController: null as unknown as L.Control.Layers,
@@ -234,7 +238,7 @@ export default Vue.extend({
     },
   },
   methods: {
-    ...mapActions(['setArea', 'cleanNeighborhood', 'setCityArea']),
+    ...mapActions(['setArea', 'cleanNeighborhood', 'setCityArea', 'editCityName']),
     initMap() {
       this.map = L.map((this as any)._uid + "_map");
       L.tileLayer("http://{s}.tile.osm.org/{z}/{x}/{y}.png", {
@@ -302,7 +306,7 @@ export default Vue.extend({
       });
 
       this.cityLayer(this.map);
-      this.cityName = this.city.name[1].label
+      this.cityNames = this.city.name
     },
     center(map: L.Map) {
       const cords: L.LatLng[] = this.city.FeatureCollection.features.reduce(
@@ -365,7 +369,8 @@ export default Vue.extend({
       (map as any).cityLayerGroup.addTo(map);
     },
     changeCityName() {
-      console.log('In development')
+      this.editCityName([this.city.id || this.city._id, this.cityNames])
+      this.cityNameDialog = false
     },
     zoomControl(map: L.Map, state: boolean) {
       map.touchZoom[state ? "enable" : "disable"]();
