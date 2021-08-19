@@ -86,36 +86,46 @@ const actions = {
       const findCityIndex = state.cities.items.findIndex(x=>(x.id||x._id)==cityId);
       if(findCityIndex == -1) return;
       const selectedCityIndex = state.cities.selected.findIndex(city => (city.id || city._id) == cityId)
+      const newArea = {
+        id: (form.mapData[2].id || form.mapData[2]._id),
+        name: form.name,
+        areaType: form.areaType,
+        userMade: true,
+        color: form.color,
+        FeatureCollection: {
+          type: 'FeatureCollection',
+          features: [{
+            type: 'Feature',
+            geometry: {
+              ...form.mapData[2].geometry,
+              type: form.mapData[2].geometry.type == 'Polygon' ? 'MultiPolygon' : form.mapData[2].geometry.type,
+              coordinates: form.mapData[2].geometry.type == 'Polygon' ? [form.mapData[2].geometry.coordinates] : form.mapData[2].geometry.coordinates,
+            },
+            properties: {
+              name: form.name
+            }
+          }]
+        }
+      }
       const areas = [
-        {
-          id: (form.mapData[2].id || form.mapData[2]._id),
-          name: form.name,
-          areaType: form.areaType,
-          userMade: true,
-          color: form.color,
-          FeatureCollection: {
-            type: 'FeatureCollection',
-            features: [{
-              type: 'Feature',
-              geometry: {
-                ...form.mapData[2].geometry,
-                type: form.mapData[2].geometry.type == 'Polygon' ? 'MultiPolygon' : form.mapData[2].geometry.type,
-                coordinates: form.mapData[2].geometry.type == 'Polygon' ? [form.mapData[2].geometry.coordinates] : form.mapData[2].geometry.coordinates,
-              },
-              properties: {
-                name: form.name
-              }
-            }]
-          }
-        },
+        newArea,
         ...state.cities.selected[selectedCityIndex].areas
       ]
       context.commit('editCityAreas', [selectedCityIndex, areas])
     })
   },
   async deleteNeighborhoods(context: any, data: any[]): Promise<any> {
-    await http.deleteAreas(data[0], data[1])
-    context.dispatch('fetchCities')
+    await http.deleteAreas(data[0], data[1]).then(() => {
+      const [cityId, ids] = data
+      const findCityIndex = state.cities.items.findIndex(x=>(x.id||x._id)==cityId);
+      const selectedCityIndex = state.cities.selected.findIndex(city => (city.id || city._id) == cityId)
+
+      if(findCityIndex == -1) return;
+      const areas = state.cities.selected[selectedCityIndex].areas
+        .filter((area: any) => ids.indexOf((area.id || area._id)) === -1)
+      console.log(areas)
+      context.commit('editCityAreas', [selectedCityIndex, areas])
+    })
   },
   async editArea(context: any, data: any[]): Promise<any> {
     const [cityId, oldArea, form] = data
@@ -174,7 +184,7 @@ const actions = {
     context.commit('setCollidingNBs', collidingNb)
   },
   async setCityArea(context: any, data: any[]): Promise<any> {
-    return http.patchCityArea(data[0], data[1]).then(()=>context.dispatch('fetchCities'))
+    return http.patchCityArea(data[0], data[1])
   },
   setNeighborhood(context: any, neighborhood: any): void {
     context.commit('setNeighborhood', neighborhood)
