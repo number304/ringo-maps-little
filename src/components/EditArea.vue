@@ -377,7 +377,7 @@ export default Vue.extend({
           const newNeighborhood = this.getArea.neighborhood.FeatureCollection.features[0]
           this.form.mapData = [0, {}, newNeighborhood]
         }
-        console.log(cityId, this.form)
+        // console.log(cityId, this.form)
         this.createArea([cityId, this.form]);
 
         if (this.getArea.neighborhood.IDsToErase) {

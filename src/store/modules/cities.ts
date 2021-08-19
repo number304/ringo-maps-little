@@ -2,6 +2,7 @@ import { multiPolygan2itm } from '@/helpers/itm';
 import * as http from '@/plugins/http'
 import { default as State } from '../types';
 const RINGO_API = process.env.VUE_APP_RINGO_API.toLowerCase() === 'true';
+import { nanoid } from 'nanoid';
 import {app} from '@/main'
 
 const state: State = {
@@ -79,22 +80,85 @@ const actions = {
   },
   async createArea(context: any, data: any[]): Promise<any> {
     const [cityId, form] = data;
+    if (RINGO_API) form.mapData[2]._id = nanoid(24)
+    else form.mapData[2].id = nanoid(24)
     return  http.addArea(cityId, form).then(()=>{
       const findCityIndex = state.cities.items.findIndex(x=>(x.id||x._id)==cityId);
       if(findCityIndex == -1) return;
-      // @TODO insert the new gemotry
-      // state.cities.items[findCityIndex];
-      // app.$forceUpdate();
+      const selectedCityIndex = state.cities.selected.findIndex(city => (city.id || city._id) == cityId)
+      const areas = [
+        {
+          id: (form.mapData[2].id || form.mapData[2]._id),
+          name: form.name,
+          areaType: form.areaType,
+          userMade: true,
+          color: form.color,
+          FeatureCollection: {
+            type: 'FeatureCollection',
+            features: [{
+              type: 'Feature',
+              geometry: {
+                ...form.mapData[2].geometry,
+                type: form.mapData[2].geometry.type == 'Polygon' ? 'MultiPolygon' : form.mapData[2].geometry.type,
+                coordinates: form.mapData[2].geometry.type == 'Polygon' ? [form.mapData[2].geometry.coordinates] : form.mapData[2].geometry.coordinates,
+              },
+              properties: {
+                name: form.name
+              }
+            }]
+          }
+        },
+        ...state.cities.selected[selectedCityIndex].areas
+      ]
+      context.commit('editCityAreas', [selectedCityIndex, areas])
     })
-    //.then(()=>context.dispatch('fetchCities'))
   },
   async deleteNeighborhoods(context: any, data: any[]): Promise<any> {
     await http.deleteAreas(data[0], data[1])
     context.dispatch('fetchCities')
   },
   async editArea(context: any, data: any[]): Promise<any> {
+    const [cityId, oldArea, form] = data
+
     return http.patchArea(data[0], data[1], data[2])
-    //.then(()=>context.dispatch('fetchCities'))
+    .then(()=>{
+      const findCityIndex = state.cities.items.findIndex(x=>(x.id||x._id)==cityId);
+
+      if(findCityIndex == -1) return;
+      const selectedCityIndex = state.cities.selected.findIndex(city => (city.id || city._id) == cityId)
+
+      const oldAreas = state.cities.selected[selectedCityIndex].areas
+      .filter((area: any) =>
+        (area.id || area._id) !== (oldArea.id || oldArea._id))
+
+      let geometry = oldArea.FeatureCollection.features[0].geometry
+      if (form.mapData) geometry = {
+        ...form.mapData[2].geometry,
+        type: form.mapData[2].geometry.type == 'Polygon' ? 'MultiPolygon' : form.mapData[2].geometry.type,
+        coordinates: form.mapData[2].geometry.type == 'Polygon' ? [form.mapData[2].geometry.coordinates] : form.mapData[2].geometry.coordinates,
+      }
+      const newArea = {
+        id: (oldArea.id || oldArea._id),
+        name: form.name,
+        areaType: form.areaType,
+        userMade: true,
+        color: form.color,
+        FeatureCollection: {
+          type: 'FeatureCollection',
+          features: [{
+            type: 'Feature',
+            geometry,
+            properties: {
+              name: form.name
+            }
+          }]
+        }
+      }
+
+      const areas = [newArea, ...oldAreas]
+      context.commit('editCityAreas', [selectedCityIndex, areas])
+      context.commit('setNeighborhood', newArea)
+    })
   },
   cleanCollidingNBs(context: any): void {
     context.commit('cleanCollidingNBs')
@@ -131,6 +195,7 @@ const mutations = {
   },
   cleanCollidingNBs: (state: State) => state.collidingNBs = [],
   cleanNeighborhood: (state: State) => state.area.neighborhood = null,
+  editCityAreas: (state: State, data: any[]) => state.cities.selected[data[0]].areas = data[1],
   setCities: (state: State, cities: any[]): any[] => state.cities.items = cities,
   setArea: (state: State, data: any[]) => {
     state.area.letleafEvent = data[0];

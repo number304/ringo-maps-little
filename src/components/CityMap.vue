@@ -696,7 +696,9 @@ export default Vue.extend({
       }
     },
     city: {
+      deep: true,
       handler: function() {
+        console.log('Refresh')
         this.loadNeighborhoods()
         this.cityLayer(this.map)
       }

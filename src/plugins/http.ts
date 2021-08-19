@@ -1,5 +1,4 @@
 import Axios, { AxiosResponse } from 'axios';
-import { nanoid } from 'nanoid';
 
 export const $api = Axios.create({
   baseURL: "/api",
@@ -49,7 +48,7 @@ export const addArea: (cityId: string, formData: any) => Promise<AxiosResponse<a
     const data = {
       areas: [
         {
-          id: nanoid(24),
+          id: formData.mapData[2].id,
           name: formData.name,
           areaType: formData.areaType,
           userMade: true,
