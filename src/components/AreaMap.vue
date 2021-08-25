@@ -417,9 +417,6 @@ export default Vue.extend({
               const updGeoJSON = JSON.parse(
                 JSON.stringify((e.layer as any).toGeoJSON()))
 
-              console.log(updGeoJSON)
-              console.log(featureIndex)
-
               self.editNewFeature(featureIndex,
                 updGeoJSON.geometry.coordinates, false)
             })

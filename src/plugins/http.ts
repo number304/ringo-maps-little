@@ -17,6 +17,12 @@ const ap = {
   },
   patch: {
     byId: (cityId: string)=>RINGO_API ? "/v1.0/areas/city/"+cityId : '/cities/' + cityId,
+  },
+  post: {
+    area: (cityId: string)=>cityId? "/v1.0/areas/":"/v1.0/areas/area"
+  },
+  put: {
+    area: (_id: string)=>'/v1.0/areas/'+_id
   }
 }
 
@@ -44,30 +50,37 @@ export const patchCityNames: (cityId: string, newCityNames: any[]) => Promise<Ax
 
 // POST a new area layer to city (Neighborhood || cutom area in city)
 export const addArea: (cityId: string, formData: any) => Promise<AxiosResponse<any>> = async (cityId, formData) => {
+  const geometry = formData.mapData[2].geometry;
+  const reqPost = {
+    id: (formData.mapData[2].id || formData.mapData[2]._id) || undefined,
+    name: formData.name,
+    areaType: formData.areaType,
+    userMade: true,
+    color: formData.color,
+    FeatureCollection: {
+      type: 'FeatureCollection',
+      features: [{
+        type: 'Feature',
+        geometry: {
+          ...geometry,
+          type: geometry.type == 'Polygon' ? 'MultiPolygon' : geometry.type,
+          coordinates: [].concat(geometry.coordinates),
+        },
+        properties: {
+          name: formData.name
+        }
+      }]
+    }
+  }
+
+  if(RINGO_API){
+    return $api.post(ap.post.area(cityId), reqPost)
+  }
+  
   return getOldAreas(cityId, '_').then(oldNeighborhoods => {
     const data = {
       areas: [
-        {
-          id: formData.mapData[2].id,
-          name: formData.name,
-          areaType: formData.areaType,
-          userMade: true,
-          color: formData.color,
-          FeatureCollection: {
-            type: 'FeatureCollection',
-            features: [{
-              type: 'Feature',
-              geometry: {
-                ...formData.mapData[2].geometry,
-                type: formData.mapData[2].geometry.type == 'Polygon' ? 'MultiPolygon' : formData.mapData[2].geometry.type,
-                coordinates: formData.mapData[2].geometry.type == 'Polygon' ? [formData.mapData[2].geometry.coordinates] : formData.mapData[2].geometry.coordinates,
-              },
-              properties: {
-                name: formData.name
-              }
-            }]
-          }
-        },
+        reqPost,
         ...oldNeighborhoods
       ]
     }
@@ -77,6 +90,23 @@ export const addArea: (cityId: string, formData: any) => Promise<AxiosResponse<a
 }
 
 export const patchArea: (cityId: string, oldArea: any, formData: any) => Promise<AxiosResponse<any>> = async (cityId, oldArea, formData) => {
+
+  if(RINGO_API) return $api.put(ap.put.area(oldArea._id), {
+    name: formData.name, 
+    FeatureCollection: {
+      type: 'FeatureCollection',
+      features: [{
+        type: 'Feature',
+        geometry: (formData.mapTouched) ? formData.mapData[2].geometry : oldArea.FeatureCollection.features[0].geometry,
+        properties: {
+          name: formData.name,
+        }
+      }]
+    },
+    color: formData.color,
+    areaType: formData.areaType,
+    userMade: true
+  })
 
   return getOldAreas(cityId, (oldArea.id || oldArea._id)).then(oldNeighborhoods => {
     const data = {

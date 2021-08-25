@@ -1,22 +1,25 @@
 import { multiPolygan2itm } from '@/helpers/itm';
 import * as http from '@/plugins/http'
-import { default as State } from '../types';
+// import { default as State } from '../types';
 const RINGO_API = process.env.VUE_APP_RINGO_API.toLowerCase() === 'true';
 import { nanoid } from 'nanoid';
 import {app} from '@/main'
 
-const state: State = {
+const state = {
   cities: {
-    items: [],
-    selected: []
+    items: [] as any[],
+    selected: [] as any[]
   },
   area: {
     neighborhood: null,
     city: null,
     letleafEvent: null,
+    types: ['neighborhood','cityArea']
   },
-  collidingNBs: []
+  collidingNBs: [] as any[]
 }
+
+export type State = typeof state;
 
 const getters = {
   allCities: (state: State): any[] => state.cities.items,
@@ -80,8 +83,9 @@ const actions = {
   },
   async createArea(context: any, data: any[]): Promise<any> {
     const [cityId, form] = data;
-    if (RINGO_API) form.mapData[2]._id = nanoid(24)
-    else form.mapData[2].id = nanoid(24)
+
+    if (!RINGO_API) form.mapData[2].id = nanoid(24);
+
     return  http.addArea(cityId, form).then(()=>{
       const findCityIndex = state.cities.items.findIndex(x=>(x.id||x._id)==cityId);
       if(findCityIndex == -1) return;
@@ -123,14 +127,13 @@ const actions = {
       if(findCityIndex == -1) return;
       const areas = state.cities.selected[selectedCityIndex].areas
         .filter((area: any) => ids.indexOf((area.id || area._id)) === -1)
-      console.log(areas)
       context.commit('editCityAreas', [selectedCityIndex, areas])
     })
   },
-  async editArea(context: any, data: any[]): Promise<any> {
+  async editArea(context: any, data: [cityId: string, oldArea: any, formData: any]): Promise<any> {
     const [cityId, oldArea, form] = data
 
-    return http.patchArea(data[0], data[1], data[2])
+    return http.patchArea(cityId, oldArea, form)
     .then(()=>{
       const findCityIndex = state.cities.items.findIndex(x=>(x.id||x._id)==cityId);
 
@@ -176,15 +179,17 @@ const actions = {
   cleanNeighborhood(context: any): void {
     context.commit('cleanNeighborhood')
   },
-  async editCityName(context: any, data: any[]): Promise<any> {
-    await http.patchCityNames(data[0], data[1])
-    context.commit('changeCityName', data)
+  async editCityName(context: any, data: [cityId: string, newCityNames: any[]]): Promise<any> {
+    const [cityId, newCityNames] = data;
+    await http.patchCityNames(cityId, newCityNames);
+    context.commit('changeCityName', data);
   },
   pushCollidingNb(context: any, collidingNb: any): void {
     context.commit('setCollidingNBs', collidingNb)
   },
-  async setCityArea(context: any, data: any[]): Promise<any> {
-    return http.patchCityArea(data[0], data[1])
+  async setCityArea(context: any, data: [cityId: string, newCityArea: any]): Promise<any> {
+    const [cityId, newCityArea] = data;
+    return http.patchCityArea(cityId, newCityArea)
   },
   setNeighborhood(context: any, neighborhood: any): void {
     context.commit('setNeighborhood', neighborhood)
@@ -192,10 +197,10 @@ const actions = {
 }
 
 const mutations = {
-  changeCityName: (state: State, data: any[]) => {
+  changeCityName: (state: State, data: [cityId: string, newCityNames: any[]]) => {
     const [cityId, newCityNames] = data
     const cityFunction = (city: any, cityId: any) => {
-      if (city.id !== cityId) return city;
+      if ((city.id || city._id) !== cityId) return city;
       city.name = newCityNames
       return city
     }
@@ -207,7 +212,7 @@ const mutations = {
   cleanNeighborhood: (state: State) => state.area.neighborhood = null,
   editCityAreas: (state: State, data: any[]) => state.cities.selected[data[0]].areas = data[1],
   setCities: (state: State, cities: any[]): any[] => state.cities.items = cities,
-  setArea: (state: State, data: any[]) => {
+  setArea: (state: State, data: [letleafEvent: any, neighborhood: any, city: any]) => {
     state.area.letleafEvent = data[0];
     state.area.neighborhood = data[1];
     state.area.city = data[2];

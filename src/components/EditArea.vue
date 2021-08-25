@@ -21,7 +21,7 @@
           <v-select
             class="px-4 pt-3 my-3"
             hide-details
-            :items="['neighborhood','custom']"
+            :items="$store.state.cities.area.types"
             label="What kind of area is this?"
             v-model="form.areaType"
           ></v-select>
@@ -291,9 +291,9 @@ export default Vue.extend({
       }
 
       const features: any = featureCollection([...areaPolygons, ...selectedPolygons])
-      // console.log(features)
+
       const dissolved = dissolve(features)
-      // console.log(dissolved)
+
 
       let IDsToErase
 
@@ -313,7 +313,7 @@ export default Vue.extend({
     },
     // Just to set the names in form object by argument's name property
     setNeighborhood(neighborhood: any) {
-      // console.log(neighborhood)
+
       const data = JSON.parse(JSON.stringify(this.form.name));
       for (let i = 0; i < neighborhood.name.length; i++) {
         const ref = data.find(
@@ -328,7 +328,6 @@ export default Vue.extend({
       this.form.mapTouched = true;
     },
     reloadModal() {
-      // console.log('Modal reloading')
       if (this.getArea.neighborhood.color)
         this.nbColors = this.getArea.neighborhood.color
       else this.nbColors = { active: '#e3a702', hover: '#571414', status: '#55915c' }
@@ -370,14 +369,13 @@ export default Vue.extend({
     newArea() {
       // If neighborhood don't have id then is new
       const isNew = typeof (this.getArea.neighborhood.id || this.getArea.neighborhood._id) != "string";
-      const cityId = this.$store.state.cities.area.city.id;
+      const cityId = (this.$store.state.cities.area.city.id || this.$store.state.cities.area.city._id);
 
       if(isNew){
         if (!this.form.mapTouched) {
           const newNeighborhood = this.getArea.neighborhood.FeatureCollection.features[0]
           this.form.mapData = [0, {}, newNeighborhood]
         }
-        // console.log(cityId, this.form)
         this.createArea([cityId, this.form]);
 
         if (this.getArea.neighborhood.IDsToErase) {
