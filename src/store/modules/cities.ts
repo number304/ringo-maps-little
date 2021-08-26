@@ -50,7 +50,7 @@ const actions = {
       }))).then(cities=>{
         context.commit("cities/selected/replace", cities)
       })
-  }
+    }
 
     context.commit('cities/selected/'+payload.action, payload.item);
   },
@@ -187,8 +187,9 @@ const actions = {
   pushCollidingNb(context: any, collidingNb: any): void {
     context.commit('setCollidingNBs', collidingNb)
   },
-  async setCityArea(context: any, data: [cityId: string, newCityArea: any]): Promise<any> {
-    const [cityId, newCityArea] = data;
+  async setCityArea(context: any, data: [cityId: string, newCityArea: any, cityIndex: number]): Promise<any> {
+    const [cityId, newCityArea, cityIndex] = data;
+    context.commit('editCityLayer', [newCityArea, cityIndex])
     return http.patchCityArea(cityId, newCityArea)
   },
   setNeighborhood(context: any, neighborhood: any): void {
@@ -211,6 +212,8 @@ const mutations = {
   cleanCollidingNBs: (state: State) => state.collidingNBs = [],
   cleanNeighborhood: (state: State) => state.area.neighborhood = null,
   editCityAreas: (state: State, data: any[]) => state.cities.selected[data[0]].areas = data[1],
+  editCityLayer: (state: State, data: [newCityArea: any, cityIndex: number]) =>
+    state.cities.selected[data[1]].FeatureCollection.features[0] = data[0],
   setCities: (state: State, cities: any[]): any[] => state.cities.items = cities,
   setArea: (state: State, data: [letleafEvent: any, neighborhood: any, city: any]) => {
     state.area.letleafEvent = data[0];

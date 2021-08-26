@@ -62,7 +62,7 @@ export default Vue.extend({
   },
   async created() {
     await this.fetchCities();
-    this.$store.dispatch("cities/selected", {
+    await this.$store.dispatch("cities/selected", {
       item: this.allCities.find(
         (x: any) => (x.id || x._id) == "5f197ceda69db72eb094bce7"
       ),

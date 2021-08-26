@@ -23,6 +23,7 @@
     <v-col style="user-select: none">
       <CityMap
         :city="city"
+        :cityIndex="index"
         :areaType="areaType"
         @editNeighborhood="emitModal"
         @fullscreen="$emit('fullscreen', true)"

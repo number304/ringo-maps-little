@@ -230,6 +230,10 @@ export default Vue.extend({
       type: Object,
       required: true,
     },
+    cityIndex: {
+      required: true,
+      type: Number,
+    },
   },
   data() {
     return {
@@ -265,13 +269,14 @@ export default Vue.extend({
       } else return "(Custom hood)";
     },
     toggleAreaButtons(): boolean {
-      return this.fullscreen &&
+      return !!(this.fullscreen &&
         this.getArea.neighborhood &&
         (this.getArea.neighborhood.id || this.getArea.neighborhood._id) &&
-        !this.editCity
-        ? true
-        : false;
+        !this.editCity);
     },
+    // cityFeature(): any {
+    //   return this.city.FeatureCollection.features[0]
+    // }
   },
   methods: {
     ...mapActions([
@@ -692,16 +697,21 @@ export default Vue.extend({
         this.setCityArea([
           this.city.id || this.city._id,
           JSON.parse(JSON.stringify(this.cityGeoJson)),
+          this.cityIndex
         ]);
 
         if (this.newCityLayer) {
           this.map.removeLayer(this.newCityLayer);
+          this.cityLayer(this.map);
           this.newCityLayer = null;
         }
+
+        if ((this.map as any).neighborhoodsLayerGroup) this.toggleNeighborhoods(this.map, true, true);
       } else {
         this.setCityArea([
           this.city.id || this.city._id,
           JSON.parse(JSON.stringify(this.cityGeoJson)),
+          this.cityIndex
         ]);
       }
 
