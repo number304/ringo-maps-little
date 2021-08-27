@@ -222,6 +222,7 @@ import "@geoman-io/leaflet-geoman-free";
 import "@geoman-io/leaflet-geoman-free/dist/leaflet-geoman.css";
 
 import dissolve from "@turf/dissolve";
+import booleanContains from "@turf/boolean-contains";
 import { featureCollection, polygon } from "@turf/helpers";
 
 export default Vue.extend({
@@ -352,8 +353,15 @@ export default Vue.extend({
           this.confirmEditCity = true;
         } else {
           this.setArea([event, newArea, this.city]);
+          const cityGeometry = polygon(this.city.FeatureCollection.features[0].geometry.coordinates[0])
+          const nbIsContained = booleanContains(cityGeometry, polyedit)
+          console.log(nbIsContained);
+          if (nbIsContained) this.$emit("editNeighborhood");
+          else {
+            const ask = confirm('Neighborhood out of city area, continue?');
+            if (ask) this.$emit("editNeighborhood");
+          }
           this.map.removeLayer(layer);
-          this.$emit("editNeighborhood");
         }
       });
 
@@ -648,8 +656,6 @@ export default Vue.extend({
       const dissolved = dissolve(nbCollection);
 
       const nbIDs = this.selectedNeighborhoods.map((nb) => nb.id || nb._id);
-
-      console.log(nbIDs);
 
       if (dissolved.features.length < 2) {
         const newNeighborhood = {
