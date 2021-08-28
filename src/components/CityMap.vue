@@ -408,7 +408,7 @@ export default Vue.extend({
         if (nbIsContained) this.$emit("editNeighborhood");
         else {
           const ask = confirm('Neighborhood out of city area, continue?');
-          if (ask) this.$emit("editNeighborhood");
+          if (ask) this.$emit("editNeighborhood", true);
         }
       } else {
         const ask = confirm('Neighborhood out of city area, continue?');

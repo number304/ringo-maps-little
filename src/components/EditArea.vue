@@ -128,6 +128,24 @@
         </v-btn>
       </v-card-actions>
     </v-card>
+    <v-dialog v-model="expandCityDialog" max-width="300" persistent>
+      <v-card class="py-4">
+        <h3 class="mb-4">Expand city to match area?</h3>
+        <v-divider></v-divider>
+        <div class="mt-4">
+          <v-btn color="green darken-1" text @click.stop="expandCity">
+            Yes
+          </v-btn>
+          <v-btn
+            color="green darken-1"
+            text
+            @click.stop="expandCityDialog = false"
+          >
+            No
+          </v-btn>
+        </div>
+      </v-card>
+    </v-dialog>
   </div>
 </template>
 
@@ -158,6 +176,10 @@ export default Vue.extend({
     AreaMap,
   },
   props: {
+    askExpandCity: {
+      type: Boolean,
+      required: true,
+    },
     dialog: {
       type: Boolean,
       required: true,
@@ -165,6 +187,7 @@ export default Vue.extend({
   },
   data() {
     return {
+      expandCityDialog: false,
       form: null as any,
       nbColors: { active: '#e3a702', hover: '#571414', status: '#55915c' },
       touchedOldArea: false,
@@ -237,6 +260,7 @@ export default Vue.extend({
     }
   },
   methods: {
+    ...mapActions(['editArea', 'createArea', 'deleteNeighborhoods', 'cleanCollidingNBs', 'setArea']),
     close() {
       if (this.isChanged) {
         const ask = confirm('Are you sure to exit?');
@@ -255,6 +279,38 @@ export default Vue.extend({
       this.$emit('closeModal');
       this.cleanCollidingNBs();
       this.nbSelectedToMerge = null;
+    },
+    expandCity() {
+      // TODO: program a method to dissolve finished nb with cityArea
+      console.log('Expanding!');
+      this.expandCityDialog = false;
+    },
+    formLabel(language: string): string | any {
+      if(!this.form.name) return;
+      if(language === 'he') return 'Name in hebrew';
+      else if(language === 'en') return 'Name in english';
+      else if(language === 'ar') return 'Name in arabic';
+      else return 'Name in other language';
+    },
+    initForm(): InitForm {
+      const names = JSON.parse(JSON.stringify(this.getArea.neighborhood.name))
+      // const areaType = this.getArea.neighborhood.areaType || 'neighborhood'
+
+      return {
+        name: names,
+        color: {
+          active: this.nbColors.active,
+          hover: this.nbColors.hover,
+          status: this.nbColors.status,
+        },
+        mapTouched: false,
+        mapData: null,
+        areaType: this.getArea.neighborhood.areaType || 'neighborhood'
+      }
+    },
+    layerChanges(index: number, feature: any, geoJSON: any) {
+      this.form.mapData = [index, feature, geoJSON];
+      this.form.mapTouched = true;
     },
     mergeSelectedNb() {
       // Necessary cause dissolve doesn't work with MultiPolygons
@@ -311,65 +367,12 @@ export default Vue.extend({
       this.setArea([{}, newNeighborhood, this.getArea.city])
       this.reloadModal()
     },
-    // Just to set the names in form object by argument's name property
-    setNeighborhood(neighborhood: any) {
-
-      const data = JSON.parse(JSON.stringify(this.form.name));
-      for (let i = 0; i < neighborhood.name.length; i++) {
-        const ref = data.find(
-          (x: any) => x.language == neighborhood.name[i].language
-        );
-        if (ref) ref.label =JSON.parse(JSON.stringify(neighborhood.name[i])).label;
-      }
-      this.$set(this.form, 'name', data);
-    },
-    layerChanges(index: number, feature: any, geoJSON: any) {
-      this.form.mapData = [index, feature, geoJSON];
-      this.form.mapTouched = true;
-    },
-    reloadModal() {
-      if (this.getArea.neighborhood.color)
-        this.nbColors = this.getArea.neighborhood.color
-      else this.nbColors = { active: '#e3a702', hover: '#571414', status: '#55915c' }
-      if (this.getArea.neighborhood.areaType)
-        this.refType = this.getArea.neighborhood.areaType
-      else this.refType = 'neighborhood'
-
-      this.form = this.initForm()
-      this.nbSelectedToMerge = null;
-      this.cleanCollidingNBs();
-    },
-    restauredArea() {
-      this.form.mapData = null;
-      this.form.mapTouched = false;
-    },
-    initForm(): InitForm {
-      const names = JSON.parse(JSON.stringify(this.getArea.neighborhood.name))
-      // const areaType = this.getArea.neighborhood.areaType || 'neighborhood'
-
-      return {
-        name: names,
-        color: {
-          active: this.nbColors.active,
-          hover: this.nbColors.hover,
-          status: this.nbColors.status,
-        },
-        mapTouched: false,
-        mapData: null,
-        areaType: this.getArea.neighborhood.areaType || 'neighborhood'
-      }
-    },
-    formLabel(language: string): string | any {
-      if(!this.form.name) return;
-      if(language === 'he') return 'Name in hebrew';
-      else if(language === 'en') return 'Name in english';
-      else if(language === 'ar') return 'Name in arabic';
-      else return 'Name in other language';
-    },
     newArea() {
       // If neighborhood don't have id then is new
       const isNew = typeof (this.getArea.neighborhood.id || this.getArea.neighborhood._id) != "string";
       const cityId = (this.$store.state.cities.area.city.id || this.$store.state.cities.area.city._id);
+
+      if(this.askExpandCity) this.expandCityDialog = true;
 
       if(isNew){
         if (!this.form.mapTouched) {
@@ -391,7 +394,34 @@ export default Vue.extend({
         return this.$emit('closeModal');
       }
     },
-    ...mapActions(['editArea', 'createArea', 'deleteNeighborhoods', 'cleanCollidingNBs', 'setArea']),
+    reloadModal() {
+      if (this.getArea.neighborhood.color)
+        this.nbColors = this.getArea.neighborhood.color
+      else this.nbColors = { active: '#e3a702', hover: '#571414', status: '#55915c' }
+      if (this.getArea.neighborhood.areaType)
+        this.refType = this.getArea.neighborhood.areaType
+      else this.refType = 'neighborhood'
+
+      this.form = this.initForm()
+      this.nbSelectedToMerge = null;
+      this.cleanCollidingNBs();
+    },
+    restauredArea() {
+      this.form.mapData = null;
+      this.form.mapTouched = false;
+    },
+    // Just to set the names in form object by argument's name property
+    setNeighborhood(neighborhood: any) {
+
+      const data = JSON.parse(JSON.stringify(this.form.name));
+      for (let i = 0; i < neighborhood.name.length; i++) {
+        const ref = data.find(
+          (x: any) => x.language == neighborhood.name[i].language
+        );
+        if (ref) ref.label =JSON.parse(JSON.stringify(neighborhood.name[i])).label;
+      }
+      this.$set(this.form, 'name', data);
+    },
   }
 })
 </script>
