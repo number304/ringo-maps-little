@@ -24,7 +24,6 @@
       <CityMap
         :city="city"
         :cityIndex="index"
-        :areaType="areaType"
         @editNeighborhood="emitModal"
         @fullscreen="$emit('fullscreen', true)"
         @fullscreenOut="$emit('fullscreen', false)"
@@ -64,10 +63,6 @@ export default Vue.extend({
       required: true,
       type: Number,
     },
-    areaType: {
-      required: true,
-      type: String,
-    }
   },
   methods: {
     copyToClipboard: function (e: Event, str: string) {
@@ -81,9 +76,8 @@ export default Vue.extend({
       document.execCommand("copy");
       document.body.removeChild(el);
     },
-    emitModal: function (areaType?: string) {
-      if (areaType) this.$emit('editNeighborhood', areaType)
-      else this.$emit('editNeighborhood')
+    emitModal: function () {
+      this.$emit('editNeighborhood')
     }
   },
 });

@@ -18,7 +18,6 @@
             <Row
               :city="city"
               :index="index"
-              :areaType="areaType"
               @editNeighborhood="toggleModalEditArea"
               @fullscreen="mapFullscreen = $event"
             />
@@ -33,7 +32,6 @@
       max-width="800px"
     >
       <EditArea
-        :areaType="areaType"
         :dialog="dialog"
         @closeModal="toggleModalEditArea" />
     </v-dialog>
@@ -54,7 +52,6 @@ export default Vue.extend({
   },
   data() {
     return {
-      areaType: 'neighborhood',
       headers: ["Details", "Map"],
       dialog: false,
       mapFullscreen: false,
@@ -73,9 +70,7 @@ export default Vue.extend({
     toLatLng(array: Array<number>) {
       return GeoJSON.coordsToLatLng([array[0], array[1]]);
     },
-    toggleModalEditArea(typeOfArea?: string) {
-      if (typeOfArea) this.areaType = typeOfArea
-      else this.areaType = 'neighborhood'
+    toggleModalEditArea() {
       this.dialog = !this.dialog;
     },
     ...mapActions(["fetchCities"]),
