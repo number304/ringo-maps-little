@@ -223,6 +223,7 @@ import "@geoman-io/leaflet-geoman-free/dist/leaflet-geoman.css";
 
 import dissolve from "@turf/dissolve";
 import booleanContains from "@turf/boolean-contains";
+import booleanIntersects from '@turf/boolean-intersects';
 import { featureCollection, polygon } from "@turf/helpers";
 
 export default Vue.extend({
@@ -353,14 +354,7 @@ export default Vue.extend({
           this.confirmEditCity = true;
         } else {
           this.setArea([event, newArea, this.city]);
-          const cityGeometry = polygon(this.city.FeatureCollection.features[0].geometry.coordinates[0])
-          const nbIsContained = booleanContains(cityGeometry, polyedit)
-          console.log(nbIsContained);
-          if (nbIsContained) this.$emit("editNeighborhood");
-          else {
-            const ask = confirm('Neighborhood out of city area, continue?');
-            if (ask) this.$emit("editNeighborhood");
-          }
+          this.checkNewNb(polyedit);
           this.map.removeLayer(layer);
         }
       });
@@ -393,6 +387,33 @@ export default Vue.extend({
           (x: any) => L.GeoJSON.coordsToLatLng(x)
         )
       );
+    },
+    changeCityName() {
+      this.editCityName([this.city.id || this.city._id, this.cityNames]);
+      this.cityNameDialog = false;
+    },
+    checkNewNb(polyedit: any) {
+      const cityCoords = this.city.FeatureCollection.features[0].geometry.coordinates;
+      const intersects = !!(() => {
+        for (let i = 0; i < cityCoords.length; i++) {
+          const pol = polygon(cityCoords[i]);
+          if (booleanIntersects(pol, polyedit)) return true;
+        }
+        return false
+      });
+
+      if (intersects) {
+        const cityGeometry = polygon(this.city.FeatureCollection.features[0].geometry.coordinates[0])
+        const nbIsContained = booleanContains(cityGeometry, polyedit)
+        if (nbIsContained) this.$emit("editNeighborhood");
+        else {
+          const ask = confirm('Neighborhood out of city area, continue?');
+          if (ask) this.$emit("editNeighborhood");
+        }
+      } else {
+        const ask = confirm('Neighborhood out of city area, continue?');
+        if (ask) this.$emit("editNeighborhood");
+      }
     },
     cityLayer(map: L.Map) {
       // If the object map has a cityLayer, delete it
@@ -428,10 +449,6 @@ export default Vue.extend({
 
       // Insert the LayerGroup from city object to map
       (map as any).cityLayerGroup.addTo(map);
-    },
-    changeCityName() {
-      this.editCityName([this.city.id || this.city._id, this.cityNames]);
-      this.cityNameDialog = false;
     },
     zoomControl(map: L.Map, state: boolean) {
       map.touchZoom[state ? "enable" : "disable"]();
