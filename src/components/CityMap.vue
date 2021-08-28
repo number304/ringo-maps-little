@@ -763,15 +763,18 @@ export default Vue.extend({
 
       (map as any).neighborhoodsLayerGroup = new L.LayerGroup();
 
+      const neighborhoods = this.neighborhoods.filter((nb: any) => !nb.areaType ||
+        (nb.areaType && (nb.areaType === 'neighborhood' || nb.areaType === 'neighbourhood')))
+
       // A loop that will add all the hoods into a layer group
       // in the map, that are ignored in City view
-      for (let i = 0; i < this.neighborhoods.length; i++) {
-        const neighborhood: any = this.neighborhoods[i];
+      for (let i = 0; i < neighborhoods.length; i++) {
+        const neighborhood: any = neighborhoods[i];
         const neighborhoodName = neighborhood.name.find(
           (x: any) => x.language == "en"
         ).label;
-        const neighborhoodColor = (this.neighborhoods[i] as any).color
-          ? (this.neighborhoods[i] as any).color.active
+        const neighborhoodColor = (neighborhood as any).color
+          ? (neighborhood as any).color.active
           : "#ff8900";
 
         (map as any).neighborhoodsLayerGroup.addLayer(

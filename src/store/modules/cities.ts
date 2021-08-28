@@ -1,9 +1,8 @@
 import { multiPolygan2itm } from '@/helpers/itm';
 import * as http from '@/plugins/http'
-// import { default as State } from '../types';
 const RINGO_API = process.env.VUE_APP_RINGO_API.toLowerCase() === 'true';
 import { nanoid } from 'nanoid';
-import {app} from '@/main'
+// import {app} from '@/main'
 
 const state = {
   cities: {
