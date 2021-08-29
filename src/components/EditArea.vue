@@ -155,7 +155,7 @@ import AreaMap from './AreaMap.vue'
 import { mapGetters, mapActions } from 'vuex'
 
 import dissolve from '@turf/dissolve'
-import { featureCollection, polygon } from '@turf/helpers'
+import { featureCollection, polygon, multiPolygon } from '@turf/helpers'
 
 import { nanoid } from 'nanoid';
 
@@ -212,7 +212,7 @@ export default Vue.extend({
     }
   },
   computed: {
-    ...mapGetters(['getArea', 'getCollidingNBs']),
+    ...mapGetters(['getArea', 'getCollidingNBs', 'selectedCities']),
     areaMapKey(): string {
       return this.getArea.neighborhood.id ||
         this.getArea.neighborhood._id ||
@@ -260,7 +260,7 @@ export default Vue.extend({
     }
   },
   methods: {
-    ...mapActions(['editArea', 'createArea', 'deleteNeighborhoods', 'cleanCollidingNBs', 'setArea']),
+    ...mapActions(['editArea', 'createArea', 'deleteNeighborhoods', 'cleanCollidingNBs', 'setArea', 'setCityArea']),
     close() {
       if (this.isChanged) {
         const ask = confirm('Are you sure to exit?');
@@ -281,8 +281,22 @@ export default Vue.extend({
       this.nbSelectedToMerge = null;
     },
     expandCity() {
-      // TODO: program a method to dissolve finished nb with cityArea
-      console.log('Expanding!');
+      const mergedCollection: any = featureCollection([
+        polygon(this.getArea.city.FeatureCollection.features[0].geometry.coordinates[0]),
+        polygon(this.getArea.neighborhood.FeatureCollection.features[0].geometry.coordinates[0])
+      ])
+
+      const dissolved = dissolve(mergedCollection);
+
+      const multiPol: any = multiPolygon([dissolved.features[0].geometry.coordinates]);
+      multiPol.properties = this.getArea.city.FeatureCollection.features[0].properties;
+
+      const cityIndex = this.selectedCities.findIndex(
+        (city: any) => (city._id || city.id) === (this.getArea.city._id || this.getArea.city.id)
+      );
+      const cityId = this.getArea.city._id || this.getArea.city.id
+
+      this.setCityArea([cityId, multiPol, cityIndex])
       this.expandCityDialog = false;
     },
     formLabel(language: string): string | any {
@@ -349,7 +363,6 @@ export default Vue.extend({
       const features: any = featureCollection([...areaPolygons, ...selectedPolygons])
 
       const dissolved = dissolve(features)
-
 
       let IDsToErase
 

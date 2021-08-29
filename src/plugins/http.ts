@@ -28,7 +28,7 @@ const ap = {
 
 export const getCities: () => Promise<any> = async () => $api.get(ap.get.cities).then((res) => RINGO_API? res.data.payload :res.data);
 
-// PUT :: Replace city pologon bounderies
+// PUT :: Replace city polygon bounderies
 export const patchCityArea: (cityId: string, newCityArea: any) => Promise<AxiosResponse<any>> = async (cityId, newCityArea) => {
   const data = {
     FeatureCollection: {

@@ -276,9 +276,6 @@ export default Vue.extend({
         (this.getArea.neighborhood.id || this.getArea.neighborhood._id) &&
         !this.editCity);
     },
-    // cityFeature(): any {
-    //   return this.city.FeatureCollection.features[0]
-    // }
   },
   methods: {
     ...mapActions([

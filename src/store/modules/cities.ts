@@ -23,6 +23,8 @@ export type State = typeof state;
 const getters = {
   allCities: (state: State): any[] => state.cities.items,
   selectedCities: (state: State): any[] => state.cities.selected,
+  // selectedCityCoords: (state: State): any => (cityIndex: number) =>
+  //   state.cities.selected[cityIndex].FeatureCollection.features[0].geometry.coordinates,
   getArea: (state: State): any => state.area,
   getCollidingNBs: (state: State): any[] => state.collidingNBs
 }
