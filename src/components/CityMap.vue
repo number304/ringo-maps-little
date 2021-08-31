@@ -814,7 +814,7 @@ export default Vue.extend({
                 });
               }
             },
-            style: () => {
+            style: function () {
               return { color: neighborhoodColor, weight: 2, opacity: 0.65 };
             },
           })
