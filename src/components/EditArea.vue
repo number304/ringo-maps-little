@@ -260,7 +260,7 @@ export default Vue.extend({
     }
   },
   methods: {
-    ...mapActions(['editArea', 'createArea', 'deleteNeighborhoods', 'cleanCollidingNBs', 'setArea', 'setCityArea']),
+    ...mapActions(['editArea', 'createArea', 'deleteNeighborhoods', 'cleanCollidingNBs', 'setArea', 'setCityArea', 'toggleRedrawCity']),
     close() {
       if (this.isChanged) {
         const ask = confirm('Are you sure to exit?');
@@ -298,6 +298,7 @@ export default Vue.extend({
 
       this.setCityArea([cityId, multiPol, cityIndex])
       this.expandCityDialog = false;
+      this.toggleRedrawCity();
     },
     formLabel(language: string): string | any {
       if(!this.form.name) return;

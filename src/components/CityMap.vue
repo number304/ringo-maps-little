@@ -257,7 +257,7 @@ export default Vue.extend({
     this.loadNeighborhoods();
   },
   computed: {
-    ...mapGetters(["getArea"]),
+    ...mapGetters(["getArea", "getRedrawCity"]),
     neighborhoodLabel(): string {
       return this.getArea.neighborhood.name.find(
         (x: any) => x.language == this.$store.getters["i18n/current"]
@@ -283,6 +283,7 @@ export default Vue.extend({
       "cleanNeighborhood",
       "setCityArea",
       "editCityName",
+      "toggleRedrawCity",
     ]),
     initMap() {
       this.map = L.map((this as any)._uid + "_map");
@@ -841,6 +842,15 @@ export default Vue.extend({
         this.cityLayer(this.map);
       },
     },
+    getRedrawCity: {
+      handler: function () {
+        if (this.getRedrawCity) {
+          this.loadNeighborhoods();
+          this.cityLayer(this.map);
+          this.toggleRedrawCity();
+        }
+      }
+    }
   },
 });
 </script>

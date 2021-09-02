@@ -15,7 +15,8 @@ const state = {
     letleafEvent: null,
     types: ['neighborhood','cityArea']
   },
-  collidingNBs: [] as any[]
+  collidingNBs: [] as any[],
+  redrawCity: false,
 }
 
 export type State = typeof state;
@@ -26,7 +27,8 @@ const getters = {
   // selectedCityCoords: (state: State): any => (cityIndex: number) =>
   //   state.cities.selected[cityIndex].FeatureCollection.features[0].geometry.coordinates,
   getArea: (state: State): any => state.area,
-  getCollidingNBs: (state: State): any[] => state.collidingNBs
+  getCollidingNBs: (state: State): any[] => state.collidingNBs,
+  getRedrawCity: (state: State): boolean => state.redrawCity,
 }
 
 const actions = {
@@ -195,6 +197,9 @@ const actions = {
   },
   setNeighborhood(context: any, neighborhood: any): void {
     context.commit('setNeighborhood', neighborhood)
+  },
+  toggleRedrawCity(context: any): void {
+    context.commit('invertRedrawCity')
   }
 }
 
@@ -215,6 +220,10 @@ const mutations = {
   editCityAreas: (state: State, data: any[]) => state.cities.selected[data[0]].areas = data[1],
   editCityLayer: (state: State, data: [newCityArea: any, cityIndex: number]) =>
     state.cities.selected[data[1]].FeatureCollection.features[0] = data[0],
+  invertRedrawCity: (state: State): void => {
+    if(state.redrawCity) state.redrawCity = false;
+    else state.redrawCity = true;
+  },
   setCities: (state: State, cities: any[]): any[] => state.cities.items = cities,
   setArea: (state: State, data: [letleafEvent: any, neighborhood: any, city: any]) => {
     state.area.letleafEvent = data[0];
