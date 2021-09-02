@@ -281,10 +281,17 @@ export default Vue.extend({
       this.nbSelectedToMerge = null;
     },
     expandCity() {
-      const mergedCollection: any = featureCollection([
-        polygon(this.getArea.city.FeatureCollection.features[0].geometry.coordinates[0]),
-        polygon(this.getArea.neighborhood.FeatureCollection.features[0].geometry.coordinates[0])
-      ])
+      // TODO: make compatible with multiPolygon (apparently done)
+      const areasToMerge = [];
+
+      for (let i = 0; i < this.getArea.city.FeatureCollection.features[0].geometry.coordinates.length; i++) {
+        const pol = this.getArea.city.FeatureCollection.features[0].geometry.coordinates[i];
+        areasToMerge.push(polygon(pol));
+      }
+
+      areasToMerge.push(polygon(this.getArea.neighborhood.FeatureCollection.features[0].geometry.coordinates[0]));
+
+      const mergedCollection: any = featureCollection(areasToMerge)
 
       const dissolved = dissolve(mergedCollection);
 

@@ -391,6 +391,7 @@ export default Vue.extend({
       this.cityNameDialog = false;
     },
     checkNewNb(polyedit: any) {
+      // TODO: make compatible with multiPolygon
       const cityCoords = this.city.FeatureCollection.features[0].geometry.coordinates;
       const intersects = !!(() => {
         for (let i = 0; i < cityCoords.length; i++) {
