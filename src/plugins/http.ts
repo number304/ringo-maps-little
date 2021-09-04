@@ -12,17 +12,17 @@ const RINGO_API = process.env.VUE_APP_RINGO_API.toLowerCase() === 'true';
 
 const ap = {
   get: {
-    cities: RINGO_API ? "/v1.0/areas/cities?all=true&FeatureCollection=true" : "/cities",
-    byId: (cityId: string)=>RINGO_API ? "/v1.0/areas/city/"+cityId+"/?FeatureCollection" : '/cities/'+cityId
+    cities: "/v1.0/areas/cities?all=true&FeatureCollection=true",
+    byId: (cityId: string)=> "/v1.0/areas/city/"+cityId+"/?FeatureCollection"
   },
   patch: {
-    byId: (cityId: string)=>RINGO_API ? "/v1.0/areas/city/"+cityId : '/cities/' + cityId,
+    byId: (cityId: string)=> "/v1.0/areas/city/"+cityId,
   },
   post: {
-    area: (cityId: string)=>cityId? "/v1.0/areas/":"/v1.0/areas/area"
+    area: (cityId: string)=> cityId ? "/v1.0/areas/" : "/v1.0/areas/area"
   },
   put: {
-    area: (_id: string)=>'/v1.0/areas/'+_id
+    area: (_id: string)=> '/v1.0/areas/'+_id
   }
 }
 
@@ -76,7 +76,7 @@ export const addArea: (cityId: string, formData: any) => Promise<AxiosResponse<a
   if(RINGO_API){
     return $api.post(ap.post.area(cityId), reqPost)
   }
-  
+
   return getOldAreas(cityId, '_').then(oldNeighborhoods => {
     const data = {
       areas: [
@@ -92,7 +92,7 @@ export const addArea: (cityId: string, formData: any) => Promise<AxiosResponse<a
 export const patchArea: (cityId: string, oldArea: any, formData: any) => Promise<AxiosResponse<any>> = async (cityId, oldArea, formData) => {
 
   if(RINGO_API) return $api.put(ap.put.area(oldArea._id), {
-    name: formData.name, 
+    name: formData.name,
     FeatureCollection: {
       type: 'FeatureCollection',
       features: [{

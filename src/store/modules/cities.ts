@@ -1,7 +1,6 @@
 import { multiPolygan2itm } from '@/helpers/itm';
 import * as http from '@/plugins/http'
 const RINGO_API = process.env.VUE_APP_RINGO_API.toLowerCase() === 'true';
-import { nanoid } from 'nanoid';
 // import {app} from '@/main'
 
 const state = {
@@ -40,12 +39,14 @@ const actions = {
         context.commit('cities/selected/'+payload.action, payload.item);
       }).catch(e=>console.log(e))
     }
+
     // ensure all areas are loaded via api on selected cities
     if(RINGO_API && payload.action == "replace"){
       return Promise.all(payload.item.map((item: any)=>new Promise((res, rej)=>{
-          const city = state.cities.items.find((x: any)=>x._id==item._id);
-          if(!city) return rej(new Error('No city found with such id!'));
-          if(city && city.areas && Array.isArray(city.areas)) return res(city);
+        const city = state.cities.items.find((x: any)=>x._id==item._id);
+        if(!city) return rej(new Error('No city found with such id!'));
+        if(city && city.areas && Array.isArray(city.areas)) return res(city)
+
         return http.cityById(item._id).then(cityData=>{
             context.dispatch("cities/setCityNeighborhoods", {city, areas: cityData.areas});
             res(city);
@@ -87,14 +88,12 @@ const actions = {
   async createArea(context: any, data: any[]): Promise<any> {
     const [cityId, form] = data;
 
-    if (!RINGO_API) form.mapData[2].id = nanoid(24);
-
     return  http.addArea(cityId, form).then(()=>{
-      const findCityIndex = state.cities.items.findIndex(x=>(x.id||x._id)==cityId);
+      const findCityIndex = state.cities.items.findIndex(x=> x._id==cityId);
       if(findCityIndex == -1) return;
-      const selectedCityIndex = state.cities.selected.findIndex(city => (city.id || city._id) == cityId)
+      const selectedCityIndex = state.cities.selected.findIndex(city => city._id == cityId)
+
       const newArea = {
-        id: (form.mapData[2].id || form.mapData[2]._id),
         name: form.name,
         areaType: form.areaType,
         userMade: true,
@@ -207,7 +206,7 @@ const mutations = {
   changeCityName: (state: State, data: [cityId: string, newCityNames: any[]]) => {
     const [cityId, newCityNames] = data
     const cityFunction = (city: any, cityId: any) => {
-      if ((city.id || city._id) !== cityId) return city;
+      if (city._id !== cityId) return city;
       city.name = newCityNames
       return city
     }
@@ -237,14 +236,14 @@ const mutations = {
     state.area.neighborhood = neighborhood
   },
   "cities/selected/add": (state: State, item: any)=>{
-    if(!item || !(item._id || item.id) || state.cities.selected.find(x=>(x.id || x._id)==(item._id || item.id))){
+    if(!item || !item._id || state.cities.selected.find(x=>x._id==item._id)){
       console.log(item, new Error('item not found'))
       return;
     }
     state.cities.selected.push(item);
   },
   "cities/selected/remove": (state: State, item: any)=>{
-    const index = state.cities.selected.findIndex(x=>(x.id || x._id)==(item.id || item._id));
+    const index = state.cities.selected.findIndex(x=>x._id === item._id);
     if(index == -1) return;
     state.cities.selected.splice(index, 1);
   },
@@ -252,11 +251,11 @@ const mutations = {
     state.cities.selected = items;
   },
   "cities/set/byId": (state: State, city: any)=>{
-    const index = state.cities.items.findIndex(x=>RINGO_API?x._id==city._id:x.id==city.id);
-    if(index != -1) state.cities.items[index] = city;
+    const index = state.cities.items.findIndex(x=> x._id === city._id);
+    if(index !== -1) state.cities.items[index] = city;
   },
   "cities/set/areas": (state: State, payload: {city: any, areas: any[]})=>{
-    const index = state.cities.items.findIndex(x=>(x._id || x.id) == (payload.city.id || payload.city._id));
+    const index = state.cities.items.findIndex(x=>x._id == payload.city._id)
     if(index > -1) state.cities.items[index].areas = payload.areas;
   }
 

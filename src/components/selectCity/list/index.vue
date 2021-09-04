@@ -63,7 +63,7 @@ export default Vue.extend({
     await this.fetchCities();
     await this.$store.dispatch("cities/selected", {
       item: this.allCities.find(
-        (x: any) => (x.id || x._id) == "5f197ceda69db72eb094bce7"
+        (x: any) => x._id == "5f197ceda69db72eb094bce7"
       ),
       action: "add",
     });
