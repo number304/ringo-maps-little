@@ -74,6 +74,7 @@ export default Vue.extend({
     },
     toggleModalEditArea(notFullyContained?: boolean) {
       if (notFullyContained) this.askExpandCity = true;
+      else this.askExpandCity = false;
       this.dialog = !this.dialog;
     },
     ...mapActions(["fetchCities"]),
