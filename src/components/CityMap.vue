@@ -391,7 +391,7 @@ export default Vue.extend({
       this.cityNameDialog = false;
     },
     checkNewNb(polyedit: any) {
-      // TODO: make compatible with multiPolygon
+      // TODO: make compatible with multiPolygon (apparently done)
       const cityCoords = this.city.FeatureCollection.features[0].geometry.coordinates;
       const intersects = !!(() => {
         for (let i = 0; i < cityCoords.length; i++) {
@@ -415,17 +415,13 @@ export default Vue.extend({
       }
     },
     cityLayer(map: L.Map) {
-      // If the object map has a cityLayer, delete it
       if ((map as any).cityLayerGroup) {
         map.removeLayer((map as any).cityLayerGroup);
         delete (map as any).cityLayerGroup;
       }
-      // const isNb = false;
 
-      // Now create a new one
       (map as any).cityLayerGroup = new L.LayerGroup();
 
-      // Get the information inside city object of his LayerGroup
       this.city.FeatureCollection.features.forEach((feature: any) => {
         this.cityGeoJson = JSON.parse(JSON.stringify(feature));
         (map as any).cityLayerGroup.addLayer(
@@ -446,7 +442,6 @@ export default Vue.extend({
         );
       });
 
-      // Insert the LayerGroup from city object to map
       (map as any).cityLayerGroup.addTo(map);
     },
     zoomControl(map: L.Map, state: boolean) {
@@ -637,8 +632,6 @@ export default Vue.extend({
 
       // If this city has an Array with id property, then it's true
       if (cityId && this.city.areas && Array.isArray(this.city.areas)) {
-        // Neighborhoods from city object inserted in same
-        // name data value
 
         const areaTypes = [
           "neighbourhood",

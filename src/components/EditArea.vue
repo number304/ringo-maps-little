@@ -139,7 +139,7 @@
           <v-btn
             color="green darken-1"
             text
-            @click.stop="expandCityDialog = false"
+            @click.stop="dontExpandCity"
           >
             No
           </v-btn>
@@ -279,6 +279,10 @@ export default Vue.extend({
       this.$emit('closeModal');
       this.cleanCollidingNBs();
       this.nbSelectedToMerge = null;
+    },
+    dontExpandCity() {
+      this.toggleRedrawCity();
+      this.expandCityDialog = false;
     },
     expandCity() {
       // TODO: make compatible with multiPolygon (apparently done)
