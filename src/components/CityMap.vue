@@ -555,7 +555,7 @@ export default Vue.extend({
 
       if (cityId && this.city.areas && Array.isArray(this.city.areas)) {
         const customAreas = this.city.areas.filter(
-          (area: any) => area.areaType && area.areaType !== "neighborhood"
+          (area: any) => area.areaType !== 'neighborhood' && area.areaType !== 'neighbourhood'
         );
 
         (map as any).customAreasLayerGroup = new L.LayerGroup();
@@ -755,8 +755,8 @@ export default Vue.extend({
 
       (map as any).neighborhoodsLayerGroup = new L.LayerGroup();
 
-      const neighborhoods = this.neighborhoods.filter((nb: any) => !nb.areaType ||
-        (nb.areaType && (nb.areaType === 'neighborhood' || nb.areaType === 'neighbourhood')))
+      const neighborhoods = this.neighborhoods.filter((nb: any) =>
+        nb.areaType === 'neighborhood' || nb.areaType === 'neighbourhood')
 
       // A loop that will add all the hoods into a layer group
       // in the map, that are ignored in City view
