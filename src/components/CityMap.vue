@@ -391,7 +391,6 @@ export default Vue.extend({
       this.cityNameDialog = false;
     },
     checkNewNb(polyedit: any) {
-      // TODO: make compatible with multiPolygon (apparently done)
       const cityCoords = this.city.FeatureCollection.features[0].geometry.coordinates;
       const intersects = !!(() => {
         for (let i = 0; i < cityCoords.length; i++) {
@@ -402,8 +401,14 @@ export default Vue.extend({
       });
 
       if (intersects) {
-        const cityGeometry = polygon(this.city.FeatureCollection.features[0].geometry.coordinates[0])
-        const nbIsContained = booleanContains(cityGeometry, polyedit)
+        const nbIsContained = !!(() => {
+          for (let i= 0; i < cityCoords.length; i++) {
+            const pol = polygon(cityCoords[i]);
+            if (booleanContains(pol, polyedit)) return true;
+          }
+          return false
+        })
+
         if (nbIsContained) this.$emit("editNeighborhood");
         else {
           const ask = confirm('Neighborhood out of city area, continue?');
