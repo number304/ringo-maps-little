@@ -31,7 +31,7 @@ const getters = {
 }
 
 const actions = {
-  "cities/selected": function(context: any, payload: {item: any, action: "add"|"remove"|"replace"}){
+  "cities/selected": function(context: any, payload: {item: any, action: "add"|"remove"|"replace", refresh?: boolean}){
    // load single neighborhood by add action
     if(RINGO_API && payload.action == "add" && typeof payload.item == "object" && (payload.item.id || payload.item._id) && !payload.item.areas && !Array.isArray(payload.item.areas)){
       return http.cityById(payload.item._id).then(city=>{
@@ -45,9 +45,10 @@ const actions = {
       return Promise.all(payload.item.map((item: any)=>new Promise((res, rej)=>{
         const city = state.cities.items.find((x: any)=>x._id==item._id);
         if(!city) return rej(new Error('No city found with such id!'));
-        if(city && city.areas && Array.isArray(city.areas)) return res(city)
+        if(city && city.areas && Array.isArray(city.areas) && !payload.refresh) return res(city)
 
         return http.cityById(item._id).then(cityData=>{
+            console.log(item, city, cityData)
             context.dispatch("cities/setCityNeighborhoods", {city, areas: cityData.areas});
             res(city);
         }).catch(e=>rej(e))

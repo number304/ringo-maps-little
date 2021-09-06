@@ -388,7 +388,7 @@ export default Vue.extend({
       this.setArea([{}, newNeighborhood, this.getArea.city])
       this.reloadModal()
     },
-    async newArea() {
+    newArea() {
       // If neighborhood don't have id then is new
       const isNew = typeof (this.getArea.neighborhood.id || this.getArea.neighborhood._id) != "string";
       const cityId = (this.$store.state.cities.area.city.id || this.$store.state.cities.area.city._id);
@@ -412,9 +412,12 @@ export default Vue.extend({
       }else{
         this.editArea([cityId, this.getArea.neighborhood, this.form])
       }
-      // await this.$store.dispatch('cities/selected',
-      // { item: this.selectedCities, action: 'replace' })
-      // this.$emit('closeModal');
+      this.$emit('closeModal');
+      this.$store.dispatch('cities/selected',
+      { item: this.selectedCities, action: 'replace', refresh: true })
+      setTimeout(() => {
+        this.toggleRedrawCity();
+      }, 500);
     },
     reloadModal() {
       if (this.getArea.neighborhood.color)

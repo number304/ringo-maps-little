@@ -273,7 +273,7 @@ export default Vue.extend({
     toggleAreaButtons(): boolean {
       return !!(this.fullscreen &&
         this.getArea.neighborhood &&
-        (this.getArea.neighborhood.id || this.getArea.neighborhood._id) &&
+        this.getArea.neighborhood._id &&
         !this.editCity);
     },
   },
@@ -836,9 +836,17 @@ export default Vue.extend({
         this.cityLayer(this.map);
       },
     },
+    // 'city.areas': {
+    //   deep: true,
+    //   handler: function () {
+    //     this.loadNeighborhoods();
+    //     this.cityLayer(this.map);
+    //   }
+    // },
     getRedrawCity: {
       handler: function () {
         if (this.getRedrawCity) {
+          console.log('hello');
           this.loadNeighborhoods();
           this.cityLayer(this.map);
           this.toggleRedrawCity();
