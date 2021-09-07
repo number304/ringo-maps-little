@@ -117,12 +117,14 @@
         <v-btn color="green darken-1" text
           @click.stop="newArea"
           :disabled="!hasName || !isChanged"
+          :loading="loading"
         >
           Save
         </v-btn>
 
         <v-btn color="green darken-1" text
           @click.stop="close"
+          :disabled="loading"
         >
           Cancel
         </v-btn>
@@ -189,9 +191,10 @@ export default Vue.extend({
     return {
       expandCityDialog: false,
       form: null as any,
+      loading: false,
       nbColors: { active: '#e3a702', hover: '#571414', status: '#55915c' },
-      touchedOldArea: false,
       nbSelectedToMerge: null as any,
+      touchedOldArea: false,
       refType: 'neighborhood',
     };
   },
@@ -389,6 +392,7 @@ export default Vue.extend({
       this.reloadModal()
     },
     newArea() {
+      this.loading = true;
       // If neighborhood don't have id then is new
       const isNew = typeof (this.getArea.neighborhood.id || this.getArea.neighborhood._id) != "string";
       const cityId = (this.$store.state.cities.area.city.id || this.$store.state.cities.area.city._id);
@@ -412,12 +416,13 @@ export default Vue.extend({
       }else{
         this.editArea([cityId, this.getArea.neighborhood, this.form])
       }
-      this.$emit('closeModal');
       this.$store.dispatch('cities/selected',
       { item: this.selectedCities, action: 'replace', refresh: true })
       setTimeout(() => {
         this.toggleRedrawCity();
-      }, 2000);
+        this.loading = false;
+        this.$emit('closeModal');
+      }, 2500);
     },
     reloadModal() {
       if (this.getArea.neighborhood.color)
