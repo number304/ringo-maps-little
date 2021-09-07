@@ -387,7 +387,7 @@ export default Vue.extend({
       );
     },
     changeCityName() {
-      this.editCityName([this.city.id || this.city._id, this.cityNames]);
+      this.editCityName([this.city._id, this.cityNames]);
       this.cityNameDialog = false;
     },
     checkNewNb(polyedit: any) {
@@ -553,10 +553,7 @@ export default Vue.extend({
       });
     },
     loadCustomAreasLayer(map: L.Map) {
-      const cityId =
-        process.env.VUE_APP_RINGO_API.toLowerCase() === "true"
-          ? this.city._id
-          : this.city.id;
+      const cityId = this.city._id;
 
       if (cityId && this.city.areas && Array.isArray(this.city.areas)) {
         const customAreas = this.city.areas.filter(
@@ -630,10 +627,7 @@ export default Vue.extend({
       }
     },
     loadNeighborhoods() {
-      const cityId =
-        process.env.VUE_APP_RINGO_API.toLowerCase() === "true"
-          ? this.city._id
-          : this.city.id;
+      const cityId = this.city._id;
 
       // If this city has an Array with id property, then it's true
       if (cityId && this.city.areas && Array.isArray(this.city.areas)) {
@@ -669,7 +663,7 @@ export default Vue.extend({
 
       const dissolved = dissolve(nbCollection);
 
-      const nbIDs = this.selectedNeighborhoods.map((nb) => nb.id || nb._id);
+      const nbIDs = this.selectedNeighborhoods.map(nb => nb._id);
 
       if (dissolved.features.length < 2) {
         const newNeighborhood = {
@@ -715,7 +709,7 @@ export default Vue.extend({
         this.$emit("editNeighborhood");
 
         this.setCityArea([
-          this.city.id || this.city._id,
+          this.city._id,
           JSON.parse(JSON.stringify(this.cityGeoJson)),
           this.cityIndex
         ]);
@@ -729,7 +723,7 @@ export default Vue.extend({
         if ((this.map as any).neighborhoodsLayerGroup) this.toggleNeighborhoods(this.map, true, true);
       } else {
         this.setCityArea([
-          this.city.id || this.city._id,
+          this.city._id,
           JSON.parse(JSON.stringify(this.cityGeoJson)),
           this.cityIndex
         ]);

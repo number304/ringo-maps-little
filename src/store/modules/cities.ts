@@ -33,7 +33,7 @@ const getters = {
 const actions = {
   "cities/selected": function(context: any, payload: {item: any, action: "add"|"remove"|"replace", refresh?: boolean}){
    // load single neighborhood by add action
-    if(RINGO_API && payload.action == "add" && typeof payload.item == "object" && (payload.item.id || payload.item._id) && !payload.item.areas && !Array.isArray(payload.item.areas)){
+    if(RINGO_API && payload.action == "add" && typeof payload.item == "object" && (payload.item._id) && !payload.item.areas && !Array.isArray(payload.item.areas)){
       return http.cityById(payload.item._id).then(city=>{
         context.dispatch('cities/setCityNeighborhoods', {city: payload.item, areas: city.areas})
         context.commit('cities/selected/'+payload.action, payload.item);
@@ -124,12 +124,12 @@ const actions = {
   async deleteNeighborhoods(context: any, data: any[]): Promise<any> {
     await http.deleteAreas(data[0], data[1]).then(() => {
       const [cityId, ids] = data
-      const findCityIndex = state.cities.items.findIndex(x=>(x.id||x._id)==cityId);
-      const selectedCityIndex = state.cities.selected.findIndex(city => (city.id || city._id) == cityId)
+      const findCityIndex = state.cities.items.findIndex(x=>x._id==cityId);
+      const selectedCityIndex = state.cities.selected.findIndex(city => city._id == cityId)
 
       if(findCityIndex == -1) return;
       const areas = state.cities.selected[selectedCityIndex].areas
-        .filter((area: any) => ids.indexOf((area.id || area._id)) === -1)
+        .filter((area: any) => ids.indexOf(area._id) === -1)
       context.commit('editCityAreas', [selectedCityIndex, areas])
     })
   },
@@ -138,14 +138,13 @@ const actions = {
 
     return http.patchArea(cityId, oldArea, form)
     .then(()=>{
-      const findCityIndex = state.cities.items.findIndex(x=>(x.id||x._id)==cityId);
+      const findCityIndex = state.cities.items.findIndex(x=> x._id==cityId);
 
       if(findCityIndex == -1) return;
-      const selectedCityIndex = state.cities.selected.findIndex(city => (city.id || city._id) == cityId)
+      const selectedCityIndex = state.cities.selected.findIndex(city => city._id == cityId)
 
       const oldAreas = state.cities.selected[selectedCityIndex].areas
-      .filter((area: any) =>
-        (area.id || area._id) !== (oldArea.id || oldArea._id))
+        .filter((area: any) => area._id !== oldArea._id)
 
       let geometry = oldArea.FeatureCollection.features[0].geometry
       if (form.mapData) geometry = {
@@ -154,7 +153,7 @@ const actions = {
         coordinates: form.mapData[2].geometry.type == 'Polygon' ? [form.mapData[2].geometry.coordinates] : form.mapData[2].geometry.coordinates,
       }
       const newArea = {
-        id: (oldArea.id || oldArea._id),
+        id: oldArea._id,
         name: form.name,
         areaType: form.areaType,
         userMade: true,

@@ -324,7 +324,7 @@ export default Vue.extend({
 
       if (this.area.neighborhood.IDsToErase) {
         nbArray = this.area.city.areas.filter((nb: any) => {
-          return !this.area.neighborhood.IDsToErase.includes((nb.id || nb._id))
+          return !this.area.neighborhood.IDsToErase.includes(nb._id)
         })
       }
 

@@ -217,9 +217,7 @@ export default Vue.extend({
   computed: {
     ...mapGetters(['getArea', 'getCollidingNBs', 'selectedCities']),
     areaMapKey(): string {
-      return this.getArea.neighborhood.id ||
-        this.getArea.neighborhood._id ||
-        nanoid(24)
+      return this.getArea.neighborhood._id || nanoid(24)
     },
     isChanged() {
       if (!this.getArea.neighborhood) return;
@@ -249,7 +247,7 @@ export default Vue.extend({
     },
     isNewArea(): boolean {
       return this.getArea.neighborhood
-        && !(this.getArea.neighborhood.id || this.getArea.neighborhood._id)
+        && !this.getArea.neighborhood._id
         && this.touchedOldArea
     },
     neighborhoodLabel(): string {
@@ -301,10 +299,8 @@ export default Vue.extend({
       const multiPol: any = multiPolygon([dissolved.features[0].geometry.coordinates]);
       multiPol.properties = this.getArea.city.FeatureCollection.features[0].properties;
 
-      const cityIndex = this.selectedCities.findIndex(
-        (city: any) => (city._id || city.id) === (this.getArea.city._id || this.getArea.city.id)
-      );
-      const cityId = this.getArea.city._id || this.getArea.city.id
+      const cityIndex = this.selectedCities.findIndex((city: any) => city._id === this.getArea.city._id);
+      const cityId = this.getArea.city._id;
 
       this.setCityArea([cityId, multiPol, cityIndex])
       this.expandCityDialog = false;
@@ -372,13 +368,12 @@ export default Vue.extend({
       }
 
       const features: any = featureCollection([...areaPolygons, ...selectedPolygons])
-
       const dissolved = dissolve(features)
 
       let IDsToErase
 
-      if (this.getArea.neighborhood.id) IDsToErase = [this.getArea.neighborhood.id, this.nbSelectedToMerge.id]
-      else IDsToErase = [...this.getArea.neighborhood.IDsToErase, this.nbSelectedToMerge.id]
+      if (this.getArea.neighborhood._id) IDsToErase = [this.getArea.neighborhood._id, this.nbSelectedToMerge._id]
+      else IDsToErase = [...this.getArea.neighborhood.IDsToErase, this.nbSelectedToMerge._id]
 
       const newNeighborhood = {
         'FeatureCollection': dissolved,
@@ -386,16 +381,14 @@ export default Vue.extend({
         IDsToErase
       }
 
-      console.log(newNeighborhood)
-
       this.setArea([{}, newNeighborhood, this.getArea.city])
       this.reloadModal()
     },
     newArea() {
       this.loading = true;
       // If neighborhood don't have id then is new
-      const isNew = typeof (this.getArea.neighborhood.id || this.getArea.neighborhood._id) != "string";
-      const cityId = (this.$store.state.cities.area.city.id || this.$store.state.cities.area.city._id);
+      const isNew = typeof this.getArea.neighborhood._id !== "string";
+      const cityId = this.$store.state.cities.area.city._id;
 
       if(this.askExpandCity) this.expandCityDialog = true;
 

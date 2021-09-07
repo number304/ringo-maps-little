@@ -5,9 +5,9 @@
         <v-col cols="2">ID</v-col>
         <v-col
           cols="10"
-          @click="copyToClipboard($event, city.id || city._id)"
+          @click="copyToClipboard($event, city._id)"
           >
-          {{ city.id || city._id }}
+          {{ city._id }}
           </v-col
         >
       </v-row>
