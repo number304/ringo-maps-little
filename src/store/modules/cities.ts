@@ -23,8 +23,6 @@ export type State = typeof state;
 const getters = {
   allCities: (state: State): any[] => state.cities.items,
   selectedCities: (state: State): any[] => state.cities.selected,
-  // selectedCityCoords: (state: State): any => (cityIndex: number) =>
-  //   state.cities.selected[cityIndex].FeatureCollection.features[0].geometry.coordinates,
   getArea: (state: State): any => state.area,
   getCollidingNBs: (state: State): any[] => state.collidingNBs,
   getRedrawCity: (state: State): boolean => state.redrawCity,
@@ -48,7 +46,6 @@ const actions = {
         if(city && city.areas && Array.isArray(city.areas) && !payload.refresh) return res(city)
 
         return http.cityById(item._id).then(cityData=>{
-            console.log(item, city, cityData)
             context.dispatch("cities/setCityNeighborhoods", {city, areas: cityData.areas});
             res(city);
         }).catch(e=>rej(e))
@@ -136,7 +133,7 @@ const actions = {
   async editArea(context: any, data: [cityId: string, oldArea: any, formData: any]): Promise<any> {
     const [cityId, oldArea, form] = data
 
-    return http.patchArea(cityId, oldArea, form)
+    return http.putArea(oldArea, form)
     .then(()=>{
       const findCityIndex = state.cities.items.findIndex(x=> x._id==cityId);
 

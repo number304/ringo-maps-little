@@ -835,17 +835,9 @@ export default Vue.extend({
         this.cityLayer(this.map);
       },
     },
-    // 'city.areas': {
-    //   deep: true,
-    //   handler: function () {
-    //     this.loadNeighborhoods();
-    //     this.cityLayer(this.map);
-    //   }
-    // },
     getRedrawCity: {
       handler: function () {
         if (this.getRedrawCity) {
-          console.log('hello');
           this.loadNeighborhoods();
           this.cityLayer(this.map);
           this.toggleRedrawCity();

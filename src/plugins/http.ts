@@ -8,8 +8,6 @@ export const $api = Axios.create({
   }
 });
 
-const RINGO_API = process.env.VUE_APP_RINGO_API.toLowerCase() === 'true';
-
 const ap = {
   get: {
     cities: "/v1.0/areas/cities?all=true&FeatureCollection=true",
@@ -26,9 +24,9 @@ const ap = {
   }
 }
 
-export const getCities: () => Promise<any> = async () => $api.get(ap.get.cities).then((res) => RINGO_API? res.data.payload :res.data);
+export const getCities: () => Promise<any> = async () => $api.get(ap.get.cities).then((res) => res.data.payload);
 
-// PUT :: Replace city polygon bounderies
+// PATCH: Replace city polygon bounderies
 export const patchCityArea: (cityId: string, newCityArea: any) => Promise<AxiosResponse<any>> = async (cityId, newCityArea) => {
   const data = {
     FeatureCollection: {
@@ -72,25 +70,12 @@ export const addArea: (cityId: string, formData: any) => Promise<AxiosResponse<a
     }
   }
 
-  if(RINGO_API){
-    return $api.post(ap.post.area(cityId), reqPost)
-  }
-
-  return getOldAreas(cityId, '_').then(oldNeighborhoods => {
-    const data = {
-      areas: [
-        reqPost,
-        ...oldNeighborhoods
-      ]
-    }
-    // if (areaType) data.areas[0].areaType = areaType
-    return $api.patch(ap.patch.byId(cityId), data)
-  })
+  return $api.post(ap.post.area(cityId), reqPost)
 }
 
-export const patchArea: (cityId: string, oldArea: any, formData: any) => Promise<AxiosResponse<any>> = async (cityId, oldArea, formData) => {
-
-  if(RINGO_API) return $api.put(ap.put.area(oldArea._id), {
+// PUT: editing an existing area
+export const putArea: (oldArea: any, formData: any) => Promise<AxiosResponse<any>> = async (oldArea, formData) => {
+  return $api.put(ap.put.area(oldArea._id), {
     name: formData.name,
     FeatureCollection: {
       type: 'FeatureCollection',
@@ -106,45 +91,16 @@ export const patchArea: (cityId: string, oldArea: any, formData: any) => Promise
     areaType: formData.areaType,
     userMade: true
   })
-
-  return getOldAreas(cityId, oldArea._id).then(oldNeighborhoods => {
-    const data = {
-      areas: [
-        {
-          _id: oldArea._id,
-          name: formData.name,
-          areaType: formData.areaType,
-          userMade: true,
-          color: formData.color,
-          FeatureCollection: {
-            type: 'FeatureCollection',
-            features: [{
-              type: 'Feature',
-              geometry: (formData.mapTouched) ? formData.mapData[2].geometry : oldArea.FeatureCollection.features[0].geometry,
-              properties: {
-                name: formData.name,
-              }
-            }]
-          }
-        },
-        ...oldNeighborhoods
-      ]
-    }
-    return $api.patch(ap.patch.byId(cityId), data);
-  })
-
 }
 
+// DELETE: delete an array of areas by _id
 export const deleteAreas: (cityId: string, ids: string[])=>Promise<AxiosResponse<any>> = async (cityId, ids) =>{
   return $api.get(ap.get.byId(cityId))
-      .then(res=>res.data.areas.filter((nb: any)=>ids.indexOf(nb._id)==-1))
+      .then(res=>res.data.payload[0].areas.filter((nb: any)=>ids.indexOf(nb._id)==-1))
       .then(areas=>$api.patch(ap.patch.byId(cityId), {areas}))
 }
 
-export const getOldAreas: (cityId: string, areaId: string)=>Promise<any[]> = async (cityId, areaId)=>{
-  return $api.get(ap.get.byId(cityId)).then(res=>res.data.areas.filter((nb: any) => nb._id !== areaId))
-}
-
+// GET: get one city by _id
 export const cityById: (cityId: string)=>Promise<any> = async (cityId)=>{
-  return $api.get(ap.get.byId(cityId)).then(res=>RINGO_API?res.data.payload[0]:res.data);
+  return $api.get(ap.get.byId(cityId)).then(res=>res.data.payload[0]);
 }
