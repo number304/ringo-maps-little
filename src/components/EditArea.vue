@@ -417,7 +417,7 @@ export default Vue.extend({
       { item: this.selectedCities, action: 'replace', refresh: true })
       setTimeout(() => {
         this.toggleRedrawCity();
-      }, 500);
+      }, 2000);
     },
     reloadModal() {
       if (this.getArea.neighborhood.color)
