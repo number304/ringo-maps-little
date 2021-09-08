@@ -282,7 +282,6 @@ export default Vue.extend({
       this.nbSelectedToMerge = null;
     },
     expandCity() {
-      // TODO: make compatible with multiPolygon (apparently done)
       const areasToMerge = [];
 
       for (let i = 0; i < this.getArea.city.FeatureCollection.features[0].geometry.coordinates.length; i++) {
@@ -315,7 +314,6 @@ export default Vue.extend({
     },
     initForm(): InitForm {
       const names = JSON.parse(JSON.stringify(this.getArea.neighborhood.name))
-      // const areaType = this.getArea.neighborhood.areaType || 'neighborhood'
 
       return {
         name: names,

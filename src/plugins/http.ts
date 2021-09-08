@@ -93,7 +93,7 @@ export const putArea: (oldArea: any, formData: any) => Promise<AxiosResponse<any
   })
 }
 
-// DELETE: delete an array of areas by _id
+// DELETE: delete an array of areas by _id (in progress)
 export const deleteAreas: (cityId: string, ids: string[])=>Promise<AxiosResponse<any>> = async (cityId, ids) =>{
   return $api.get(ap.get.byId(cityId))
       .then(res=>res.data.payload[0].areas.filter((nb: any)=>ids.indexOf(nb._id)==-1))
