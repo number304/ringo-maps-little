@@ -33,6 +33,7 @@
     >
       <EditArea
         :askExpandCity="askExpandCity"
+        :makeCity="makeCity"
         :dialog="dialog"
         @closeModal="toggleModalEditArea" />
     </v-dialog>
@@ -56,6 +57,7 @@ export default Vue.extend({
       askExpandCity: false,
       dialog: false,
       headers: ["Details", "Map"],
+      makeCity: false,
       mapFullscreen: false,
     };
   },
@@ -72,9 +74,13 @@ export default Vue.extend({
     toLatLng(array: Array<number>) {
       return GeoJSON.coordsToLatLng([array[0], array[1]]);
     },
-    toggleModalEditArea(notFullyContained?: boolean) {
+    toggleModalEditArea(notFullyContained?: boolean, makeCity?: boolean) {
       if (notFullyContained) this.askExpandCity = true;
       else this.askExpandCity = false;
+
+      if (makeCity) this.makeCity = true;
+      else this.makeCity = false;
+
       this.dialog = !this.dialog;
     },
     ...mapActions(["fetchCities"]),

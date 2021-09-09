@@ -177,6 +177,9 @@
           <v-btn color="green darken-1" text @click.stop="patchCity">
             Yes
           </v-btn>
+          <v-btn color="green darken-1" text @click.stop="emitModalForCity">
+            Create new city
+          </v-btn>
           <v-btn color="green darken-1" text @click.stop="restoreCityGeoJson">
             Cancel
           </v-btn>
@@ -460,6 +463,11 @@ export default Vue.extend({
     },
     drag(map: L.Map, state: boolean) {
       map.dragging[state ? "enable" : "disable"]();
+    },
+    emitModalForCity() {
+      this.setArea([{}, (this.cityGeoJson as any).properties.neighborhood, this.city]);
+      this.$emit("editNeighborhood", false, true);
+      this.restoreCityGeoJson();
     },
     exitSelectMode() {
       for (let i = 0; i < this.selectedNeighborhoods.length; i++) {

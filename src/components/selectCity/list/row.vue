@@ -76,8 +76,8 @@ export default Vue.extend({
       document.execCommand("copy");
       document.body.removeChild(el);
     },
-    emitModal: function (notFullyContained?: boolean) {
-      this.$emit('editNeighborhood', notFullyContained)
+    emitModal: function (notFullyContained?: boolean, makeCity?: boolean) {
+      this.$emit('editNeighborhood', notFullyContained, makeCity)
     }
   },
 });

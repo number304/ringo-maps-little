@@ -14,7 +14,7 @@
     <v-card v-else>
       <div class="d-flex">
         <v-card-title class="text-h5" style="word-break: normal">
-          {{ getArea.city.name[1].label }} - {{ neighborhoodLabel }}
+          {{ dialogNameTitle }}
         </v-card-title>
         <v-spacer></v-spacer>
         <div>
@@ -23,7 +23,9 @@
             hide-details
             :items="$store.state.cities.area.types"
             label="What kind of area is this?"
+            v-if="!makeCity"
             v-model="form.areaType"
+            :disabled="loading"
           ></v-select>
         </div>
       </div>
@@ -38,6 +40,7 @@
               :label="formLabel(name.language)"
               v-model="name.label"
               class="mx-4"
+              :disabled="loading"
             ></v-text-field>
             <div class="d-flex mx-4 mb-4">
               <label for="activeColor">
@@ -48,6 +51,7 @@
                 type="color"
                 name="activeColor"
                 v-model="form.color.active"
+                :disabled="loading"
               >
             </div>
             <div class="d-flex mx-4 mb-4">
@@ -59,6 +63,7 @@
                 type="color"
                 name="hoverColor"
                 v-model="form.color.hover"
+                :disabled="loading"
               >
             </div>
             <div class="d-flex mx-4">
@@ -70,9 +75,13 @@
                 type="color"
                 name="statusColor"
                 v-model="form.color.status"
+                :disabled="loading"
               >
             </div>
-            <div class="px-4 pb-4 pt-2 mt-3 text-left select-to-merge">
+            <div
+              class="px-4 pb-4 pt-2 mt-3 text-left select-to-merge"
+              v-if="!makeCity"
+            >
               <v-select
                 :items="getCollidingNBs"
                 item-text="name[1].label"
@@ -185,6 +194,10 @@ export default Vue.extend({
     dialog: {
       type: Boolean,
       required: true,
+    },
+    makeCity: {
+      type: Boolean,
+      required: true,
     }
   },
   data() {
@@ -199,10 +212,10 @@ export default Vue.extend({
     };
   },
   created() {
-    if (this.getArea.neighborhood.color) this.nbColors = this.getArea.neighborhood.color
-    if (this.getArea.neighborhood.areaType) this.refType = this.getArea.neighborhood.areaType
+    if (this.getArea.neighborhood.color) this.nbColors = this.getArea.neighborhood.color;
+    if (this.getArea.neighborhood.areaType) this.refType = this.getArea.neighborhood.areaType;
 
-    if (this.getArea) this.form = this.initForm()
+    if (this.getArea) this.form = this.initForm();
   },
   beforeUpdate() {
     if (this.getArea.neighborhood && !this.dialog) {
@@ -218,6 +231,22 @@ export default Vue.extend({
     ...mapGetters(['getArea', 'getCollidingNBs', 'selectedCities']),
     areaMapKey(): string {
       return this.getArea.neighborhood._id || nanoid(24)
+    },
+    dialogNameTitle(): string {
+      if (this.makeCity) {
+        if (this.form.name[1].label.length === 0) {
+          return 'New City';
+        }
+        else return this.form.name[1].label;
+      }
+      else {
+        let dialogTitle = this.getArea.city.name[1].label;
+        if (this.form.name[1].label.length === 0) {
+          dialogTitle += ' - New Neighborhood';
+        }
+        else dialogTitle += ' - ' + this.form.name[1].label;
+        return dialogTitle;
+      }
     },
     isChanged() {
       if (!this.getArea.neighborhood) return;
@@ -249,12 +278,6 @@ export default Vue.extend({
       return this.getArea.neighborhood
         && !this.getArea.neighborhood._id
         && this.touchedOldArea
-    },
-    neighborhoodLabel(): string {
-      if (this.form.name[1].label.length === 0) {
-        return 'New Neighborhood'
-      }
-      else return this.form.name[1].label
     },
     selectToMergeLabel(): string {
       return this.getCollidingNBs.length === 0 ? 'No neighborhoods colliding' : 'Select a neighborhood to merge'
@@ -413,7 +436,7 @@ export default Vue.extend({
         this.toggleRedrawCity();
         this.loading = false;
         this.$emit('closeModal');
-      }, 2500);
+      }, 3000);
     },
     reloadModal() {
       if (this.getArea.neighborhood.color)
