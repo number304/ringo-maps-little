@@ -62,6 +62,16 @@
         >
           <v-icon dark>mdi-home-group</v-icon>
         </v-btn>
+        <!-- Add cities to map -->
+        <v-btn
+          fab
+          dark
+          class="orange darken-2 btn"
+          title="Display a city"
+          @click="displayCityDialog"
+        >
+          <v-icon dark>mdi-city-variant-outline</v-icon>
+        </v-btn>
       </div>
     </div>
 
@@ -149,7 +159,7 @@
         fab
         dark
         class="orange-darken-2 btn mr-2"
-        @click.stop="cityNameDialog = true"
+        @click.stop="cityDialog = true;cityNameDialog = true"
         title="Change city name"
         x-small
       >
@@ -186,9 +196,10 @@
         </div>
       </v-card>
     </v-dialog>
-    <!-- Dialog to edit city name -->
-    <v-dialog v-model="cityNameDialog" max-width="400px" persistent>
-      <v-card class="pt-4 pb-2">
+    <!-- Dialog for editing name or display more cities -->
+    <v-dialog v-model="cityDialog" max-width="400px" persistent>
+      <!-- Card to edit city name -->
+      <v-card v-if="cityNameDialog" class="pt-4 pb-2">
         <v-text-field
           class="mx-4"
           :key="name.language"
@@ -204,11 +215,49 @@
           <v-btn
             color="green darken-1"
             text
-            @click.stop="cityNameDialog = false"
+            @click.stop="cityDialog = false;cityNameDialog = false"
           >
             Cancel
           </v-btn>
         </div>
+      </v-card>
+      <!-- Card to select a city to display -->
+      <v-card v-if="selectCityDialog" class="pt-4 pb-2">
+        <h3 class="text-left text-h5 mx-4">
+          Add cities to this map
+        </h3>
+        <v-divider class="mt-2"></v-divider>
+        <v-autocomplete
+          class="mx-4"
+          multiple
+          menu-props="closeOnContentClick"
+          :items="$store.getters.allCities"
+          :item-text="getItemLanguage()"
+          return-object
+          v-model="addedCities"
+          :filter="filterCities"
+        >
+          <template v-slot:selection="data">
+            <v-chip
+              v-bind="data.attrs"
+              :input-value="data.selected"
+              close
+              @click="data.select"
+              @click:close="removeCity(data.item)"
+            >
+              {{ data.item.name.find((x) => x.language === $store.getters["i18n/current"]).label }}
+            </v-chip>
+          </template>
+          <template v-slot:item="{ item }">
+            {{ item.name.find((x) => x.language === $store.getters["i18n/current"]).label }}
+          </template>
+        </v-autocomplete>
+        <v-btn
+          color="green darken-1" text
+          @click.stop="cityDialog = false;cityNameDialog = false"
+        >
+          Close
+        </v-btn>
       </v-card>
     </v-dialog>
   </div>
@@ -242,9 +291,11 @@ export default Vue.extend({
   },
   data() {
     return {
+      addedCities: [],
+      cityDialog: false,
       cityGeoJson: null as unknown as L.GeoJSON,
-      cityNames: [] as any[],
       cityNameDialog: false,
+      cityNames: [] as any[],
       confirmEditCity: false,
       customController: null as unknown as L.Control.Layers,
       editCity: true,
@@ -252,6 +303,7 @@ export default Vue.extend({
       map: null as unknown as L.Map,
       neighborhoods: [],
       newCityLayer: null as any,
+      selectCityDialog: false,
       selectedNeighborhoods: [] as any[],
     };
   },
@@ -391,6 +443,7 @@ export default Vue.extend({
     },
     changeCityName() {
       this.editCityName([this.city._id, this.cityNames]);
+      this.cityDialog = false;
       this.cityNameDialog = false;
     },
     checkNewNb(polyedit: any) {
@@ -460,6 +513,10 @@ export default Vue.extend({
       map.keyboard[state ? "enable" : "disable"]();
 
       state ? map.zoomControl.addTo(map) : map.zoomControl.remove();
+    },
+    displayCityDialog () {
+      this.cityDialog = true;
+      this.selectCityDialog = true;
     },
     drag(map: L.Map, state: boolean) {
       map.dragging[state ? "enable" : "disable"]();
@@ -539,6 +596,16 @@ export default Vue.extend({
       }
 
       this.selectedNeighborhoods = [];
+    },
+    filterCities: function (item: any, queryText: string) {
+      const match = new RegExp(queryText, "ig");
+      return !!item.name.filter((x: any) => x.label.match(match)).length;
+    },
+    getItemLanguage: function (): string {
+      const language = this.$store.getters["i18n/current"]
+      if (language === 'he') return 'name[0].label'
+      else if (language === 'en') return 'name[1].label'
+      else return 'name[2].label'
     },
     toggleFullScreen() {
       this.fullscreen = !this.fullscreen;
@@ -693,20 +760,6 @@ export default Vue.extend({
         );
       }
     },
-    restoreCityGeoJson() {
-      this.cityGeoJson = this.city.FeatureCollection.features[0];
-      if (this.newCityLayer) {
-        this.map.removeLayer(this.newCityLayer);
-        this.newCityLayer = null;
-      }
-      this.confirmEditCity = false;
-      this.cityLayer(this.map);
-
-      if (!this.editCity) {
-        this.toggleNeighborhoods(this.map);
-        this.toggleEdition();
-      }
-    },
     patchCity() {
       if ((this.cityGeoJson as any).properties.neighborhood) {
         const newNeighborhood = (this.cityGeoJson as any).properties
@@ -738,6 +791,23 @@ export default Vue.extend({
       }
 
       this.confirmEditCity = false;
+    },
+    removeCity (city: any) {
+      this.addedCities = this.addedCities.filter((area: any) => area._id !== city._id)
+    },
+    restoreCityGeoJson() {
+      this.cityGeoJson = this.city.FeatureCollection.features[0];
+      if (this.newCityLayer) {
+        this.map.removeLayer(this.newCityLayer);
+        this.newCityLayer = null;
+      }
+      this.confirmEditCity = false;
+      this.cityLayer(this.map);
+
+      if (!this.editCity) {
+        this.toggleNeighborhoods(this.map);
+        this.toggleEdition();
+      }
     },
     toggleEdition() {
       this.editCity = !this.editCity;
