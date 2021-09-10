@@ -475,6 +475,31 @@ export default Vue.extend({
         if (ask) this.$emit("editNeighborhood");
       }
     },
+    citiesLayer(map: L.Map) {
+      if ((map as any).citiesLayerGroup) {
+        map.removeLayer((map as any).citiesLayerGroup)
+        delete (map as any).citiesLayerGroup
+      }
+
+      if (this.addedCities.length < 1) return;
+
+      (map as any).citiesLayerGroup = new L.LayerGroup()
+
+      for (let i = 0; i < this.addedCities.length; i++) {
+        const city: any = this.addedCities[i];
+
+        (map as any).citiesLayerGroup.addLayer(
+          L.geoJSON(city.FeatureCollection.features[0], {
+            pmIgnore: true,
+            style: function () {
+              return { color: '#007bff', weight: 2, opacity: 0.65 }
+            }
+          })
+        )
+      }
+
+      (map as any).citiesLayerGroup.addTo(map);
+    },
     cityLayer(map: L.Map) {
       if ((map as any).cityLayerGroup) {
         map.removeLayer((map as any).cityLayerGroup);
@@ -920,6 +945,12 @@ export default Vue.extend({
           this.cityLayer(this.map);
           this.toggleRedrawCity();
         }
+      }
+    },
+    addedCities: {
+      // deep: true,
+      handler: function () {
+        this.citiesLayer(this.map)
       }
     }
   },
