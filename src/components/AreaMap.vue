@@ -291,7 +291,7 @@ export default Vue.extend({
         (map as any).cityLayerGroup.addLayer(
           L.geoJSON(feature.geometry, {
             pmIgnore: true,
-            style: () => {
+            style: function () {
               return { color: '#007bff', weight: 2, opacity: 0.65 }
             }
           })
@@ -354,7 +354,7 @@ export default Vue.extend({
                 });
               }
             },
-            style: () => {
+            style: function () {
               return { color: '#7F7E80FF', weight: 2, opacity: 0.65 }
             }
           })
