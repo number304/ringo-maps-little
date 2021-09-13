@@ -448,24 +448,24 @@ export default Vue.extend({
     },
     checkNewNb(polyedit: any) {
       const cityCoords = this.city.FeatureCollection.features[0].geometry.coordinates;
-      const intersects = !!(() => {
+      const intersects = () => {
         for (let i = 0; i < cityCoords.length; i++) {
           const pol = polygon(cityCoords[i]);
           if (booleanIntersects(pol, polyedit)) return true;
         }
-        return false
-      });
+        return false;
+      }
 
-      if (intersects) {
-        const nbIsContained = !!(() => {
+      if (intersects()) {
+        const nbIsContained = () => {
           for (let i= 0; i < cityCoords.length; i++) {
             const pol = polygon(cityCoords[i]);
             if (booleanContains(pol, polyedit)) return true;
           }
           return false
-        })
+        }
 
-        if (nbIsContained) this.$emit("editNeighborhood");
+        if (nbIsContained()) this.$emit("editNeighborhood");
         else {
           const ask = confirm('Neighborhood out of city area, continue?');
           if (ask) this.$emit("editNeighborhood", true);
