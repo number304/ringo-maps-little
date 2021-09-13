@@ -41,7 +41,8 @@
         <!-- Toggle neighborhoods -->
         <v-btn
           fab
-          dark
+          :dark="displayCity"
+          :disabled="!displayCity"
           :class="[
             !neighborhoods.length
               ? 'red'
@@ -231,7 +232,7 @@
           class="mx-4"
           multiple
           menu-props="closeOnContentClick"
-          :items="$store.getters.allCities"
+          :items="allCitiesButCurrent"
           :item-text="getItemLanguage()"
           return-object
           v-model="addedCities"
@@ -252,6 +253,15 @@
             {{ item.name.find((x) => x.language === $store.getters["i18n/current"]).label }}
           </template>
         </v-autocomplete>
+        <v-checkbox
+          class="mx-4"
+          v-model="displayCity"
+          :disabled="!!(map.neighborhoodsLayerGroup)"
+          :label="map.neighborhoodsLayerGroup ?
+            'Display current city (disabled when neighborhoods show)' : 'Display current city'"
+          >
+        </v-checkbox>
+        <v-divider class="mb-2"></v-divider>
         <v-btn
           color="green darken-1" text
           @click.stop="cityDialog = false;cityNameDialog = false"
@@ -298,6 +308,7 @@ export default Vue.extend({
       cityNames: [] as any[],
       confirmEditCity: false,
       customController: null as unknown as L.Control.Layers,
+      displayCity: true,
       editCity: true,
       fullscreen: false,
       map: null as unknown as L.Map,
@@ -324,6 +335,9 @@ export default Vue.extend({
         if (type === "neighborhood") return "(Custom hood)";
         else return "(Custom area)";
       } else return "(Custom hood)";
+    },
+    allCitiesButCurrent(): any[] {
+      return this.$store.getters.allCities.filter((city: any) => city._id !== this.city._id)
     },
     toggleAreaButtons(): boolean {
       return !!(this.fullscreen &&
@@ -462,7 +476,7 @@ export default Vue.extend({
             const pol = polygon(cityCoords[i]);
             if (booleanContains(pol, polyedit)) return true;
           }
-          return false
+          return false;
         }
 
         if (nbIsContained()) this.$emit("editNeighborhood");
@@ -500,11 +514,13 @@ export default Vue.extend({
 
       (map as any).citiesLayerGroup.addTo(map);
     },
-    cityLayer(map: L.Map) {
+    cityLayer(map: L.Map, removeLayer?: boolean) {
       if ((map as any).cityLayerGroup) {
         map.removeLayer((map as any).cityLayerGroup);
         delete (map as any).cityLayerGroup;
       }
+
+      if (removeLayer) return;
 
       (map as any).cityLayerGroup = new L.LayerGroup();
 
@@ -923,13 +939,10 @@ export default Vue.extend({
     },
   },
   watch: {
-    neighborhoods: {
-      deep: true,
-      immediate: false,
-      handler: function (val, oldVal) {
-        if (!val.length || !oldVal.length) return;
-        this.toggleNeighborhoods(this.map, true, true);
-      },
+    addedCities: {
+      handler: function () {
+        this.citiesLayer(this.map)
+      }
     },
     city: {
       deep: true,
@@ -937,6 +950,12 @@ export default Vue.extend({
         this.loadNeighborhoods();
         this.cityLayer(this.map);
       },
+    },
+    displayCity: {
+      handler: function (val) {
+        if (val) this.cityLayer(this.map);
+        else this.cityLayer(this.map, true);
+      }
     },
     getRedrawCity: {
       handler: function () {
@@ -947,12 +966,14 @@ export default Vue.extend({
         }
       }
     },
-    addedCities: {
-      // deep: true,
-      handler: function () {
-        this.citiesLayer(this.map)
-      }
-    }
+    neighborhoods: {
+      deep: true,
+      immediate: false,
+      handler: function (val, oldVal) {
+        if (!val.length || !oldVal.length) return;
+        this.toggleNeighborhoods(this.map, true, true);
+      },
+    },
   },
 });
 </script>
