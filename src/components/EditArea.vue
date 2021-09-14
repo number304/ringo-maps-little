@@ -420,13 +420,13 @@ export default Vue.extend({
         }
         this.createArea([cityId, this.form]);
 
-        if (this.getArea.neighborhood.IDsToErase) {
-          // Run a function to erase this areas from API
-          setTimeout(() =>
-            this.deleteNeighborhoods([cityId, this.getArea.neighborhood.IDsToErase]),
-            1000
-          )
-        }
+        // if (this.getArea.neighborhood.IDsToErase) {
+        //   // Run a function to erase this areas from API
+        //   setTimeout(() =>
+        //     this.deleteNeighborhoods([cityId, this.getArea.neighborhood.IDsToErase]),
+        //     1000
+        //   )
+        // }
       }else{
         this.editArea([cityId, this.getArea.neighborhood, this.form])
       }

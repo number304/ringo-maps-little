@@ -779,7 +779,7 @@ export default Vue.extend({
 
       const dissolved = dissolve(nbCollection);
 
-      const nbIDs = this.selectedNeighborhoods.map(nb => nb._id);
+      // const nbIDs = this.selectedNeighborhoods.map(nb => nb._id);
 
       if (dissolved.features.length < 2) {
         const newNeighborhood = {
@@ -789,7 +789,6 @@ export default Vue.extend({
             { label: "", language: "en" },
             { label: "", language: "ar" },
           ],
-          IDsToErase: nbIDs,
         };
 
         this.setArea([{}, newNeighborhood, this.city]);
