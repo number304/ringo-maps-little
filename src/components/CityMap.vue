@@ -286,7 +286,7 @@ import "@geoman-io/leaflet-geoman-free/dist/leaflet-geoman.css";
 import dissolve from "@turf/dissolve";
 import booleanContains from "@turf/boolean-contains";
 import booleanIntersects from '@turf/boolean-intersects';
-import { featureCollection, polygon } from "@turf/helpers";
+import { featureCollection, polygon, multiPolygon } from "@turf/helpers";
 
 export default Vue.extend({
   props: {
@@ -778,17 +778,17 @@ export default Vue.extend({
       );
 
       const dissolved = dissolve(nbCollection);
-
-      // const nbIDs = this.selectedNeighborhoods.map(nb => nb._id);
+      const multiPol = featureCollection([multiPolygon([dissolved.features[0].geometry.coordinates])]);
 
       if (dissolved.features.length < 2) {
         const newNeighborhood = {
-          FeatureCollection: dissolved,
+          FeatureCollection: multiPol,
           name: [
             { label: "", language: "he" },
             { label: "", language: "en" },
             { label: "", language: "ar" },
           ],
+          areaType: 'cityArea'
         };
 
         this.setArea([{}, newNeighborhood, this.city]);

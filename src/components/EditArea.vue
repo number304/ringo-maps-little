@@ -388,18 +388,15 @@ export default Vue.extend({
             )
       }
 
-      const features: any = featureCollection([...areaPolygons, ...selectedPolygons])
-      const dissolved = dissolve(features)
+      const features: any = featureCollection([...areaPolygons, ...selectedPolygons]);
 
-      let IDsToErase
-
-      if (this.getArea.neighborhood._id) IDsToErase = [this.getArea.neighborhood._id, this.nbSelectedToMerge._id]
-      else IDsToErase = [...this.getArea.neighborhood.IDsToErase, this.nbSelectedToMerge._id]
+      const dissolved = dissolve(features);
+      const multiPol = featureCollection([multiPolygon([dissolved.features[0].geometry.coordinates])]);
 
       const newNeighborhood = {
-        'FeatureCollection': dissolved,
+        'FeatureCollection': multiPol,
         'name': [{label: '',language: 'he'},{label: '', language: 'en'},{label: '',language: 'ar'}],
-        IDsToErase
+        'areaType': 'cityArea',
       }
 
       this.setArea([{}, newNeighborhood, this.getArea.city])
