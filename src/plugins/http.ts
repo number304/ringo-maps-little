@@ -53,7 +53,7 @@ export const addArea: (cityId: string, formData: any) => Promise<AxiosResponse<a
     name: formData.name,
     areaType: formData.areaType,
     userMade: true,
-    color: formData.color,
+    color: formData.areaType === 'city' ? undefined : formData.color,
     FeatureCollection: {
       type: 'FeatureCollection',
       features: [{

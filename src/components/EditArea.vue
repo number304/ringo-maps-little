@@ -42,7 +42,7 @@
               class="mx-4"
               :disabled="loading"
             ></v-text-field>
-            <div class="d-flex mx-4 mb-4">
+            <div class="d-flex mx-4 mb-4" v-if="!makeCity">
               <label for="activeColor">
                 Active Color
               </label>
@@ -54,7 +54,7 @@
                 :disabled="loading"
               >
             </div>
-            <div class="d-flex mx-4 mb-4">
+            <div class="d-flex mx-4 mb-4" v-if="!makeCity">
               <label for="hoverColor">
                 Hover Color
               </label>
@@ -66,7 +66,7 @@
                 :disabled="loading"
               >
             </div>
-            <div class="d-flex mx-4">
+            <div class="d-flex mx-4" v-if="!makeCity">
               <label for="statusColor">
                 Status Color
               </label>
@@ -341,13 +341,13 @@ export default Vue.extend({
       return {
         name: names,
         color: {
-          active: this.nbColors.active,
+          active: this.makeCity ? '#007bff' : this.nbColors.active,
           hover: this.nbColors.hover,
           status: this.nbColors.status,
         },
         mapTouched: false,
         mapData: null,
-        areaType: this.getArea.neighborhood.areaType || 'neighborhood'
+        areaType: this.getArea.neighborhood.areaType || (this.makeCity ? 'city' : 'neighborhood')
       }
     },
     layerChanges(index: number, feature: any, geoJSON: any) {
@@ -419,14 +419,6 @@ export default Vue.extend({
           this.form.mapData = [0, {}, newNeighborhood]
         }
         this.createArea([cityId, this.form]);
-
-        // if (this.getArea.neighborhood.IDsToErase) {
-        //   // Run a function to erase this areas from API
-        //   setTimeout(() =>
-        //     this.deleteNeighborhoods([cityId, this.getArea.neighborhood.IDsToErase]),
-        //     1000
-        //   )
-        // }
       }else{
         this.editArea([cityId, this.getArea.neighborhood, this.form])
       }
@@ -436,7 +428,8 @@ export default Vue.extend({
         this.toggleRedrawCity();
         this.loading = false;
         this.$emit('closeModal');
-      }, 3000);
+        if (this.makeCity) this.$store.dispatch('fetchCities');
+      }, this.askExpandCity ? 5000 : 3000);
     },
     reloadModal() {
       if (this.getArea.neighborhood.color)

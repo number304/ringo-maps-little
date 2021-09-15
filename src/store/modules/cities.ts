@@ -86,7 +86,7 @@ const actions = {
   async createArea(context: any, data: any[]): Promise<any> {
     const [cityId, form] = data;
 
-    return  http.addArea(cityId, form).then(()=>{
+    return http.addArea(cityId, form).then(()=>{
       const findCityIndex = state.cities.items.findIndex(x=> x._id==cityId);
       if(findCityIndex == -1) return;
       const selectedCityIndex = state.cities.selected.findIndex(city => city._id == cityId)
